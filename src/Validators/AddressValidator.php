@@ -6,7 +6,8 @@ namespace Bnpl\Validators;
 
 use Bnpl\Models\Address;
 
-class AddressValidator {
+class AddressValidator
+{
     /**
      * @param string $zipCode
      * @return bool
@@ -24,11 +25,11 @@ class AddressValidator {
     {
         $errors = [];
 
-        if (!$address->getZip() || !$this->validateZipCode($address->getZip())) {
+        if (!$this->validateZipCode($address->getZip())) {
             $errors[] = 'zip';
         }
 
-        if (!$address->getCity() || trim($address->getCity()) === '') {
+        if (trim($address->getCity()) === '') {
             $errors[] = 'city';
         }
 

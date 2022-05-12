@@ -7,15 +7,16 @@ use Throwable;
 
 class InvalidResponseException extends Exception
 {
-    private const MESSAGE = 'Invalid respopnse: ';
+    private const MESSAGE = 'Invalid response: ';
 
     /**
-     * @param string $message
+     * @param string $reason
      * @param int $code
      * @param ?Throwable $previous
      */
-    public function __construct(string $message = '', int $code = 0, Throwable $previous = null)
+    public function __construct(string $reason, int $code = 0, Throwable $previous = null)
     {
-        parent::__construct(self::MESSAGE . $message, $code, $previous);
+        $message = self::MESSAGE . $reason;
+        parent::__construct($message, $code, $previous);
     }
 }

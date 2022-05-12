@@ -4,12 +4,21 @@ declare(strict_types=1);
 
 namespace Bnpl\Models;
 
-class Other {
+use Bnpl\Exception\InvalidOtherException;
+use Bnpl\Validators\OtherValidator;
+
+class Other
+{
     private string $ip;
     private string $browser;
     private string $os;
 
-    public function __construct(string $ip, string $browser, string $os)
+    /**
+     * @param string $ip
+     * @param string $browser
+     * @param string $os
+     */
+    private function __construct(string $ip, string $browser, string $os)
     {
         $this->ip = $ip;
         $this->browser = $browser;
@@ -26,10 +35,12 @@ class Other {
 
     /**
      * @param string $ip
+     * @return Other
      */
-    public function setIp(string $ip): void
+    public function setIp(string $ip): self
     {
         $this->ip = $ip;
+        return $this;
     }
 
     /**
@@ -42,10 +53,12 @@ class Other {
 
     /**
      * @param string $browser
+     * @return Other
      */
-    public function setBrowser(string $browser): void
+    public function setBrowser(string $browser): self
     {
         $this->browser = $browser;
+        return $this;
     }
 
     /**
@@ -58,9 +71,31 @@ class Other {
 
     /**
      * @param string $os
+     * @return Other
      */
-    public function setOs(string $os): void
+    public function setOs(string $os): self
     {
         $this->os = $os;
+        return $this;
+    }
+
+    /**
+     * @param string $ip
+     * @param string $browser
+     * @param string $os
+     * @return static
+     * @throws InvalidOtherException
+     */
+    public static function create(string $ip, string $browser, string $os): self
+    {
+        $other = new Other($ip, $browser, $os);
+
+        $otherValidator = new OtherValidator();
+        $invalidFields = $otherValidator->validateOther($other);
+        if (count($invalidFields) > 0) {
+            throw new InvalidOtherException($invalidFields);
+        }
+
+        return $other;
     }
 }

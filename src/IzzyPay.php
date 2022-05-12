@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Bnpl;
 
 use Bnpl\Exception\InvalidResponseException;
+use Bnpl\Models\BasicCustomer;
+use Bnpl\Models\Cart;
+use Bnpl\Models\DetailedCustomer;
+use Bnpl\Models\Other;
 use Bnpl\Traits\HmacTrait;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
@@ -17,6 +21,7 @@ class IzzyPay
     private const REQUEST_TIMEOUT = 20;
     private const CRED_ENDPOINT = '/api/opencart/cred';
     private const INIT_ENDPOINT = '/api/opencart/init';
+    private const START_ENDPOINT = '/api/opencart/start';
 
     private string $merchantId;
     private string $baseUrl;
@@ -46,18 +51,16 @@ class IzzyPay
      * @throws InvalidResponseException
      * @throws \JsonException
      */
-    public function init($merchantCartId, $cart, $customer, $other)
+    public function init(string $merchantCartId, Cart $cart, BasicCustomer $customer, Other $other)
     {
         $url = $this->baseUrl . self::INIT_ENDPOINT;
         $this->sendPostRequest($url, []);
     }
 
-    public function init2()
+    public function start(string $merchantCartId, Cart $cart, DetailedCustomer $customer, Other $other)
     {
-    }
-
-    public function start()
-    {
+        $url = $this->baseUrl . self::START_ENDPOINT;
+        $this->sendPostRequest($url, []);
     }
 
     /**

@@ -4,16 +4,22 @@ declare(strict_types=1);
 
 namespace Bnpl\Models;
 
+use Bnpl\Exception\InvalidCartException;
+use Bnpl\Validators\CartValidator;
+
 class Cart
 {
     private string $currency;
     private float $totalValue;
+    /**
+     * @var CartItem[]
+     */
     private array $items;
 
-    public function __construct(string $currency)
+    private function __construct(string $currency, float $totalValue)
     {
         $this->currency = $currency;
-        $this->totalValue = 0;
+        $this->totalValue = $totalValue;
         $this->items = [];
     }
 
@@ -27,10 +33,30 @@ class Cart
 
     /**
      * @param string $currency
+     * @return Cart
      */
-    public function setCurrency(string $currency): void
+    public function setCurrency(string $currency): self
     {
         $this->currency = $currency;
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getTotalValue(): float
+    {
+        return $this->totalValue;
+    }
+
+    /**
+     * @param float $totalValue
+     * @return Cart
+     */
+    public function setTotalValue(float $totalValue): self
+    {
+        $this->totalValue = $totalValue;
+        return $this;
     }
 
     /**
@@ -43,19 +69,43 @@ class Cart
 
     /**
      * @param CartItem $item
-     * @return void
+     * @return Cart
      */
-    public function addItem(CartItem $item): void
+    public function addItem(CartItem $item): self
     {
-        $items[] = $item;
-        $this->totalValue += $item->getQuantity() * $item->getPrice();
+        $this->items[] = $item;
+        return $this;
     }
 
     /**
-     * @return void
+     * @return Cart
      */
-    public function reset(): void
+    public function reset(): self
     {
         $this->items = [];
+        return $this;
+    }
+
+    /**
+     * @param string $currency
+     * @param float $totalValue
+     * @param array $cartItems
+     * @return static
+     * @throws InvalidCartException
+     */
+    public static function create(string $currency, float $totalValue, array $cartItems = []): self
+    {
+        $cart = new Cart($currency, $totalValue);
+        foreach ($cartItems as $cartItem) {
+            $cart->addItem($cartItem);
+        }
+
+        $cartValidator = new CartValidator();
+        $invalidFields = $cartValidator->validateCart($cart);
+        if (count($invalidFields) > 0) {
+            throw new InvalidCartException($invalidFields);
+        }
+
+        return $cart;
     }
 }

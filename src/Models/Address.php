@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Bnpl\Models;
 
-use Bnpl\Exception\InvalidAddressException;
+use Bnpl\Exception\InvalidCustomerException;
 use Bnpl\Validators\AddressValidator;
 
-class Address {
+class Address
+{
     private string $zip;
     private string $city;
     private ?string $street;
@@ -15,8 +16,16 @@ class Address {
     private ?string $address1;
     private ?string $address2;
     private ?string $address3;
-    private AddressValidator $addressValidator;
 
+    /**
+     * @param string $zip
+     * @param string $city
+     * @param string|null $street
+     * @param string|null $houseNo
+     * @param string|null $address1
+     * @param string|null $address2
+     * @param string|null $address3
+     */
     private function __construct(string $zip, string $city, ?string $street, ?string $houseNo, ?string $address1, ?string $address2, ?string $address3)
     {
         $this->zip = $zip;
@@ -26,8 +35,6 @@ class Address {
         $this->address1 = $address1;
         $this->address2 = $address2;
         $this->address3 = $address3;
-
-        $this->addressValidator = new AddressValidator();
     }
 
     /**
@@ -40,10 +47,12 @@ class Address {
 
     /**
      * @param string $zip
+     * @return Address
      */
-    public function setZip(string $zip): void
+    public function setZip(string $zip): self
     {
         $this->zip = $zip;
+        return $this;
     }
 
     /**
@@ -56,10 +65,12 @@ class Address {
 
     /**
      * @param string $city
+     * @return Address
      */
-    public function setCity(string $city): void
+    public function setCity(string $city): self
     {
         $this->city = $city;
+        return $this;
     }
 
     /**
@@ -72,10 +83,12 @@ class Address {
 
     /**
      * @param string|null $street
+     * @return Address
      */
-    public function setStreet(?string $street): void
+    public function setStreet(?string $street): self
     {
         $this->street = $street;
+        return $this;
     }
 
     /**
@@ -88,10 +101,12 @@ class Address {
 
     /**
      * @param string|null $houseNo
+     * @return Address
      */
-    public function setHouseNo(?string $houseNo): void
+    public function setHouseNo(?string $houseNo): self
     {
         $this->houseNo = $houseNo;
+        return $this;
     }
 
     /**
@@ -104,10 +119,12 @@ class Address {
 
     /**
      * @param string|null $address1
+     * @return Address
      */
-    public function setAddress1(?string $address1): void
+    public function setAddress1(?string $address1): self
     {
         $this->address1 = $address1;
+        return $this;
     }
 
     /**
@@ -120,10 +137,12 @@ class Address {
 
     /**
      * @param string|null $address2
+     * @return Address
      */
-    public function setAddress2(?string $address2): void
+    public function setAddress2(?string $address2): self
     {
         $this->address2 = $address2;
+        return $this;
     }
 
     /**
@@ -136,22 +155,12 @@ class Address {
 
     /**
      * @param string|null $address3
+     * @return Address
      */
-    public function setAddress3(?string $address3): void
+    public function setAddress3(?string $address3): self
     {
         $this->address3 = $address3;
-    }
-
-    /**
-     * @return void
-     * @throws InvalidAddressException
-     */
-    private function validate(): void
-    {
-        $invalidFields = $this->addressValidator->validateAddress($this);
-        if (count($invalidFields) > 0) {
-            throw new InvalidAddressException(implode(', ', $invalidFields));
-        }
+        return $this;
     }
 
     /**
@@ -163,12 +172,18 @@ class Address {
      * @param string|null $address2
      * @param string|null $address3
      * @return Address
-     * @throws InvalidAddressException
+     * @throws InvalidCustomerException
      */
-    public static function create(string $zip, string $city, ?string $street, ?string $houseNo, ?string $address1, ?string $address2, ?string $address3): Address
+    public static function create(string $zip, string $city, ?string $street, ?string $houseNo, ?string $address1, ?string $address2, ?string $address3): self
     {
         $address = new Address($zip, $city, $street, $houseNo, $address1, $address2, $address3);
-        $address->validate();
+
+        $addressValidator = new AddressValidator();
+        $invalidFields = $addressValidator->validateAddress($address);
+        if (count($invalidFields) > 0) {
+            throw new InvalidCustomerException($invalidFields);
+        }
+
         return $address;
     }
 }
