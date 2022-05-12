@@ -1,0 +1,15 @@
+{
+    "name": "bnpl/sdk",
+    "type": "library",
+    "license": "proprietary",
+    "version": "1.0.0",
+    "require": {
+        "php": ">=8.0",
+        "guzzlehttp/guzzle": "^7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bnpl\\": "src/"
+        }
+    }
+}
