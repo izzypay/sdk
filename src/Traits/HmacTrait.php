@@ -15,8 +15,8 @@ trait HmacTrait
      */
     public function getSignature(string $authorizationHeader): ?string
     {
-        if (preg_match('/HMAC\s((.+):(.+))/', $authorizationHeader, $matches)) {
-            return $matches[3];
+        if (preg_match('/HMAC\s(.+)/', $authorizationHeader, $matches)) {
+            return $matches[1];
         }
 
         return null;
