@@ -80,4 +80,16 @@ abstract class AbstractCustomer
         $this->other = $other;
         return $this;
     }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'registered' => $this->registered,
+            'merchantCustomerId' => $this->merchantCustomerId,
+            'other' => $this->other,
+        ];
+    }
 }

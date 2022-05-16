@@ -80,6 +80,18 @@ class Other
     }
 
     /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'ip' => $this->ip,
+            'browser' => $this->browser,
+            'os' => $this->os,
+        ];
+    }
+
+    /**
      * @param string $ip
      * @param string $browser
      * @param string $os

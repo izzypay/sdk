@@ -87,6 +87,23 @@ class Cart
     }
 
     /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        $items = [];
+        foreach ($this->items as $item) {
+            $items[] = $item->toArray();
+        }
+
+        return [
+            'currency' => $this->currency,
+            'totalValue' => $this->totalValue,
+            'items' => $items,
+        ];
+    }
+
+    /**
      * @param string $currency
      * @param float $totalValue
      * @param array $cartItems

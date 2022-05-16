@@ -164,6 +164,22 @@ class Address
     }
 
     /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'zip' => $this->zip,
+            'city' => $this->city,
+            'street' => $this->street,
+            'houseNo' => $this->houseNo,
+            'address1' => $this->address1,
+            'address2' => $this->address2,
+            'address3' => $this->address3,
+        ];
+    }
+
+    /**
      * @param string $zip
      * @param string $city
      * @param string $street

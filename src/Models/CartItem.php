@@ -209,6 +209,24 @@ class CartItem
     }
 
     /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'name' => $this->name,
+            'category' => $this->category,
+            'subCategory' => $this->subCategory,
+            'type' => $this->type,
+            'price' => $this->price,
+            'quantity' => $this->quantity,
+            'manufacturer' => $this->manufacturer,
+            'merchantItemId' => $this->merchantItemId,
+            'other' => $this->other,
+        ];
+    }
+
+    /**
      * @param string $name
      * @param string $category
      * @param string $subCategory

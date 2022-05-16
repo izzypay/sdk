@@ -148,6 +148,21 @@ class DetailedCustomer extends AbstractCustomer
     }
 
     /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        $arrayData = parent::toArray();
+        $arrayData['name'] = $this->name;
+        $arrayData['surname'] = $this->surname;
+        $arrayData['phone'] = $this->phone;
+        $arrayData['email'] = $this->email;
+        $arrayData['deliveryAddress'] = $this->deliveryAddress->toArray();
+        $arrayData['invoiceAddress'] = $this->invoiceAddress->toArray();
+        return $arrayData;
+    }
+
+    /**
      * @param string $registered
      * @param string $merchantCustomerId
      * @param string $other
