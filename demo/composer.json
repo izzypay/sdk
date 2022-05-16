@@ -1,0 +1,15 @@
+{
+    "name": "izzypay/demo",
+    "type": "project",
+    "license": "proprietary",
+    "version": "1.0.0",
+    "require": {
+        "izzypay/sdk": "^1.0"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../"
+        }
+    ]
+}
