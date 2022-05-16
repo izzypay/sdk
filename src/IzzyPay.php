@@ -5,121 +5,82 @@ declare(strict_types=1);
 namespace IzzyPay;
 
 use IzzyPay\Exceptions\InvalidResponseException;
+use IzzyPay\Exceptions\RequestException;
+use IzzyPay\Models\AbstractCustomer;
 use IzzyPay\Models\BasicCustomer;
 use IzzyPay\Models\Cart;
 use IzzyPay\Models\DetailedCustomer;
 use IzzyPay\Models\Other;
-use IzzyPay\Traits\HmacTrait;
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Response;
+use IzzyPay\Services\RequestService;
+use JsonException;
 
 class IzzyPay
 {
-    use HmacTrait;
-
-    private const SDK_VERSION = '1.0';
-    private const REQUEST_TIMEOUT = 20;
-    private const CRED_ENDPOINT = '/api/opencart/cred';
-    private const INIT_ENDPOINT = '/api/opencart/init';
-    private const START_ENDPOINT = '/api/opencart/start';
-
     private string $merchantId;
-    private string $baseUrl;
-    private Client $client;
+    private RequestService $requestService;
 
     public function __construct(string $merchantId, string $merchantSecret, string $baseUrl)
     {
         $this->merchantId = $merchantId;
-        $this->merchantSecret = $merchantSecret;
-
-        $this->client = new Client();
+        $this->requestService = new RequestService($merchantId, $merchantSecret, $baseUrl);
     }
 
     /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws InvalidResponseException
-     * @throws \JsonException
+     * @throws RequestException
      */
     public function cred(): void
     {
-        $url = $this->baseUrl . self::CRED_ENDPOINT;
-        $this->sendHeadRequest($url);
+        $this->requestService->sendHeadRequest(RequestService::CRED_ENDPOINT);
     }
 
     /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @param string $merchantCartId
+     * @param Cart $cart
+     * @param BasicCustomer $customer
+     * @param Other $other
+     * @return string
      * @throws InvalidResponseException
-     * @throws \JsonException
+     * @throws JsonException
+     * @throws RequestException
      */
-    public function init(string $merchantCartId, Cart $cart, BasicCustomer $customer, Other $other)
+    public function init(string $merchantCartId, Cart $cart, BasicCustomer $customer, Other $other): string
     {
-        $url = $this->baseUrl . self::INIT_ENDPOINT;
-        $this->sendPostRequest($url, []);
-    }
-
-    public function start(string $merchantCartId, Cart $cart, DetailedCustomer $customer, Other $other)
-    {
-        $url = $this->baseUrl . self::START_ENDPOINT;
-        $this->sendPostRequest($url, []);
-    }
-
-    /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \JsonException
-     * @throws InvalidResponseException
-     */
-    private function sendHeadRequest(string $url): void
-    {
-        $authorizationHeader = $this->generateAuthorizationHeader($this->merchantId);
-        $response = $this->client->head($url, [
-            'timeout' => self::REQUEST_TIMEOUT,
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'Authorization' => $authorizationHeader,
-            ]
-        ]);
-        $this->validateResponse($response);
+        $body = $this->prepareRequestData($merchantCartId, $cart, $customer, $other);
+        return $this->requestService->sendPostRequest(RequestService::INIT_ENDPOINT, $body);
     }
 
     /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \JsonException
+     * @param string $merchantCartId
+     * @param Cart $cart
+     * @param DetailedCustomer $customer
+     * @param Other $other
+     * @return string
      * @throws InvalidResponseException
+     * @throws JsonException
+     * @throws RequestException
      */
-    private function sendPostRequest(string $url, array $body)
+    public function start(string $merchantCartId, Cart $cart, DetailedCustomer $customer, Other $other): string
     {
-        $requestBody = json_encode($body, JSON_THROW_ON_ERROR);
-        $authorizationHeader = $this->generateAuthorizationHeader($this->merchantId, $requestBody);
-        $response = $this->client->post($url, [
-            'timeout' => self::REQUEST_TIMEOUT,
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'Authorization' => $authorizationHeader,
-            ],
-            'body' => $requestBody,
-        ]);
-        $this->validateResponse($response);
+        $body = $this->prepareRequestData($merchantCartId, $cart, $customer, $other);
+        return $this->requestService->sendPostRequest(RequestService::START_ENDPOINT, $body);
     }
 
     /**
-     * @param Response $response
-     * @throws InvalidResponseException
+     * @param string $merchantCartId
+     * @param Cart $cart
+     * @param AbstractCustomer $customer
+     * @param Other $other
+     * @return array
      */
-    public function validateResponse(Response $response): void
+    private function prepareRequestData(string $merchantCartId, Cart $cart, AbstractCustomer $customer, Other $other): array
     {
-        if (!$response->hasHeader('Authorization')) {
-            throw new InvalidResponseException('Missing authorization header');
-        }
-
-        $authorizationHeader = $response->getHeader('Authorization')[0];
-        $signature = $this->getSignature($authorizationHeader);
-        if ($signature === null) {
-            throw new InvalidResponseException('Invalid authorization header');
-        }
-
-        $calculatedEncodedSignature = $this->generateSignature($response->getBody()->getContents());
-        if ($calculatedEncodedSignature !== $signature) {
-            throw new InvalidResponseException('Invalid signature');
-        }
+        return [
+            'merchantId' => $this->merchantId,
+            'merchantCartId' => $merchantCartId,
+            'cart' => $cart->toArray(),
+            'customer' => $customer->toArray(),
+            'other' => $other->toArray(),
+        ];
     }
 }

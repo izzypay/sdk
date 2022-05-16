@@ -8,6 +8,7 @@ use IzzyPay\Exceptions\InvalidCustomerException;
 use IzzyPay\Exceptions\InvalidCartException;
 use IzzyPay\Exceptions\InvalidOtherException;
 use IzzyPay\Exceptions\InvalidResponseException;
+use IzzyPay\Exceptions\RequestException;
 use IzzyPay\IzzyPay;
 use IzzyPay\Models\Address;
 use IzzyPay\Models\CartItem;
@@ -41,7 +42,7 @@ try {
     var_dump($e->getMessage());
 } catch (InvalidResponseException $e) {
     var_dump($e->getMessage());
-} catch (GuzzleException $e) {
+} catch (RequestException $e) {
     var_dump($e->getMessage());
 } catch (JsonException $e) {
     var_dump($e->getMessage());
