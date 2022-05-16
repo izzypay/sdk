@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Bnpl;
+namespace IzzyPay;
 
-use Bnpl\Exception\InvalidResponseException;
-use Bnpl\Models\BasicCustomer;
-use Bnpl\Models\Cart;
-use Bnpl\Models\DetailedCustomer;
-use Bnpl\Models\Other;
-use Bnpl\Traits\HmacTrait;
+use IzzyPay\Exceptions\InvalidResponseException;
+use IzzyPay\Models\BasicCustomer;
+use IzzyPay\Models\Cart;
+use IzzyPay\Models\DetailedCustomer;
+use IzzyPay\Models\Other;
+use IzzyPay\Traits\HmacTrait;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 

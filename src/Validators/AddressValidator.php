@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Bnpl\Validators;
+namespace IzzyPay\Validators;
 
-use Bnpl\Models\Address;
+use IzzyPay\Models\Address;
 
 class AddressValidator
 {

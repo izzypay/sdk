@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Bnpl\Models;
+namespace IzzyPay\Models;
 
-use Bnpl\Exception\InvalidOtherException;
-use Bnpl\Validators\OtherValidator;
+use IzzyPay\Exceptions\InvalidOtherException;
+use IzzyPay\Validators\OtherValidator;
 
 class Other
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bnpl\Exception;
+namespace IzzyPay\Exceptions;
 
 use Exception;
 use Throwable;

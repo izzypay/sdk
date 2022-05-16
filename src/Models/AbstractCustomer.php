@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bnpl\Models;
+namespace IzzyPay\Models;
 
 abstract class AbstractCustomer
 {

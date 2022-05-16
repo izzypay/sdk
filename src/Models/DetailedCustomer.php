@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Bnpl\Models;
+namespace IzzyPay\Models;
 
-use Bnpl\Exception\InvalidCustomerException;
-use Bnpl\Validators\AddressValidator;
-use Bnpl\Validators\CustomerValidator;
+use IzzyPay\Exceptions\InvalidCustomerException;
+use IzzyPay\Validators\AddressValidator;
+use IzzyPay\Validators\CustomerValidator;
 
 class DetailedCustomer extends AbstractCustomer
 {

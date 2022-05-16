@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Bnpl\Validators;
+namespace IzzyPay\Validators;
 
-use Bnpl\Models\AbstractCustomer;
-use Bnpl\Models\BasicCustomer;
-use Bnpl\Models\DetailedCustomer;
+use IzzyPay\Models\AbstractCustomer;
+use IzzyPay\Models\BasicCustomer;
+use IzzyPay\Models\DetailedCustomer;
 
 class CustomerValidator
 {

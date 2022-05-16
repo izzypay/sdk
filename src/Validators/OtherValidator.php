@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Bnpl\Validators;
+namespace IzzyPay\Validators;
 
-use Bnpl\Models\Other;
+use IzzyPay\Models\Other;
 
 class OtherValidator
 {

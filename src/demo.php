@@ -9,17 +9,17 @@ require('Models\CartItem.php');
 require('Models\Cart.php');
 require('Models\Other.php');
 
-use Bnpl\Exception\InvalidCustomerException;
-use Bnpl\Exception\InvalidCartException;
-use Bnpl\Exception\InvalidOtherException;
-use Bnpl\Exception\InvalidResponseException;
-use Bnpl\IzzyPay;
-use Bnpl\Models\Address;
-use Bnpl\Models\CartItem;
-use Bnpl\Models\Cart;
-use Bnpl\Models\BasicCustomer;
-use Bnpl\Models\DetailedCustomer;
-use Bnpl\Models\Other;
+use IzzyPay\Exceptions\InvalidCustomerException;
+use IzzyPay\Exceptions\InvalidCartException;
+use IzzyPay\Exceptions\InvalidOtherException;
+use IzzyPay\Exceptions\InvalidResponseException;
+use IzzyPay\IzzyPay;
+use IzzyPay\Models\Address;
+use IzzyPay\Models\CartItem;
+use IzzyPay\Models\Cart;
+use IzzyPay\Models\BasicCustomer;
+use IzzyPay\Models\DetailedCustomer;
+use IzzyPay\Models\Other;
 use GuzzleHttp\Exception\GuzzleException;
 
 try {

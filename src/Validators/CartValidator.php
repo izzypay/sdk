@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Bnpl\Validators;
+namespace IzzyPay\Validators;
 
-use Bnpl\Models\Cart;
-use Bnpl\Models\CartItem;
+use IzzyPay\Models\Cart;
+use IzzyPay\Models\CartItem;
 
 class CartValidator
 {
