@@ -39,7 +39,7 @@ class CartValidator
             $errors[] = 'name';
         }
 
-        if (trim($cartItem->getCategory()) === '') {
+        if ((trim($cartItem->getType()) !== CartItem::TYPE_DELIVERY) && trim($cartItem->getCategory()) === '') {
             $errors[] = 'category';
         }
 
