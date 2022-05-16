@@ -2,12 +2,16 @@
 
 declare(strict_types=1);
 
+require('Traits/HmacTrait.php');
+require('Services/RequestService.php');
+require('Models/AbstractCustomer.php');
+require('Models/BasicCustomer.php');
+require('Models/DetailedCustomer.php');
+require('Models/Address.php');
+require('Models/CartItem.php');
+require('Models/Cart.php');
+require('Models/Other.php');
 require('IzzyPay.php');
-require('Models\BasicCustomer.php');
-require('Models\Address.php');
-require('Models\CartItem.php');
-require('Models\Cart.php');
-require('Models\Other.php');
 
 use IzzyPay\Exceptions\InvalidCustomerException;
 use IzzyPay\Exceptions\InvalidCartException;

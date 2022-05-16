@@ -24,7 +24,7 @@ class CartValidator
      */
     private function validateQuantity(int $quantity): bool
     {
-        return $quantity < 1;
+        return $quantity > 0;
     }
 
     /**
