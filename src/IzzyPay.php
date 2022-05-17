@@ -39,12 +39,12 @@ class IzzyPay
      * @param Cart $cart
      * @param BasicCustomer $customer
      * @param Other $other
-     * @return string
+     * @return array
      * @throws InvalidResponseException
      * @throws JsonException
      * @throws RequestException
      */
-    public function init(string $merchantCartId, Cart $cart, BasicCustomer $customer, Other $other): string
+    public function init(string $merchantCartId, Cart $cart, BasicCustomer $customer, Other $other): array
     {
         $body = $this->prepareRequestData($merchantCartId, $cart, $customer, $other);
         return $this->requestService->sendPostRequest(RequestService::INIT_ENDPOINT, $body);
@@ -55,12 +55,12 @@ class IzzyPay
      * @param Cart $cart
      * @param DetailedCustomer $customer
      * @param Other $other
-     * @return string
+     * @return array
      * @throws InvalidResponseException
      * @throws JsonException
      * @throws RequestException
      */
-    public function start(string $merchantCartId, Cart $cart, DetailedCustomer $customer, Other $other): string
+    public function start(string $merchantCartId, Cart $cart, DetailedCustomer $customer, Other $other): array
     {
         $body = $this->prepareRequestData($merchantCartId, $cart, $customer, $other);
         return $this->requestService->sendPostRequest(RequestService::START_ENDPOINT, $body);

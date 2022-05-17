@@ -6,11 +6,11 @@ namespace IzzyPay\Services;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Psr7\Response;
 use IzzyPay\Exceptions\InvalidResponseException;
 use IzzyPay\Exceptions\RequestException;
 use IzzyPay\Traits\HmacTrait;
 use JsonException;
+use Psr\Http\Message\ResponseInterface;
 
 class RequestService
 {
@@ -65,12 +65,12 @@ class RequestService
     /**
      * @param string $endpoint
      * @param array $body
-     * @return string
+     * @return array
      * @throws InvalidResponseException
      * @throws JsonException
      * @throws RequestException
      */
-    public function sendPostRequest(string $endpoint, array $body): string
+    public function sendPostRequest(string $endpoint, array $body): array
     {
         try {
             $url = $this->baseUrl . $endpoint;
@@ -86,17 +86,17 @@ class RequestService
                 'body' => $requestBody,
             ]);
             $this->validateResponse($response);
-            return $response->getBody()->getContents();
+            return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         } catch (GuzzleException $exception) {
             throw new RequestException($exception->getMessage());
         }
     }
 
     /**
-     * @param Response $response
+     * @param ResponseInterface $response
      * @throws InvalidResponseException
      */
-    private function validateResponse(Response $response): void
+    private function validateResponse(ResponseInterface $response): void
     {
         if (!$response->hasHeader('Authorization')) {
             throw new InvalidResponseException('Missing authorization header');
@@ -108,7 +108,9 @@ class RequestService
             throw new InvalidResponseException('Invalid authorization header');
         }
 
-        $calculatedEncodedSignature = $this->generateSignature($response->getBody()->getContents());
+        $content = $response->getBody()->getContents();
+        $response->getBody()->rewind();
+        $calculatedEncodedSignature = $this->generateSignature($content);
         if ($calculatedEncodedSignature !== $signature) {
             throw new InvalidResponseException('Invalid signature');
         }
