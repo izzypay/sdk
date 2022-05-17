@@ -19,7 +19,7 @@ class RequestService
     private const REQUEST_TIMEOUT = 20;
     private const SDK_HEADER_FIELD = 'X-Sdk-Version';
     private const SDK_VERSION = '1.0';
-    private const HMAC_ALGORITHM = 'sha256';
+    private const HMAC_ALGORITHM = 'sha384';
 
     public const CRED_ENDPOINT = '/api/opencart/cred';
     public const INIT_ENDPOINT = '/api/opencart/init';
