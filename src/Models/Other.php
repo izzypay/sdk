@@ -87,7 +87,7 @@ class Other
         return [
             'ip' => $this->ip,
             'browser' => $this->browser,
-            'os' => $this->os,
+            'OS' => $this->os,
         ];
     }
 
