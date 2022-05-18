@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace IzzyPay\Tests\Unit\Traits;
 
 use IzzyPay\Traits\HmacTrait;
+use JsonException;
 use PHPUnit\Framework\TestCase;
 
 class HmacTraitTest extends TestCase
@@ -26,13 +27,19 @@ class HmacTraitTest extends TestCase
         $this->assertEquals($expected, $signature);
     }
 
-    public function testGenerateSignature()
+    /**
+     * @throws JsonException
+     */
+    public function testGenerateSignature(): void
     {
         $data = json_encode(['key' => 'value'], JSON_THROW_ON_ERROR);
         $signature = $this->generateSignature($data);
         $this->assertEquals('zDWTmMuXCqhVfqSPxhGG3PBdulkQWM0ihAjd4HkZTzQW+3iCyKX7hM4Bdgimr3+f', $signature);
     }
 
+    /**
+     * @throws JsonException
+     */
     public function testGenerateAuthorizationHeader(): void
     {
         $merchant = 'merchant';

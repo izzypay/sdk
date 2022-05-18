@@ -16,7 +16,7 @@ class OtherValidator
     {
         $errors = [];
 
-        if (($other->getIp() !== '') && !filter_var($other->getIp(), FILTER_VALIDATE_IP)) {
+        if (!filter_var($other->getIp(), FILTER_VALIDATE_IP)) {
             $errors[] = 'ip';
         }
 

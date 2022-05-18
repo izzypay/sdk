@@ -16,7 +16,7 @@ class UrlsValidator
     {
         $errors = [];
 
-        if (($urls->getIpn() === '') || !filter_var($urls->getIpn(), FILTER_VALIDATE_URL)) {
+        if (!filter_var($urls->getIpn(), FILTER_VALIDATE_URL)) {
             $errors[] = 'ipn';
         }
 

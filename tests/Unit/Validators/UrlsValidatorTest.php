@@ -8,6 +8,7 @@ use IzzyPay\Models\Urls;
 use IzzyPay\Tests\Helpers\Traits\InvokeConstructorTrait;
 use IzzyPay\Validators\UrlsValidator;
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
 
 class UrlsValidatorTest extends TestCase
 {
@@ -16,19 +17,24 @@ class UrlsValidatorTest extends TestCase
     /**
      * @dataProvider getUrlsProvider
      */
-    public function testUrlsValidator(Urls $urls, array $expected): void
+    public function testValidateUrls(Urls $urls, array $expected): void
     {
         $urlsValidator = new UrlsValidator();
         $errors = $urlsValidator->validateUrls($urls);
-        $this->assertEquals($expected, $errors);
+        $this->assertEqualsCanonicalizing($expected, $errors);
     }
 
+    /**
+     * @throws ReflectionException
+     */
     public function getUrlsProvider(): array
     {
-        $invalidUrls = $this->invokeConstructor(Urls::class, ['']);
+        $invalidUrls1 = $this->invokeConstructor(Urls::class, ['']);
+        $invalidUrls2 = $this->invokeConstructor(Urls::class, ['invalid']);
         $validUrls = $this->invokeConstructor(Urls::class, ['https://example.com']);
         return [
-            [$invalidUrls, ['ipn']],
+            [$invalidUrls1, ['ipn']],
+            [$invalidUrls2, ['ipn']],
             [$validUrls, []],
         ];
     }

@@ -45,7 +45,7 @@ class CustomerValidator
             $errors[] = 'surname';
         }
 
-        if (trim($detailedCustomer->getEmail()) === '') {
+        if (!filter_var($detailedCustomer->getEmail(), FILTER_VALIDATE_EMAIL)) {
             $errors[] = 'email';
         }
 
@@ -53,6 +53,10 @@ class CustomerValidator
             $errors[] = 'phone';
         }
 
-        return $errors;
+        $addressValidator = new AddressValidator();
+        $invalidDeliveryAddressFields = $addressValidator->validateAddress($detailedCustomer->getDeliveryAddress());
+        $invalidInvoiceAddressFields = $addressValidator->validateAddress($detailedCustomer->getInvoiceAddress());
+
+        return array_merge($errors, $invalidDeliveryAddressFields, $invalidInvoiceAddressFields);
     }
 }

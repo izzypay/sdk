@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace IzzyPay\Models;
 
 use IzzyPay\Exceptions\InvalidCustomerException;
-use IzzyPay\Validators\AddressValidator;
 use IzzyPay\Validators\CustomerValidator;
 
 class DetailedCustomer extends AbstractCustomer
@@ -179,13 +178,8 @@ class DetailedCustomer extends AbstractCustomer
     {
         $detailedCustomer = new DetailedCustomer($registered, $merchantCustomerId, $other, $name, $surname, $phone, $email, $deliveryAddress, $invoiceAddress);
 
-        $addressValidator = new AddressValidator();
-        $invalidDeliveryAddressFields = $addressValidator->validateAddress($deliveryAddress);
-        $invalidInvoiceAddressFields = $addressValidator->validateAddress($invoiceAddress);
         $customerValidator = new CustomerValidator();
-        $invalidCustomerFields = $customerValidator->validateDetailedCustomer($detailedCustomer);
-
-        $invalidFields = array_merge($invalidDeliveryAddressFields, $invalidInvoiceAddressFields, $invalidCustomerFields);
+        $invalidFields = $customerValidator->validateDetailedCustomer($detailedCustomer);
         if (count($invalidFields) > 0) {
             throw new InvalidCustomerException($invalidFields);
         }
