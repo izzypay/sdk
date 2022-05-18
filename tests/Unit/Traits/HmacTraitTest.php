@@ -7,9 +7,6 @@ namespace IzzyPay\Tests\Unit\Traits;
 use IzzyPay\Traits\HmacTrait;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \IzzyPay\Traits\HmacTrait
- */
 class HmacTraitTest extends TestCase
 {
     use HmacTrait;
@@ -23,7 +20,7 @@ class HmacTraitTest extends TestCase
     /**
      * @dataProvider getSignatureProvider
      */
-    public function testGetSignature($authorizationHeader, $expected): void
+    public function testGetSignature(string $authorizationHeader, ?string $expected): void
     {
         $signature = $this->getSignature($authorizationHeader);
         $this->assertEquals($expected, $signature);
