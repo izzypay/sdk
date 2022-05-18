@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace IzzyPay\Models;
 
-use IzzyPay\Exceptions\InvalidOtherException;
+use IzzyPay\Exceptions\InvalidUrlsException;
 use IzzyPay\Validators\UrlsValidator;
 
 class Urls
@@ -50,7 +50,7 @@ class Urls
     /**
      * @param string $ipn
      * @return static
-     * @throws InvalidOtherException
+     * @throws InvalidUrlsException
      */
     public static function create(string $ipn): self
     {
@@ -59,7 +59,7 @@ class Urls
         $urlsValidator = new UrlsValidator();
         $invalidFields = $urlsValidator->validateUrls($urls);
         if (count($invalidFields) > 0) {
-            throw new InvalidOtherException($invalidFields);
+            throw new InvalidUrlsException($invalidFields);
         }
 
         return $urls;

@@ -8,6 +8,7 @@ use IzzyPay\Exceptions\InvalidCustomerException;
 use IzzyPay\Exceptions\InvalidCartException;
 use IzzyPay\Exceptions\InvalidOtherException;
 use IzzyPay\Exceptions\InvalidResponseException;
+use IzzyPay\Exceptions\InvalidUrlsException;
 use IzzyPay\Exceptions\RequestException;
 use IzzyPay\IzzyPay;
 use IzzyPay\Models\Address;
@@ -55,7 +56,7 @@ function sendStart(IzzyPay $izzyPay, string $merchantCartId, $token): ?array
         $other = Other::create('127.0.0.1', 'browser', 'os');
         $urls = Urls::create('https://ipn.com');
         return $izzyPay->start($token, $merchantCartId, $cart, $detailedCustomer, $other, $urls);
-    } catch (InvalidCustomerException|InvalidCartException|InvalidOtherException|InvalidResponseException|RequestException|JsonException $e) {
+    } catch (InvalidCustomerException|InvalidCartException|InvalidOtherException|InvalidResponseException|RequestException|JsonException|InvalidUrlsException $e) {
         var_dump($e->getMessage());
     }
     return null;
