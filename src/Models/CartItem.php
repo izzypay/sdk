@@ -9,7 +9,7 @@ use IzzyPay\Validators\CartValidator;
 
 class CartItem
 {
-    public CONST TYPE_DELIVERY = 'delivery';
+    public const TYPE_DELIVERY = 'delivery';
 
     private string $name;
     private string $category;
@@ -239,7 +239,7 @@ class CartItem
      * @return static
      * @throws InvalidCartException
      */
-    public static function create(string $name, string $category, string $subCategory, string $type, float $price, int $quantity, string $merchantItemId, string $manufacturer, string $other): self
+    public static function create(string $name, string $category, string $subCategory, string $type, float $price, int $quantity, string $manufacturer, string $merchantItemId, string $other): self
     {
         $cartItem = new CartItem($name, $category, $subCategory, $type, $price, $quantity, $manufacturer, $merchantItemId, $other);
 
