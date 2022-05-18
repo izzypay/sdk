@@ -21,10 +21,6 @@ class RequestService
     private const SDK_VERSION = '1.0';
     private const HMAC_ALGORITHM = 'sha384';
 
-    public const CRED_ENDPOINT = '/api/opencart/cred';
-    public const INIT_ENDPOINT = '/api/opencart/init';
-    public const START_ENDPOINT = '/api/opencart/start';
-
     private string $merchantId;
     private string $baseUrl;
     private Client $client;

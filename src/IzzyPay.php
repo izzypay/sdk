@@ -17,6 +17,10 @@ use JsonException;
 
 class IzzyPay
 {
+    public const CRED_ENDPOINT = '/api/opencart/cred';
+    public const INIT_ENDPOINT = '/api/opencart/init';
+    public const START_ENDPOINT = '/api/opencart/start';
+
     private string $merchantId;
     private RequestService $requestService;
 
@@ -32,7 +36,7 @@ class IzzyPay
      */
     public function cred(): void
     {
-        $this->requestService->sendHeadRequest(RequestService::CRED_ENDPOINT);
+        $this->requestService->sendHeadRequest(self::CRED_ENDPOINT);
     }
 
     /**
@@ -48,7 +52,7 @@ class IzzyPay
     public function init(string $merchantCartId, Cart $cart, BasicCustomer $customer, Other $other): array
     {
         $body = $this->prepareInitRequestData($merchantCartId, $cart, $customer, $other);
-        return $this->requestService->sendPostRequest(RequestService::INIT_ENDPOINT, $body);
+        return $this->requestService->sendPostRequest(self::INIT_ENDPOINT, $body);
     }
 
     /**
@@ -65,7 +69,7 @@ class IzzyPay
      */
     public function start(string $token, string $merchantCartId, Cart $cart, DetailedCustomer $customer, Other $other, Urls $urls): array
     {
-        $endpoint = RequestService::START_ENDPOINT . '/' . $token . '?XDEBUG_SESSION_START=PHPSTORM';
+        $endpoint = self::START_ENDPOINT . '/' . $token;
         $body = $this->prepareStartRequestData($merchantCartId, $cart, $customer, $other, $urls);
         return $this->requestService->sendPostRequest($endpoint, $body);
     }
