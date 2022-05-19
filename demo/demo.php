@@ -62,7 +62,10 @@ function sendStart(IzzyPay $izzyPay, string $merchantCartId, $token): ?array
     return null;
 }
 
+// Used to check whether the configured credentials are correct.
+// Not part of the normal flow, therefore doesn't need to be called before the init.
 verifyCredential($izzyPay);
+
 $initResponse = sendInit($izzyPay, $merchantCartId);
 if ($initResponse && !array_key_exists('errors', $initResponse) && $initResponse['available']) {
     $jsUrl = $initResponse['jsUrl'];

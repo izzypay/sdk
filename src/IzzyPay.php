@@ -17,6 +17,7 @@ use JsonException;
 
 class IzzyPay
 {
+    // TODO: Update with the final endpoints
     public const CRED_ENDPOINT = '/api/opencart/cred';
     public const INIT_ENDPOINT = '/api/opencart/init';
     public const START_ENDPOINT = '/api/opencart/start';
