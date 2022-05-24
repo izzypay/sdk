@@ -2,28 +2,23 @@
 
 declare(strict_types=1);
 
-namespace IzzyPay\Tests\Unit\Traits;
+namespace IzzyPay\Tests\Unit\Services;
 
-use IzzyPay\Traits\HmacTrait;
+use IzzyPay\Services\HmacService;
 use JsonException;
 use PHPUnit\Framework\TestCase;
 
-class HmacTraitTest extends TestCase
+class HmacServiceTest extends TestCase
 {
-    use HmacTrait;
-
-    protected function setUp(): void
-    {
-        $this->hmacAlgorithm = 'sha384';
-        $this->merchantSecret = 'secret';
-    }
+    private const MERCHANT_SECRET = 'secret';
 
     /**
      * @dataProvider getSignatureProvider
      */
     public function testGetSignature(string $authorizationHeader, ?string $expected): void
     {
-        $signature = $this->getSignature($authorizationHeader);
+        $hmacService = $this->getNewHmacService();
+        $signature = $hmacService->getSignature($authorizationHeader);
         $this->assertEquals($expected, $signature);
     }
 
@@ -33,7 +28,8 @@ class HmacTraitTest extends TestCase
     public function testGenerateSignature(): void
     {
         $data = json_encode(['key' => 'value'], JSON_THROW_ON_ERROR);
-        $signature = $this->generateSignature($data);
+        $hmacService = $this->getNewHmacService();
+        $signature = $hmacService->generateSignature($data);
         $this->assertEquals('zDWTmMuXCqhVfqSPxhGG3PBdulkQWM0ihAjd4HkZTzQW+3iCyKX7hM4Bdgimr3+f', $signature);
     }
 
@@ -44,8 +40,9 @@ class HmacTraitTest extends TestCase
     {
         $merchant = 'merchant';
         $data = json_encode(['key' => 'value'], JSON_THROW_ON_ERROR);
-        $authorizationHeader = $this->generateAuthorizationHeader($merchant, $data);
-        $signature = $this->generateSignature($data);
+        $hmacService = $this->getNewHmacService();
+        $authorizationHeader = $hmacService->generateAuthorizationHeader($merchant, $data);
+        $signature = $hmacService->generateSignature($data);
         $this->assertEquals("HMAC $merchant:$signature", $authorizationHeader);
     }
 
@@ -56,5 +53,10 @@ class HmacTraitTest extends TestCase
             ['Bearer signature', null],
             ['HMAC signature', 'signature']
         ];
+    }
+
+    private function getNewHmacService(): HmacService
+    {
+        return new HmacService(self::MERCHANT_SECRET);
     }
 }

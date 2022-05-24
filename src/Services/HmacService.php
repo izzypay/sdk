@@ -2,12 +2,23 @@
 
 declare(strict_types=1);
 
-namespace IzzyPay\Traits;
+namespace IzzyPay\Services;
 
-trait HmacTrait
+class HmacService
 {
+    private const HMAC_ALGORITHM = 'sha384';
+
     private string $hmacAlgorithm;
     private string $merchantSecret;
+
+    /**
+     * @param string $merchantSecret
+     */
+    public function __construct(string $merchantSecret)
+    {
+        $this->hmacAlgorithm = self::HMAC_ALGORITHM;
+        $this->merchantSecret = $merchantSecret;
+    }
 
     /**
      * @param string $authorizationHeader
