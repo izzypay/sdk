@@ -103,10 +103,7 @@ class Other
         $other = new Other($ip, $browser, $os);
 
         $otherValidator = new OtherValidator();
-        $invalidFields = $otherValidator->validateOther($other);
-        if (count($invalidFields) > 0) {
-            throw new InvalidOtherException($invalidFields);
-        }
+        $otherValidator->validateOther($other);
 
         return $other;
     }

@@ -7,7 +7,7 @@ namespace IzzyPay\Models;
 use IzzyPay\Exceptions\InvalidCustomerException;
 use IzzyPay\Validators\CustomerValidator;
 
-class BasicCustomer extends AbstractCustomer
+class LimitedCustomer extends AbstractCustomer
 {
     /**
      * @param string $registered
@@ -18,13 +18,10 @@ class BasicCustomer extends AbstractCustomer
      */
     public static function create(string $registered, string $merchantCustomerId, string $other): self
     {
-        $basicCustomer = new BasicCustomer($registered, $merchantCustomerId, $other);
+        $basicCustomer = new LimitedCustomer($registered, $merchantCustomerId, $other);
 
         $customerValidator = new CustomerValidator();
-        $invalidFields = $customerValidator->validateBasicCustomer($basicCustomer);
-        if (count($invalidFields) > 0) {
-            throw new InvalidCustomerException($invalidFields);
-        }
+        $customerValidator->validateLimitedCustomer($basicCustomer);
 
         return $basicCustomer;
     }

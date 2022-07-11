@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace IzzyPay\Validators;
 
+use IzzyPay\Exceptions\InvalidCartException;
+use IzzyPay\Exceptions\InvalidCartItemException;
 use IzzyPay\Models\Cart;
 use IzzyPay\Models\CartItem;
 
@@ -29,9 +31,10 @@ class CartValidator
 
     /**
      * @param CartItem $cartItem
-     * @return array
+     * @return void
+     * @throws InvalidCartItemException
      */
-    public function validateCartItem(CartItem $cartItem): array
+    public function validateCartItem(CartItem $cartItem): void
     {
         $errors = [];
 
@@ -55,15 +58,23 @@ class CartValidator
             $errors[] = 'merchantItemId';
         }
 
-        return $errors;
+        if (count($errors) > 0) {
+            throw new InvalidCartItemException($errors);
+        }
     }
 
     /**
      * @param Cart $cart
-     * @return array
+     * @return void
+     * @throws InvalidCartException
+     * @throws InvalidCartItemException
      */
-    public function validateCart(Cart $cart): array
+    public function validateCart(Cart $cart): void
     {
+        foreach ($cart->getItems() as $cartItem) {
+            $this->validateCartItem($cartItem);
+        }
+
         $errors = [];
 
         if (!$this->validateCurrency($cart->getCurrency())) {
@@ -78,13 +89,8 @@ class CartValidator
             $errors[] = 'items';
         }
 
-        foreach ($cart->getItems() as $cartItem) {
-            $cartItemErrors = $this->validateCartItem($cartItem);
-            foreach ($cartItemErrors as $cartItemError) {
-                $errors[] = $cartItemError;
-            }
+        if (count($errors) > 0) {
+            throw new InvalidCartException($errors);
         }
-
-        return $errors;
     }
 }

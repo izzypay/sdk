@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace IzzyPay\Validators;
 
+use IzzyPay\Exceptions\InvalidAddressException;
 use IzzyPay\Models\Address;
 
 class AddressValidator
@@ -19,9 +20,10 @@ class AddressValidator
 
     /**
      * @param Address $address
-     * @return array
+     * @return void
+     * @throws InvalidAddressException
      */
-    public function validateAddress(Address $address): array
+    public function validateAddress(Address $address): void
     {
         $errors = [];
 
@@ -40,6 +42,8 @@ class AddressValidator
             $errors[] = 'address1';
         }
 
-        return $errors;
+        if (count($errors) > 0) {
+            throw new InvalidAddressException($errors);
+        }
     }
 }

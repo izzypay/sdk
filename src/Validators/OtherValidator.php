@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace IzzyPay\Validators;
 
+use IzzyPay\Exceptions\InvalidOtherException;
 use IzzyPay\Models\Other;
 
 class OtherValidator
 {
     /**
      * @param Other $other
-     * @return array
+     * @return void
+     * @throws InvalidOtherException
      */
-    public function validateOther(Other $other): array
+    public function validateOther(Other $other): void
     {
         $errors = [];
 
@@ -20,6 +22,8 @@ class OtherValidator
             $errors[] = 'ip';
         }
 
-        return $errors;
+        if (count($errors) > 0) {
+            throw new InvalidOtherException($errors);
+        }
     }
 }

@@ -37,7 +37,7 @@ abstract class AbstractCustomer
 
     /**
      * @param string $registered
-     * @return BasicCustomer
+     * @return LimitedCustomer
      */
     public function setRegistered(string $registered): self
     {
@@ -55,7 +55,7 @@ abstract class AbstractCustomer
 
     /**
      * @param string $merchantCustomerId
-     * @return BasicCustomer
+     * @return LimitedCustomer
      */
     public function setMerchantCustomerId(string $merchantCustomerId): self
     {
@@ -73,7 +73,7 @@ abstract class AbstractCustomer
 
     /**
      * @param string $other
-     * @return BasicCustomer
+     * @return LimitedCustomer
      */
     public function setOther(string $other): self
     {

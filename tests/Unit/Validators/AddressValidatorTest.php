@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace IzzyPay\Tests\Unit\Validators;
 
+use IzzyPay\Exceptions\InvalidAddressException;
 use IzzyPay\Models\Address;
 use IzzyPay\Tests\Helpers\Traits\InvokeConstructorTrait;
 use IzzyPay\Validators\AddressValidator;
@@ -26,12 +27,18 @@ class AddressValidatorTest extends TestCase
 
     /**
      * @dataProvider getAddressProvider
+     * @throws InvalidAddressException
      */
-    public function testValidateAddress(Address $address, array $expected): void
+    public function testValidateAddress(Address $address, ?string $exception): void
     {
+        if ($exception) {
+            $this->expectException($exception);
+        }
         $addressValidator = new AddressValidator();
-        $errors = $addressValidator->validateAddress($address);
-        $this->assertEqualsCanonicalizing($expected, $errors);
+        $addressValidator->validateAddress($address);
+        if (!$exception) {
+            $this->assertTrue(true);
+        }
     }
 
     public function getZipCodeProvider(): array
@@ -53,10 +60,10 @@ class AddressValidatorTest extends TestCase
         $validAddress2 = $this->invokeConstructor(Address::class, ['1234', 'city', '', '', 'address1', '', '']);
         $validAddress3 = $this->invokeConstructor(Address::class, ['1234', 'city', 'street', 'houseNo', 'address1', 'address2', 'address3']);
         return [
-            [$invalidAddress, ['zip', 'city', 'street', 'houseNo', 'address1']],
-            [$validAddress1, []],
-            [$validAddress2, []],
-            [$validAddress3, []],
+            [$invalidAddress, InvalidAddressException::class],
+            [$validAddress1, null],
+            [$validAddress2, null],
+            [$validAddress3, null],
         ];
     }
 }

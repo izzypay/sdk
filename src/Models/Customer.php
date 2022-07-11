@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace IzzyPay\Models;
 
+use IzzyPay\Exceptions\InvalidAddressException;
 use IzzyPay\Exceptions\InvalidCustomerException;
 use IzzyPay\Validators\CustomerValidator;
 
-class DetailedCustomer extends AbstractCustomer
+class Customer extends AbstractCustomer
 {
     private string $name;
     private string $surname;
+    private string $companyName;
     private string $phone;
     private string $email;
     private Address $deliveryAddress;
@@ -21,16 +23,18 @@ class DetailedCustomer extends AbstractCustomer
      * @param string $merchantCustomerId
      * @param string $other
      * @param string $name
+     * @param string $companyName
      * @param string $surname
      * @param string $phone
      * @param string $email
      * @param Address $deliveryAddress
      * @param Address $invoiceAddress
      */
-    private function __construct(string $registered, string $merchantCustomerId, string $other, string $name, string $surname, string $phone, string $email, Address $deliveryAddress, Address $invoiceAddress)
+    private function __construct(string $registered, string $merchantCustomerId, string $other, string $name, string $companyName, string $surname, string $phone, string $email, Address $deliveryAddress, Address $invoiceAddress)
     {
         parent::__construct($registered, $merchantCustomerId, $other);
         $this->name = $name;
+        $this->companyName = $companyName;
         $this->surname = $surname;
         $this->email = $email;
         $this->phone = $phone;
@@ -48,7 +52,7 @@ class DetailedCustomer extends AbstractCustomer
 
     /**
      * @param string $name
-     * @return DetailedCustomer
+     * @return Customer
      */
     public function setName(string $name): self
     {
@@ -66,11 +70,29 @@ class DetailedCustomer extends AbstractCustomer
 
     /**
      * @param string $surname
-     * @return DetailedCustomer
+     * @return Customer
      */
     public function setSurname(string $surname): self
     {
         $this->surname = $surname;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCompanyName(): string
+    {
+        return $this->companyName;
+    }
+
+    /**
+     * @param string $companyName
+     * @return Customer
+     */
+    public function setCompanyName(string $companyName): Customer
+    {
+        $this->companyName = $companyName;
         return $this;
     }
 
@@ -84,7 +106,7 @@ class DetailedCustomer extends AbstractCustomer
 
     /**
      * @param string $phone
-     * @return DetailedCustomer
+     * @return Customer
      */
     public function setPhone(string $phone): self
     {
@@ -102,7 +124,7 @@ class DetailedCustomer extends AbstractCustomer
 
     /**
      * @param string $email
-     * @return DetailedCustomer
+     * @return Customer
      */
     public function setEmail(string $email): self
     {
@@ -120,7 +142,7 @@ class DetailedCustomer extends AbstractCustomer
 
     /**
      * @param Address $deliveryAddress
-     * @return DetailedCustomer
+     * @return Customer
      */
     public function setDeliveryAddress(Address $deliveryAddress): self
     {
@@ -138,7 +160,7 @@ class DetailedCustomer extends AbstractCustomer
 
     /**
      * @param Address $invoiceAddress
-     * @return DetailedCustomer
+     * @return Customer
      */
     public function setInvoiceAddress(Address $invoiceAddress): self
     {
@@ -154,6 +176,7 @@ class DetailedCustomer extends AbstractCustomer
         $arrayData = parent::toArray();
         $arrayData['name'] = $this->name;
         $arrayData['surname'] = $this->surname;
+        $arrayData['companyName'] = $this->companyName;
         $arrayData['phone'] = $this->phone;
         $arrayData['email'] = $this->email;
         $arrayData['deliveryAddress'] = $this->deliveryAddress->toArray();
@@ -167,22 +190,21 @@ class DetailedCustomer extends AbstractCustomer
      * @param string $other
      * @param string $name
      * @param string $surname
+     * @param string $companyName
      * @param string $phone
      * @param string $email
      * @param Address $deliveryAddress
      * @param Address $invoiceAddress
      * @return static
      * @throws InvalidCustomerException
+     * @throws InvalidAddressException
      */
-    public static function create(string $registered, string $merchantCustomerId, string $other, string $name, string $surname, string $phone, string $email, Address $deliveryAddress, Address $invoiceAddress): self
+    public static function create(string $registered, string $merchantCustomerId, string $other, string $name, string $surname, string $companyName, string $phone, string $email, Address $deliveryAddress, Address $invoiceAddress): self
     {
-        $detailedCustomer = new DetailedCustomer($registered, $merchantCustomerId, $other, $name, $surname, $phone, $email, $deliveryAddress, $invoiceAddress);
+        $detailedCustomer = new Customer($registered, $merchantCustomerId, $other, $name, $companyName, $surname, $phone, $email, $deliveryAddress, $invoiceAddress);
 
         $customerValidator = new CustomerValidator();
-        $invalidFields = $customerValidator->validateDetailedCustomer($detailedCustomer);
-        if (count($invalidFields) > 0) {
-            throw new InvalidCustomerException($invalidFields);
-        }
+        $customerValidator->validateCustomer($detailedCustomer);
 
         return $detailedCustomer;
     }

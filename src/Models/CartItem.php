@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace IzzyPay\Models;
 
-use IzzyPay\Exceptions\InvalidCartException;
+use IzzyPay\Exceptions\InvalidCartItemException;
 use IzzyPay\Validators\CartValidator;
 
 class CartItem
@@ -237,17 +237,14 @@ class CartItem
      * @param string $merchantItemId
      * @param string $other
      * @return static
-     * @throws InvalidCartException
+     * @throws InvalidCartItemException
      */
     public static function create(string $name, string $category, string $subCategory, string $type, float $price, int $quantity, string $manufacturer, string $merchantItemId, string $other): self
     {
         $cartItem = new CartItem($name, $category, $subCategory, $type, $price, $quantity, $manufacturer, $merchantItemId, $other);
 
         $cartValidator = new CartValidator();
-        $invalidFields = $cartValidator->validateCartItem($cartItem);
-        if (count($invalidFields) > 0) {
-            throw new InvalidCartException($invalidFields);
-        }
+        $cartValidator->validateCartItem($cartItem);
 
         return $cartItem;
     }

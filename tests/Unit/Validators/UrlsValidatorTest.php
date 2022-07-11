@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace IzzyPay\Tests\Unit\Validators;
 
+use IzzyPay\Exceptions\InvalidUrlsException;
 use IzzyPay\Models\Urls;
 use IzzyPay\Tests\Helpers\Traits\InvokeConstructorTrait;
 use IzzyPay\Validators\UrlsValidator;
@@ -16,12 +17,18 @@ class UrlsValidatorTest extends TestCase
 
     /**
      * @dataProvider getUrlsProvider
+     * @throws InvalidUrlsException
      */
-    public function testValidateUrls(Urls $urls, array $expected): void
+    public function testValidateUrls(Urls $urls, ?string $exception): void
     {
+        if ($exception) {
+            $this->expectException($exception);
+        }
         $urlsValidator = new UrlsValidator();
-        $errors = $urlsValidator->validateUrls($urls);
-        $this->assertEqualsCanonicalizing($expected, $errors);
+        $urlsValidator->validateUrls($urls);
+        if (!$exception) {
+            $this->assertTrue(true);
+        }
     }
 
     /**
@@ -33,9 +40,9 @@ class UrlsValidatorTest extends TestCase
         $invalidUrls2 = $this->invokeConstructor(Urls::class, ['invalid']);
         $validUrls = $this->invokeConstructor(Urls::class, ['https://example.com']);
         return [
-            [$invalidUrls1, ['ipn']],
-            [$invalidUrls2, ['ipn']],
-            [$validUrls, []],
+            [$invalidUrls1, InvalidUrlsException::class],
+            [$invalidUrls2, InvalidUrlsException::class],
+            [$validUrls, null],
         ];
     }
 }

@@ -4,38 +4,50 @@ declare(strict_types=1);
 
 namespace IzzyPay\Validators;
 
+use IzzyPay\Exceptions\InvalidAddressException;
+use IzzyPay\Exceptions\InvalidCustomerException;
 use IzzyPay\Models\AbstractCustomer;
-use IzzyPay\Models\BasicCustomer;
-use IzzyPay\Models\DetailedCustomer;
+use IzzyPay\Models\Customer;
 
 class CustomerValidator
 {
     /**
-     * @param BasicCustomer $basicCustomer
-     * @return array
+     * @param AbstractCustomer $limitedCustomer
+     * @return void
+     * @throws InvalidCustomerException
      */
-    public function validateBasicCustomer(AbstractCustomer $basicCustomer): array
+    public function validateLimitedCustomer(AbstractCustomer $limitedCustomer): void
     {
         $errors = [];
 
-        if (trim($basicCustomer->getMerchantCustomerId()) === '') {
+        if (trim($limitedCustomer->getMerchantCustomerId()) === '') {
             $errors[] = 'merchantCustomerId';
         }
 
-        if (!in_array($basicCustomer->getRegistered(), AbstractCustomer::ALLOWED_REGISTERED_VALUES)) {
+        if (!in_array($limitedCustomer->getRegistered(), AbstractCustomer::ALLOWED_REGISTERED_VALUES)) {
             $errors[] = 'registered';
         }
 
-        return $errors;
+        if (count($errors) > 0) {
+            throw new InvalidCustomerException($errors);
+        }
     }
 
     /**
-     * @param DetailedCustomer $detailedCustomer
-     * @return array
+     * @param Customer $detailedCustomer
+     * @return void
+     * @throws InvalidCustomerException
+     * @throws InvalidAddressException
      */
-    public function validateDetailedCustomer(DetailedCustomer $detailedCustomer): array
+    public function validateCustomer(Customer $detailedCustomer): void
     {
-        $errors = $this->validateBasicCustomer($detailedCustomer);
+        $this->validateLimitedCustomer($detailedCustomer);
+
+        $addressValidator = new AddressValidator();
+        $addressValidator->validateAddress($detailedCustomer->getDeliveryAddress());
+        $addressValidator->validateAddress($detailedCustomer->getInvoiceAddress());
+
+        $errors = [];
 
         if (trim($detailedCustomer->getName()) === '') {
             $errors[] = 'name';
@@ -53,10 +65,8 @@ class CustomerValidator
             $errors[] = 'phone';
         }
 
-        $addressValidator = new AddressValidator();
-        $invalidDeliveryAddressFields = $addressValidator->validateAddress($detailedCustomer->getDeliveryAddress());
-        $invalidInvoiceAddressFields = $addressValidator->validateAddress($detailedCustomer->getInvoiceAddress());
-
-        return array_merge($errors, $invalidDeliveryAddressFields, $invalidInvoiceAddressFields);
+        if (count($errors) > 0) {
+            throw new InvalidCustomerException($errors);
+        }
     }
 }

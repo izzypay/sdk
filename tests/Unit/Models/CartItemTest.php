@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace IzzyPay\Tests\Unit\Models;
 
-use IzzyPay\Exceptions\InvalidCartException;
+use IzzyPay\Exceptions\InvalidCartItemException;
 use IzzyPay\Models\CartItem;
 use IzzyPay\Tests\Helpers\Traits\InvokeConstructorTrait;
 use IzzyPay\Tests\Helpers\Traits\SetterAndGetterTesterTrait;
@@ -72,12 +72,12 @@ class CartItemTest extends TestCase
 
     public function testCreateWithException(): void
     {
-        $this->expectException(InvalidCartException::class);
+        $this->expectException(InvalidCartItemException::class);
         CartItem::create('', '', '', '', 0, 0, '', '', '');
     }
 
     /**
-     * @throws InvalidCartException
+     * @throws InvalidCartItemException
      */
     public function testCreate(): void
     {

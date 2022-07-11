@@ -6,13 +6,13 @@ namespace IzzyPay\Tests\Unit\Models;
 
 use IzzyPay\Exceptions\InvalidCustomerException;
 use IzzyPay\Models\AbstractCustomer;
-use IzzyPay\Models\BasicCustomer;
+use IzzyPay\Models\LimitedCustomer;
 use IzzyPay\Tests\Helpers\Traits\InvokeConstructorTrait;
 use IzzyPay\Tests\Helpers\Traits\SetterAndGetterTesterTrait;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 
-class BasicCustomerTest extends TestCase
+class LimitedCustomerTest extends TestCase
 {
     use InvokeConstructorTrait;
     use SetterAndGetterTesterTrait;
@@ -35,8 +35,8 @@ class BasicCustomerTest extends TestCase
      */
     public function testSettersAndGetters(): void
     {
-        $basicCustomer = $this->invokeConstructor(BasicCustomer::class, [self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER]);
-        $this->_testSettersAndGetters($basicCustomer);
+        $limitedCustomer = $this->invokeConstructor(LimitedCustomer::class, [self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER]);
+        $this->_testSettersAndGetters($limitedCustomer);
     }
 
     /**
@@ -44,19 +44,19 @@ class BasicCustomerTest extends TestCase
      */
     public function testToArray(): void
     {
-        $basicCustomer = $this->invokeConstructor(BasicCustomer::class, [self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER]);
-        $basicCustomerAsArray = $basicCustomer->toArray();
+        $limitedCustomer = $this->invokeConstructor(LimitedCustomer::class, [self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER]);
+        $limitedCustomerAsArray = $limitedCustomer->toArray();
         $this->assertEqualsCanonicalizing([
             'registered' => self::REGISTERED,
             'merchantCustomerId' => self::MERCHANT_CUSTOMER_ID,
             'other' => self::OTHER,
-        ], $basicCustomerAsArray);
+        ], $limitedCustomerAsArray);
     }
 
     public function testCreateWithException(): void
     {
         $this->expectException(InvalidCustomerException::class);
-        BasicCustomer::create('invalid', '', '');
+        LimitedCustomer::create('invalid', '', '');
     }
 
     /**
@@ -64,9 +64,9 @@ class BasicCustomerTest extends TestCase
      */
     public function testCreate(): void
     {
-        $basicCustomer = BasicCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER);
-        $this->assertEquals(self::REGISTERED, $basicCustomer->getRegistered());
-        $this->assertEquals(self::MERCHANT_CUSTOMER_ID, $basicCustomer->getMerchantCustomerId());
-        $this->assertEquals(self::OTHER, $basicCustomer->getOther());
+        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER);
+        $this->assertEquals(self::REGISTERED, $limitedCustomer->getRegistered());
+        $this->assertEquals(self::MERCHANT_CUSTOMER_ID, $limitedCustomer->getMerchantCustomerId());
+        $this->assertEquals(self::OTHER, $limitedCustomer->getOther());
     }
 }

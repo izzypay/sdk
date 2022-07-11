@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace IzzyPay\Tests\Unit\Validators;
 
+use IzzyPay\Exceptions\InvalidCustomerException;
 use IzzyPay\Models\AbstractCustomer;
 use IzzyPay\Models\Address;
-use IzzyPay\Models\BasicCustomer;
-use IzzyPay\Models\DetailedCustomer;
+use IzzyPay\Models\LimitedCustomer;
+use IzzyPay\Models\Customer;
 use IzzyPay\Tests\Helpers\Traits\InvokeConstructorTrait;
 use IzzyPay\Validators\CustomerValidator;
 use PHPUnit\Framework\TestCase;
@@ -18,66 +19,76 @@ class CustomerValidatorTest extends TestCase
     use InvokeConstructorTrait;
 
     /**
-     * @dataProvider getBasicCustomerProvider
+     * @dataProvider getLimitedCustomerProvider
      */
-    public function testValidateBasicCustomer(BasicCustomer $basicCustomer, array $expected): void
+    public function testValidateLimitedCustomer(LimitedCustomer $limitedCustomer, bool $throwsException): void
     {
+        if ($throwsException) {
+            $this->expectException(InvalidCustomerException::class);
+        }
         $customerValidator = new CustomerValidator();
-        $errors = $customerValidator->validateBasicCustomer($basicCustomer);
-        $this->assertEqualsCanonicalizing($expected, $errors);
+        $customerValidator->validateLimitedCustomer($limitedCustomer);
+        if (!$throwsException) {
+            $this->assertTrue(true);
+        }
     }
 
     /**
-     * @dataProvider getDetailedCustomerProvider
+     * @dataProvider getCustomerProvider
      */
-    public function testValidateDetailedCustomer(DetailedCustomer $detailedCustomer, array $expected): void
+    public function testValidateCustomer(Customer $customer, bool $throwsException): void
     {
+        if ($throwsException) {
+            $this->expectException(InvalidCustomerException::class);
+        }
         $customerValidator = new CustomerValidator();
-        $errors = $customerValidator->validateDetailedCustomer($detailedCustomer);
-        $this->assertEqualsCanonicalizing($expected, $errors);
+        $customerValidator->validateCustomer($customer);
+        if (!$throwsException) {
+            $this->assertTrue(true);
+        }
     }
 
     /**
      * @throws ReflectionException
      */
-    public function getBasicCustomerProvider(): array
+    public function getLimitedCustomerProvider(): array
     {
-        $invalidBasicCustomer1 = $this->invokeConstructor(BasicCustomer::class, [' ', '', '']);
-        $invalidBasicCustomer2 = $this->invokeConstructor(BasicCustomer::class, ['invalid', ' ', '']);
-        $validBasicCustomer1 = $this->invokeConstructor(BasicCustomer::class, [AbstractCustomer::REGISTERED_VALUE_GUEST, 'merchantCustomerId', '']);
-        $validBasicCustomer2 = $this->invokeConstructor(BasicCustomer::class, [AbstractCustomer::REGISTERED_VALUE_MERCHANT, 'merchantCustomerId', '']);
-        $validBasicCustomer3 = $this->invokeConstructor(BasicCustomer::class, [AbstractCustomer::REGISTERED_VALUE_3RDPARTY, 'merchantCustomerId', '']);
-        $validBasicCustomer4 = $this->invokeConstructor(BasicCustomer::class, [AbstractCustomer::REGISTERED_VALUE_GUEST, 'merchantCustomerId', 'other']);
+        $invalidLimitedCustomer1 = $this->invokeConstructor(LimitedCustomer::class, [' ', '', '']);
+        $invalidLimitedCustomer2 = $this->invokeConstructor(LimitedCustomer::class, ['invalid', ' ', '']);
+        $validLimitedCustomer1 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_GUEST, 'merchantCustomerId', '']);
+        $validLimitedCustomer2 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_MERCHANT, 'merchantCustomerId', '']);
+        $validLimitedCustomer3 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_3RDPARTY, 'merchantCustomerId', '']);
+        $validLimitedCustomer4 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_GUEST, 'merchantCustomerId', 'other']);
         return [
-            [$invalidBasicCustomer1, ['merchantCustomerId', 'registered']],
-            [$invalidBasicCustomer2, ['merchantCustomerId', 'registered']],
-            [$validBasicCustomer1, []],
-            [$validBasicCustomer2, []],
-            [$validBasicCustomer3, []],
-            [$validBasicCustomer4, []]
+            [$invalidLimitedCustomer1, true],
+            [$invalidLimitedCustomer2, true],
+            [$validLimitedCustomer1, false],
+            [$validLimitedCustomer2, false],
+            [$validLimitedCustomer3, false],
+            [$validLimitedCustomer4, false]
         ];
     }
 
     /**
      * @throws ReflectionException
      */
-    public function getDetailedCustomerProvider(): array
+    public function getCustomerProvider(): array
     {
         $invalidAddress = $this->invokeConstructor(Address::class, [' ', ' ', '', '', '', '', '']);
         $validAddress = $this->invokeConstructor(Address::class, ['1234', 'city', 'street', 'houseNo', 'address1', 'address2', 'address3']);
-        $invalidDetailedCustomer1 = $this->invokeConstructor(DetailedCustomer::class, [' ', ' ', '', ' ', ' ', ' ', ' ', $invalidAddress, $invalidAddress]);
-        $invalidDetailedCustomer2 = $this->invokeConstructor(DetailedCustomer::class, [' ', ' ', '', ' ', ' ', ' ', ' ', $invalidAddress, $validAddress]);
-        $invalidDetailedCustomer3 = $this->invokeConstructor(DetailedCustomer::class, [' ', ' ', '', ' ', ' ', ' ', ' ', $validAddress, $invalidAddress]);
-        $invalidDetailedCustomer4 = $this->invokeConstructor(DetailedCustomer::class, [' ', ' ', '', ' ', ' ', ' ', ' ', $validAddress, $validAddress]);
-        $invalidDetailedCustomer5 = $this->invokeConstructor(DetailedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_GUEST, 'merchantCustomerId', 'other', 'name', 'surname', 'phone', 'email', $validAddress, $validAddress]);
-        $validDetailedCustomer = $this->invokeConstructor(DetailedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_GUEST, 'merchantCustomerId', 'other', 'name', 'surname', 'phone', 'email@example.com', $validAddress, $validAddress]);
+        $invalidCustomer1 = $this->invokeConstructor(Customer::class, [' ', ' ', '', ' ', ' ', '', ' ', ' ', $invalidAddress, $invalidAddress]);
+        $invalidCustomer2 = $this->invokeConstructor(Customer::class, [' ', ' ', '', ' ', ' ', '', ' ', ' ', $invalidAddress, $validAddress]);
+        $invalidCustomer3 = $this->invokeConstructor(Customer::class, [' ', ' ', '', ' ', ' ', '',' ', ' ', $validAddress, $invalidAddress]);
+        $invalidCustomer4 = $this->invokeConstructor(Customer::class, [' ', ' ', '', ' ', ' ', '',' ', ' ', $validAddress, $validAddress]);
+        $invalidCustomer5 = $this->invokeConstructor(Customer::class, [AbstractCustomer::REGISTERED_VALUE_GUEST, 'merchantCustomerId', 'other', 'name', 'surname', 'company name', 'phone', 'email', $validAddress, $validAddress]);
+        $validCustomer = $this->invokeConstructor(Customer::class, [AbstractCustomer::REGISTERED_VALUE_GUEST, 'merchantCustomerId', 'other', 'name', 'surname', 'company name', 'phone', 'email@example.com', $validAddress, $validAddress]);
         return [
-            [$invalidDetailedCustomer1, ['zip', 'city', 'street', 'houseNo', 'address1', 'zip', 'city', 'street', 'houseNo', 'address1', 'merchantCustomerId', 'registered', 'name', 'surname', 'email', 'phone']],
-            [$invalidDetailedCustomer2, ['zip', 'city', 'street', 'houseNo', 'address1', 'merchantCustomerId', 'registered', 'name', 'surname', 'email', 'phone']],
-            [$invalidDetailedCustomer3, ['zip', 'city', 'street', 'houseNo', 'address1', 'merchantCustomerId', 'registered', 'name', 'surname', 'email', 'phone']],
-            [$invalidDetailedCustomer4, ['merchantCustomerId', 'registered', 'name', 'surname', 'email', 'phone']],
-            [$invalidDetailedCustomer5, ['email']],
-            [$validDetailedCustomer, []],
+            [$invalidCustomer1, true],
+            [$invalidCustomer2, true],
+            [$invalidCustomer3, true],
+            [$invalidCustomer4, true],
+            [$invalidCustomer5, true],
+            [$validCustomer, false],
         ];
     }
 }

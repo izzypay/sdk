@@ -5,20 +5,30 @@ declare(strict_types=1);
 namespace IzzyPay;
 
 use IzzyPay\Exceptions\AuthenticationException;
+use IzzyPay\Exceptions\InvalidAddressException;
+use IzzyPay\Exceptions\InvalidCartException;
+use IzzyPay\Exceptions\InvalidCartItemException;
+use IzzyPay\Exceptions\InvalidCustomerException;
+use IzzyPay\Exceptions\InvalidOtherException;
 use IzzyPay\Exceptions\InvalidResponseException;
+use IzzyPay\Exceptions\InvalidUrlsException;
 use IzzyPay\Exceptions\RequestException;
 use IzzyPay\Exceptions\PaymentServiceUnavailableException;
 use IzzyPay\Models\AbstractCustomer;
-use IzzyPay\Models\BasicCustomer;
+use IzzyPay\Models\LimitedCustomer;
 use IzzyPay\Models\Cart;
-use IzzyPay\Models\DetailedCustomer;
+use IzzyPay\Models\Customer;
 use IzzyPay\Models\Other;
 use IzzyPay\Models\Response\InitResponse;
 use IzzyPay\Models\Response\StartResponse;
 use IzzyPay\Models\Urls;
 use IzzyPay\Services\HmacService;
 use IzzyPay\Services\RequestService;
+use IzzyPay\Validators\CartValidator;
+use IzzyPay\Validators\CustomerValidator;
+use IzzyPay\Validators\OtherValidator;
 use IzzyPay\Validators\ResponseValidator;
+use IzzyPay\Validators\UrlsValidator;
 use JsonException;
 
 class IzzyPay
@@ -53,7 +63,7 @@ class IzzyPay
     /**
      * @param string $merchantCartId
      * @param Cart $cart
-     * @param BasicCustomer $customer
+     * @param LimitedCustomer $limitedCustomer
      * @param Other $other
      * @return InitResponse
      * @throws AuthenticationException
@@ -61,10 +71,23 @@ class IzzyPay
      * @throws JsonException
      * @throws PaymentServiceUnavailableException
      * @throws RequestException
+     * @throws InvalidCartItemException
+     * @throws InvalidCartException
+     * @throws InvalidCustomerException
+     * @throws InvalidOtherException
      */
-    public function init(string $merchantCartId, Cart $cart, BasicCustomer $customer, Other $other): InitResponse
+    public function init(string $merchantCartId, Cart $cart, LimitedCustomer $limitedCustomer, Other $other): InitResponse
     {
-        $body = $this->prepareInitRequestData($merchantCartId, $cart, $customer, $other);
+        $cartValidator = new CartValidator();
+        $cartValidator->validateCart($cart);
+
+        $customerValidator = new CustomerValidator();
+        $customerValidator->validateLimitedCustomer($limitedCustomer);
+
+        $otherValidator = new OtherValidator();
+        $otherValidator->validateOther($other);
+
+        $body = $this->prepareInitRequestData($merchantCartId, $cart, $limitedCustomer, $other);
         $response = $this->requestService->sendPostRequest(self::INIT_ENDPOINT, $body);
         $this->responseValidator->validateInitResponse($response);
         $this->responseValidator->verifyInitAvailability($response);
@@ -75,7 +98,7 @@ class IzzyPay
      * @param string $token
      * @param string $merchantCartId
      * @param Cart $cart
-     * @param DetailedCustomer $customer
+     * @param Customer $customer
      * @param Other $other
      * @param Urls $urls
      * @return StartResponse
@@ -84,11 +107,30 @@ class IzzyPay
      * @throws JsonException
      * @throws RequestException
      * @throws PaymentServiceUnavailableException
+     * @throws InvalidCartItemException
+     * @throws InvalidCartException
+     * @throws InvalidAddressException
+     * @throws InvalidCustomerException
+     * @throws InvalidOtherException
+     * @throws InvalidUrlsException
      */
-    public function start(string $token, string $merchantCartId, Cart $cart, DetailedCustomer $customer, Other $other, Urls $urls): StartResponse
+    public function start(string $token, string $merchantCartId, Cart $cart, Customer $customer, Other $other, Urls $urls): StartResponse
     {
+        $cartValidator = new CartValidator();
+        $cartValidator->validateCart($cart);
+
+        $customerValidator = new CustomerValidator();
+        $customerValidator->validateCustomer($customer);
+
+        $otherValidator = new OtherValidator();
+        $otherValidator->validateOther($other);
+
+        $urlsValidator = new UrlsValidator();
+        $urlsValidator->validateUrls($urls);
+
         $endpoint = self::START_ENDPOINT . '/' . $token;
         $body = $this->prepareStartRequestData($merchantCartId, $cart, $customer, $other, $urls);
+        var_dump($body);
         $response = $this->requestService->sendPostRequest($endpoint, $body);
         $this->responseValidator->validateStartResponse($response);
         $this->responseValidator->verifyStartAvailability($response);

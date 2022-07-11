@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace IzzyPay\Models;
 
-use IzzyPay\Exceptions\InvalidCustomerException;
+use IzzyPay\Exceptions\InvalidAddressException;
 use IzzyPay\Validators\AddressValidator;
 
 class Address
@@ -188,17 +188,14 @@ class Address
      * @param string $address2
      * @param string $address3
      * @return Address
-     * @throws InvalidCustomerException
+     * @throws InvalidAddressException
      */
     public static function create(string $zip, string $city, string $street, string $houseNo, string $address1, string $address2, string $address3): self
     {
         $address = new Address($zip, $city, $street, $houseNo, $address1, $address2, $address3);
 
         $addressValidator = new AddressValidator();
-        $invalidFields = $addressValidator->validateAddress($address);
-        if (count($invalidFields) > 0) {
-            throw new InvalidCustomerException($invalidFields);
-        }
+        $addressValidator->validateAddress($address);
 
         return $address;
     }

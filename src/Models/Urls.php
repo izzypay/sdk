@@ -57,10 +57,7 @@ class Urls
         $urls = new Urls($ipn);
 
         $urlsValidator = new UrlsValidator();
-        $invalidFields = $urlsValidator->validateUrls($urls);
-        if (count($invalidFields) > 0) {
-            throw new InvalidUrlsException($invalidFields);
-        }
+        $urlsValidator->validateUrls($urls);
 
         return $urls;
     }

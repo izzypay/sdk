@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace IzzyPay\Validators;
 
+use IzzyPay\Exceptions\InvalidUrlsException;
 use IzzyPay\Models\Urls;
 
 class UrlsValidator
 {
     /**
      * @param Urls $urls
-     * @return array
+     * @return void
+     * @throws InvalidUrlsException
      */
-    public function validateUrls(Urls $urls): array
+    public function validateUrls(Urls $urls): void
     {
         $errors = [];
 
@@ -20,6 +22,8 @@ class UrlsValidator
             $errors[] = 'ipn';
         }
 
-        return $errors;
+        if (count($errors) > 0) {
+            throw new InvalidUrlsException($errors);
+        }
     }
 }

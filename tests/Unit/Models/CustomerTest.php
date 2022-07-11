@@ -7,13 +7,13 @@ namespace IzzyPay\Tests\Unit\Models;
 use IzzyPay\Exceptions\InvalidCustomerException;
 use IzzyPay\Models\AbstractCustomer;
 use IzzyPay\Models\Address;
-use IzzyPay\Models\DetailedCustomer;
+use IzzyPay\Models\Customer;
 use IzzyPay\Tests\Helpers\Traits\InvokeConstructorTrait;
 use IzzyPay\Tests\Helpers\Traits\SetterAndGetterTesterTrait;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 
-class DetailedCustomerTest extends TestCase
+class CustomerTest extends TestCase
 {
     use InvokeConstructorTrait;
     use SetterAndGetterTesterTrait;
@@ -23,6 +23,7 @@ class DetailedCustomerTest extends TestCase
     private const OTHER = 'other';
     private const NAME = 'name';
     private const SURNAME = 'surname';
+    private const COMPANY_NAME = 'company name';
     private const PHONE = '1234567890';
     private const EMAIL = 'email@example.com';
     private const ZIP = '1234';
@@ -43,6 +44,7 @@ class DetailedCustomerTest extends TestCase
             'merchantCustomerId' => 'change merchantCustomerId',
             'other' => 'change other',
             'name' => 'change name',
+            'companyName' => 'change company name',
             'surname' => 'change surname',
             'phone' => 'change phone',
             'email' => 'change email',
@@ -57,8 +59,8 @@ class DetailedCustomerTest extends TestCase
     public function testSettersAndGetters(): void
     {
         $address = $this->invokeConstructor(Address::class, [self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3]);
-        $detailedCustomer = $this->invokeConstructor(DetailedCustomer::class, [self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::PHONE, self::EMAIL, $address, $address]);
-        $this->_testSettersAndGetters($detailedCustomer);
+        $customer = $this->invokeConstructor(Customer::class, [self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::COMPANY_NAME, self::PHONE, self::EMAIL, $address, $address]);
+        $this->_testSettersAndGetters($customer);
     }
 
     /**
@@ -67,13 +69,14 @@ class DetailedCustomerTest extends TestCase
     public function testToArray(): void
     {
         $address = $this->invokeConstructor(Address::class, [self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3]);
-        $detailedCustomer = $this->invokeConstructor(DetailedCustomer::class, [self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::PHONE, self::EMAIL, $address, $address]);
-        $detailedCustomerAsArray = $detailedCustomer->toArray();
+        $customer = $this->invokeConstructor(Customer::class, [self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::COMPANY_NAME, self::PHONE, self::EMAIL, $address, $address]);
+        $customerAsArray = $customer->toArray();
         $this->assertEqualsCanonicalizing([
             'registered' => self::REGISTERED,
             'merchantCustomerId' => self::MERCHANT_CUSTOMER_ID,
             'other' => self::OTHER,
             'name' => self::NAME,
+            'companyName' => self::COMPANY_NAME,
             'surname' => self::SURNAME,
             'phone' => self::PHONE,
             'email' => self::EMAIL,
@@ -95,7 +98,7 @@ class DetailedCustomerTest extends TestCase
                 'address2' => self::ADDRESS2,
                 'address3' => self::ADDRESS3,
             ],
-        ], $detailedCustomerAsArray);
+        ], $customerAsArray);
     }
 
     /**
@@ -105,7 +108,7 @@ class DetailedCustomerTest extends TestCase
     {
         $this->expectException(InvalidCustomerException::class);
         $address = $this->invokeConstructor(Address::class, [self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3]);
-        DetailedCustomer::create('invalid', '', '', '', '', '', '', $address, $address);
+        Customer::create('invalid', '', '', '', '', '','', '', $address, $address);
     }
 
     /**
@@ -115,15 +118,15 @@ class DetailedCustomerTest extends TestCase
     public function testCreate(): void
     {
         $address = $this->invokeConstructor(Address::class, [self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3]);
-        $detailedCustomer = DetailedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::PHONE, self::EMAIL, $address, $address);
-        $this->assertEquals(self::REGISTERED, $detailedCustomer->getRegistered());
-        $this->assertEquals(self::MERCHANT_CUSTOMER_ID, $detailedCustomer->getMerchantCustomerId());
-        $this->assertEquals(self::OTHER, $detailedCustomer->getOther());
-        $this->assertEquals(self::NAME, $detailedCustomer->getName());
-        $this->assertEquals(self::SURNAME, $detailedCustomer->getSurname());
-        $this->assertEquals(self::PHONE, $detailedCustomer->getPhone());
-        $this->assertEquals(self::EMAIL, $detailedCustomer->getEmail());
-        $this->assertEquals($address, $detailedCustomer->getDeliveryAddress());
-        $this->assertEquals($address, $detailedCustomer->getInvoiceAddress());
+        $customer = Customer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::COMPANY_NAME, self::PHONE, self::EMAIL, $address, $address);
+        $this->assertEquals(self::REGISTERED, $customer->getRegistered());
+        $this->assertEquals(self::MERCHANT_CUSTOMER_ID, $customer->getMerchantCustomerId());
+        $this->assertEquals(self::OTHER, $customer->getOther());
+        $this->assertEquals(self::NAME, $customer->getName());
+        $this->assertEquals(self::SURNAME, $customer->getSurname());
+        $this->assertEquals(self::PHONE, $customer->getPhone());
+        $this->assertEquals(self::EMAIL, $customer->getEmail());
+        $this->assertEquals($address, $customer->getDeliveryAddress());
+        $this->assertEquals($address, $customer->getInvoiceAddress());
     }
 }

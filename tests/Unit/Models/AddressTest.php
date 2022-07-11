@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace IzzyPay\Tests\Unit\Models;
 
+use IzzyPay\Exceptions\InvalidAddressException;
 use IzzyPay\Exceptions\InvalidCustomerException;
 use IzzyPay\Models\Address;
 use IzzyPay\Tests\Helpers\Traits\InvokeConstructorTrait;
@@ -66,12 +67,12 @@ class AddressTest extends TestCase
 
     public function testCreateWithException(): void
     {
-        $this->expectException(InvalidCustomerException::class);
+        $this->expectException(InvalidAddressException::class);
         Address::create('', '', '', '', '', '', '');
     }
 
     /**
-     * @throws InvalidCustomerException
+     * @throws InvalidAddressException
      */
     public function testCreate(): void
     {
