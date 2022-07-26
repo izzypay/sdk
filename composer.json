@@ -1,0 +1,32 @@
+{
+    "name": "izzypay/sdk",
+    "type": "library",
+    "license": "proprietary",
+    "version": "1.0.0",
+    "require": {
+        "php": ">=8.0",
+        "guzzlehttp/guzzle": "^7.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "mockery/mockery": "^1.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "IzzyPay\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "IzzyPay\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": [
+            "vendor/bin/phpunit --testdox tests"
+        ],
+        "coverage": [
+            "XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-html tests/_output tests"
+        ]
+    }
+}
