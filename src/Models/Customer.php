@@ -20,7 +20,7 @@ class Customer extends AbstractCustomer
 
     /**
      * @param string $registered
-     * @param string $merchantCustomerId
+     * @param string|null $merchantCustomerId
      * @param string $other
      * @param string $name
      * @param string $companyName
@@ -30,7 +30,7 @@ class Customer extends AbstractCustomer
      * @param Address $deliveryAddress
      * @param Address $invoiceAddress
      */
-    private function __construct(string $registered, string $merchantCustomerId, string $other, string $name, string $companyName, string $surname, string $phone, string $email, Address $deliveryAddress, Address $invoiceAddress)
+    private function __construct(string $registered, ?string $merchantCustomerId, string $other, string $name, string $companyName, string $surname, string $phone, string $email, Address $deliveryAddress, Address $invoiceAddress)
     {
         parent::__construct($registered, $merchantCustomerId, $other);
         $this->name = $name;
@@ -186,7 +186,7 @@ class Customer extends AbstractCustomer
 
     /**
      * @param string $registered
-     * @param string $merchantCustomerId
+     * @param string|null $merchantCustomerId
      * @param string $other
      * @param string $name
      * @param string $surname
@@ -196,10 +196,10 @@ class Customer extends AbstractCustomer
      * @param Address $deliveryAddress
      * @param Address $invoiceAddress
      * @return static
-     * @throws InvalidCustomerException
      * @throws InvalidAddressException
+     * @throws InvalidCustomerException
      */
-    public static function create(string $registered, string $merchantCustomerId, string $other, string $name, string $surname, string $companyName, string $phone, string $email, Address $deliveryAddress, Address $invoiceAddress): self
+    public static function create(string $registered, ?string $merchantCustomerId, string $other, string $name, string $surname, string $companyName, string $phone, string $email, Address $deliveryAddress, Address $invoiceAddress): self
     {
         $detailedCustomer = new Customer($registered, $merchantCustomerId, $other, $name, $companyName, $surname, $phone, $email, $deliveryAddress, $invoiceAddress);
 

@@ -11,12 +11,12 @@ class LimitedCustomer extends AbstractCustomer
 {
     /**
      * @param string $registered
-     * @param string $merchantCustomerId
+     * @param string|null $merchantCustomerId
      * @param string $other
      * @return static
      * @throws InvalidCustomerException
      */
-    public static function create(string $registered, string $merchantCustomerId, string $other): self
+    public static function create(string $registered, ?string $merchantCustomerId, string $other): self
     {
         $basicCustomer = new LimitedCustomer($registered, $merchantCustomerId, $other);
 

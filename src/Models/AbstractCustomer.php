@@ -12,15 +12,15 @@ abstract class AbstractCustomer
     public const ALLOWED_REGISTERED_VALUES = [self::REGISTERED_VALUE_GUEST, self::REGISTERED_VALUE_MERCHANT, self::REGISTERED_VALUE_3RDPARTY];
 
     protected string $registered;
-    protected string $merchantCustomerId;
+    protected ?string $merchantCustomerId;
     protected string $other;
 
     /**
      * @param string $registered
-     * @param string $merchantCustomerId
+     * @param string|null $merchantCustomerId
      * @param string $other
      */
-    protected function __construct(string $registered, string $merchantCustomerId, string $other)
+    protected function __construct(string $registered, ?string $merchantCustomerId, string $other)
     {
         $this->registered = $registered;
         $this->merchantCustomerId = $merchantCustomerId;
@@ -46,18 +46,18 @@ abstract class AbstractCustomer
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getMerchantCustomerId(): string
+    public function getMerchantCustomerId(): ?string
     {
         return $this->merchantCustomerId;
     }
 
     /**
-     * @param string $merchantCustomerId
+     * @param string|null $merchantCustomerId
      * @return LimitedCustomer
      */
-    public function setMerchantCustomerId(string $merchantCustomerId): self
+    public function setMerchantCustomerId(?string $merchantCustomerId): self
     {
         $this->merchantCustomerId = $merchantCustomerId;
         return $this;

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace IzzyPay\Tests\Unit;
 
 use IzzyPay\Exceptions\AuthenticationException;
+use IzzyPay\Exceptions\InvalidAddressException;
 use IzzyPay\Exceptions\InvalidCartException;
 use IzzyPay\Exceptions\InvalidCartItemException;
 use IzzyPay\Exceptions\InvalidCustomerException;
@@ -375,6 +376,7 @@ class IzzyPayTest extends TestCase
      * @throws PaymentServiceUnavailableException
      * @throws InvalidUrlsException
      * @throws InvalidCartItemException
+     * @throws InvalidAddressException
      */
     public function testStartWithRequestException(): void
     {
@@ -420,6 +422,7 @@ class IzzyPayTest extends TestCase
      * @throws PaymentServiceUnavailableException
      * @throws InvalidUrlsException
      * @throws InvalidCartItemException
+     * @throws InvalidAddressException
      */
     public function testStartWithAuthenticationException(): void
     {
@@ -465,6 +468,7 @@ class IzzyPayTest extends TestCase
      * @throws PaymentServiceUnavailableException
      * @throws InvalidUrlsException
      * @throws InvalidCartItemException
+     * @throws InvalidAddressException
      */
     public function testStartWithInvalidResponseException(): void
     {
@@ -516,6 +520,7 @@ class IzzyPayTest extends TestCase
      * @throws PaymentServiceUnavailableException
      * @throws InvalidUrlsException
      * @throws InvalidCartItemException
+     * @throws InvalidAddressException
      */
     public function testStartWithPaymentServiceUnavailableException(): void
     {
@@ -568,6 +573,7 @@ class IzzyPayTest extends TestCase
      * @throws PaymentServiceUnavailableException
      * @throws InvalidUrlsException
      * @throws InvalidCartItemException
+     * @throws InvalidAddressException
      */
     public function testStart(): void
     {
