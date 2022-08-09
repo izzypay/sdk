@@ -53,15 +53,15 @@ class CustomerValidatorTest extends TestCase
      */
     public function getLimitedCustomerProvider(): array
     {
-        $invalidLimitedCustomer1 = $this->invokeConstructor(LimitedCustomer::class, [' ', '', '']);
-        $invalidLimitedCustomer2 = $this->invokeConstructor(LimitedCustomer::class, ['invalid', ' ', '']);
-        $invalidLimitedCustomer3 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_MERCHANT, null, '']);
-        $invalidLimitedCustomer4 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_3RDPARTY, null, '']);
-        $validLimitedCustomer1 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_GUEST, 'merchantCustomerId', '']);
-        $validLimitedCustomer2 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_MERCHANT, 'merchantCustomerId', '']);
-        $validLimitedCustomer3 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_3RDPARTY, 'merchantCustomerId', '']);
-        $validLimitedCustomer4 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_GUEST, 'merchantCustomerId', 'other']);
-        $validLimitedCustomer5 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_GUEST, null, '']);
+        $invalidLimitedCustomer1 = $this->invokeConstructor(LimitedCustomer::class, [' ', '', '', '']);
+        $invalidLimitedCustomer2 = $this->invokeConstructor(LimitedCustomer::class, ['invalid', ' ', '', '']);
+        $invalidLimitedCustomer3 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_MERCHANT, null, null, '']);
+        $invalidLimitedCustomer4 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_3RDPARTY, null, null, '']);
+        $validLimitedCustomer1 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_GUEST, 'merchantCustomerId', 'company name', '']);
+        $validLimitedCustomer2 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_MERCHANT, 'merchantCustomerId', 'company name', '']);
+        $validLimitedCustomer3 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_3RDPARTY, 'merchantCustomerId', 'company name', '']);
+        $validLimitedCustomer4 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_GUEST, 'merchantCustomerId', 'company name', 'other']);
+        $validLimitedCustomer5 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_GUEST, null, null, '']);
         return [
             [$invalidLimitedCustomer1, true],
             [$invalidLimitedCustomer2, true],

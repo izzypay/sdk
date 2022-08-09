@@ -12,7 +12,6 @@ class Customer extends AbstractCustomer
 {
     private string $name;
     private string $surname;
-    private string $companyName;
     private string $phone;
     private string $email;
     private Address $deliveryAddress;
@@ -21,20 +20,19 @@ class Customer extends AbstractCustomer
     /**
      * @param string $registered
      * @param string|null $merchantCustomerId
+     * @param string|null $companyName
      * @param string $other
      * @param string $name
-     * @param string $companyName
      * @param string $surname
      * @param string $phone
      * @param string $email
      * @param Address $deliveryAddress
      * @param Address $invoiceAddress
      */
-    private function __construct(string $registered, ?string $merchantCustomerId, string $other, string $name, string $companyName, string $surname, string $phone, string $email, Address $deliveryAddress, Address $invoiceAddress)
+    private function __construct(string $registered, ?string $merchantCustomerId, ?string $companyName, string $other, string $name, string $surname, string $phone, string $email, Address $deliveryAddress, Address $invoiceAddress)
     {
-        parent::__construct($registered, $merchantCustomerId, $other);
+        parent::__construct($registered, $merchantCustomerId, $companyName, $other);
         $this->name = $name;
-        $this->companyName = $companyName;
         $this->surname = $surname;
         $this->email = $email;
         $this->phone = $phone;
@@ -75,24 +73,6 @@ class Customer extends AbstractCustomer
     public function setSurname(string $surname): self
     {
         $this->surname = $surname;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCompanyName(): string
-    {
-        return $this->companyName;
-    }
-
-    /**
-     * @param string $companyName
-     * @return Customer
-     */
-    public function setCompanyName(string $companyName): Customer
-    {
-        $this->companyName = $companyName;
         return $this;
     }
 
@@ -176,7 +156,6 @@ class Customer extends AbstractCustomer
         $arrayData = parent::toArray();
         $arrayData['name'] = $this->name;
         $arrayData['surname'] = $this->surname;
-        $arrayData['companyName'] = $this->companyName;
         $arrayData['phone'] = $this->phone;
         $arrayData['email'] = $this->email;
         $arrayData['deliveryAddress'] = $this->deliveryAddress->toArray();
@@ -190,7 +169,7 @@ class Customer extends AbstractCustomer
      * @param string $other
      * @param string $name
      * @param string $surname
-     * @param string $companyName
+     * @param string|null $companyName
      * @param string $phone
      * @param string $email
      * @param Address $deliveryAddress
@@ -199,9 +178,9 @@ class Customer extends AbstractCustomer
      * @throws InvalidAddressException
      * @throws InvalidCustomerException
      */
-    public static function create(string $registered, ?string $merchantCustomerId, string $other, string $name, string $surname, string $companyName, string $phone, string $email, Address $deliveryAddress, Address $invoiceAddress): self
+    public static function create(string $registered, ?string $merchantCustomerId, ?string $companyName, string $other, string $name, string $surname, string $phone, string $email, Address $deliveryAddress, Address $invoiceAddress): self
     {
-        $detailedCustomer = new Customer($registered, $merchantCustomerId, $other, $name, $companyName, $surname, $phone, $email, $deliveryAddress, $invoiceAddress);
+        $detailedCustomer = new Customer($registered, $merchantCustomerId, $companyName, $other, $name, $surname, $phone, $email, $deliveryAddress, $invoiceAddress);
 
         $customerValidator = new CustomerValidator();
         $customerValidator->validateCustomer($detailedCustomer);

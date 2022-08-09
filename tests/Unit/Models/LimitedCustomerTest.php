@@ -19,6 +19,7 @@ class LimitedCustomerTest extends TestCase
 
     private const REGISTERED = AbstractCustomer::REGISTERED_VALUE_GUEST;
     private const MERCHANT_CUSTOMER_ID = 'merchantCustomerId';
+    private const COMPANY_NAME = 'company name';
     private const OTHER = 'other';
 
     protected function setUp(): void
@@ -26,6 +27,7 @@ class LimitedCustomerTest extends TestCase
         $this->fields = [
             'registered' => AbstractCustomer::REGISTERED_VALUE_MERCHANT,
             'merchantCustomerId' => 'change merchantCustomerId',
+            'companyName' => 'change company name',
             'other' => 'change other',
         ];
     }
@@ -35,7 +37,7 @@ class LimitedCustomerTest extends TestCase
      */
     public function testSettersAndGetters(): void
     {
-        $limitedCustomer = $this->invokeConstructor(LimitedCustomer::class, [self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER]);
+        $limitedCustomer = $this->invokeConstructor(LimitedCustomer::class, [self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::COMPANY_NAME, self::OTHER]);
         $this->_testSettersAndGetters($limitedCustomer);
     }
 
@@ -44,11 +46,12 @@ class LimitedCustomerTest extends TestCase
      */
     public function testToArray(): void
     {
-        $limitedCustomer = $this->invokeConstructor(LimitedCustomer::class, [self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER]);
+        $limitedCustomer = $this->invokeConstructor(LimitedCustomer::class, [self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::COMPANY_NAME, self::OTHER]);
         $limitedCustomerAsArray = $limitedCustomer->toArray();
         $this->assertEqualsCanonicalizing([
             'registered' => self::REGISTERED,
             'merchantCustomerId' => self::MERCHANT_CUSTOMER_ID,
+            'companyName' => self::COMPANY_NAME,
             'other' => self::OTHER,
         ], $limitedCustomerAsArray);
     }
@@ -56,7 +59,7 @@ class LimitedCustomerTest extends TestCase
     public function testCreateWithException(): void
     {
         $this->expectException(InvalidCustomerException::class);
-        LimitedCustomer::create('invalid', '', '');
+        LimitedCustomer::create('invalid', '', '', '');
     }
 
     /**
@@ -64,9 +67,10 @@ class LimitedCustomerTest extends TestCase
      */
     public function testCreate(): void
     {
-        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER);
+        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::COMPANY_NAME, self::OTHER);
         $this->assertEquals(self::REGISTERED, $limitedCustomer->getRegistered());
         $this->assertEquals(self::MERCHANT_CUSTOMER_ID, $limitedCustomer->getMerchantCustomerId());
+        $this->assertEquals(self::COMPANY_NAME, $limitedCustomer->getCompanyName());
         $this->assertEquals(self::OTHER, $limitedCustomer->getOther());
     }
 }

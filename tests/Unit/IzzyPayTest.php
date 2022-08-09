@@ -154,7 +154,7 @@ class IzzyPayTest extends TestCase
     {
         $cartItem = CartItem::create(self::NAME, self::CATEGORY, self::SUB_CATEGORY, self::TYPE, self::PRICE, self::QUANTITY, self::MANUFACTURER, self::MERCHANT_ITEM_ID, self::OTHER);
         $cart = Cart::create(self::CURRENCY, self::TOTAL_VALUE, [$cartItem]);
-        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER);
+        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::COMPANY_NAME, self::OTHER);
         $other = Other::create(self::IP, self::BROWSER, self::OS);
         $body = [
             'merchantId' => self::MERCHANT_ID,
@@ -194,7 +194,7 @@ class IzzyPayTest extends TestCase
     {
         $cartItem = CartItem::create(self::NAME, self::CATEGORY, self::SUB_CATEGORY, self::TYPE, self::PRICE, self::QUANTITY, self::MANUFACTURER, self::MERCHANT_ITEM_ID, self::OTHER);
         $cart = Cart::create(self::CURRENCY, self::TOTAL_VALUE, [$cartItem]);
-        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER);
+        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::COMPANY_NAME, self::OTHER);
         $other = Other::create(self::IP, self::BROWSER, self::OS);
         $body = [
             'merchantId' => self::MERCHANT_ID,
@@ -234,7 +234,7 @@ class IzzyPayTest extends TestCase
     {
         $cartItem = CartItem::create(self::NAME, self::CATEGORY, self::SUB_CATEGORY, self::TYPE, self::PRICE, self::QUANTITY, self::MANUFACTURER, self::MERCHANT_ITEM_ID, self::OTHER);
         $cart = Cart::create(self::CURRENCY, self::TOTAL_VALUE, [$cartItem]);
-        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER);
+        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::COMPANY_NAME, self::OTHER);
         $other = Other::create(self::IP, self::BROWSER, self::OS);
         $body = [
             'merchantId' => self::MERCHANT_ID,
@@ -279,7 +279,7 @@ class IzzyPayTest extends TestCase
     {
         $cartItem = CartItem::create(self::NAME, self::CATEGORY, self::SUB_CATEGORY, self::TYPE, self::PRICE, self::QUANTITY, self::MANUFACTURER, self::MERCHANT_ITEM_ID, self::OTHER);
         $cart = Cart::create(self::CURRENCY, self::TOTAL_VALUE, [$cartItem]);
-        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER);
+        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::COMPANY_NAME, self::OTHER);
         $other = Other::create(self::IP, self::BROWSER, self::OS);
         $body = [
             'merchantId' => self::MERCHANT_ID,
@@ -325,7 +325,7 @@ class IzzyPayTest extends TestCase
     {
         $cartItem = CartItem::create(self::NAME, self::CATEGORY, self::SUB_CATEGORY, self::TYPE, self::PRICE, self::QUANTITY, self::MANUFACTURER, self::MERCHANT_ITEM_ID, self::OTHER);
         $cart = Cart::create(self::CURRENCY, self::TOTAL_VALUE, [$cartItem]);
-        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER);
+        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::COMPANY_NAME, self::OTHER);
         $other = Other::create(self::IP, self::BROWSER, self::OS);
         $body = [
             'merchantId' => self::MERCHANT_ID,
