@@ -16,12 +16,14 @@ class UrlsTest extends TestCase
     use InvokeConstructorTrait;
     use SetterAndGetterTesterTrait;
 
-    private const URL = 'https://example.com';
+    private const IPN_URL = 'https://ipn.com';
+    private const CHECKOUT_URL = 'https://checkout.com';
 
     protected function setUp(): void
     {
         $this->fields = [
-            'ipn' => 'https://www.example.com',
+            'ipn' => 'https://www.ipn.com',
+            'checkoutUrl' => 'https://www.checkout.com'
         ];
     }
 
@@ -30,7 +32,7 @@ class UrlsTest extends TestCase
      */
     public function testSettersAndGetters(): void
     {
-        $urls = $this->invokeConstructor(Urls::class, [self::URL]);
+        $urls = $this->invokeConstructor(Urls::class, [self::IPN_URL, self::CHECKOUT_URL]);
         $this->_testSettersAndGetters($urls);
     }
 
@@ -39,17 +41,18 @@ class UrlsTest extends TestCase
      */
     public function testToArray(): void
     {
-        $urls = $this->invokeConstructor(Urls::class, [self::URL]);
+        $urls = $this->invokeConstructor(Urls::class, [self::IPN_URL, self::CHECKOUT_URL]);
         $urlsAsArray = $urls->toArray();
         $this->assertEqualsCanonicalizing([
-            'ipn' => self::URL,
+            'ipn' => self::IPN_URL,
+            'checkoutUrl' => self::CHECKOUT_URL,
         ], $urlsAsArray);
     }
 
     public function testCreateWithException(): void
     {
         $this->expectException(InvalidUrlsException::class);
-        Urls::create('invalid');
+        Urls::create('invalid', 'invalid');
     }
 
     /**
@@ -57,7 +60,8 @@ class UrlsTest extends TestCase
      */
     public function testCreate(): void
     {
-        $urls = Urls::create(self::URL);
-        $this->assertEquals(self::URL, $urls->getIpn());
+        $urls = Urls::create(self::IPN_URL, self::CHECKOUT_URL);
+        $this->assertEquals(self::IPN_URL, $urls->getIpn());
+        $this->assertEquals(self::CHECKOUT_URL, $urls->getCheckoutUrl());
     }
 }

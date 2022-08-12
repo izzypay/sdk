@@ -22,6 +22,10 @@ class UrlsValidator
             $errors[] = 'ipn';
         }
 
+        if (($urls->getCheckoutUrl() !== null) && !filter_var($urls->getCheckoutUrl(), FILTER_VALIDATE_URL)) {
+            $errors[] = 'checkoutUrl';
+        }
+
         if (count($errors) > 0) {
             throw new InvalidUrlsException($errors);
         }
