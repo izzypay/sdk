@@ -12,18 +12,21 @@ abstract class AbstractCustomer
     public const ALLOWED_REGISTERED_VALUES = [self::REGISTERED_VALUE_GUEST, self::REGISTERED_VALUE_MERCHANT, self::REGISTERED_VALUE_3RDPARTY];
 
     protected string $registered;
-    protected string $merchantCustomerId;
+    protected ?string $merchantCustomerId;
+    protected ?string $companyName;
     protected string $other;
 
     /**
      * @param string $registered
-     * @param string $merchantCustomerId
+     * @param string|null $merchantCustomerId
+     * @param string|null $companyName
      * @param string $other
      */
-    protected function __construct(string $registered, string $merchantCustomerId, string $other)
+    protected function __construct(string $registered, ?string $merchantCustomerId, ?string $companyName, string $other)
     {
         $this->registered = $registered;
         $this->merchantCustomerId = $merchantCustomerId;
+        $this->companyName = $companyName;
         $this->other = $other;
     }
 
@@ -37,7 +40,7 @@ abstract class AbstractCustomer
 
     /**
      * @param string $registered
-     * @return LimitedCustomer
+     * @return AbstractCustomer
      */
     public function setRegistered(string $registered): self
     {
@@ -46,20 +49,38 @@ abstract class AbstractCustomer
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getMerchantCustomerId(): string
+    public function getMerchantCustomerId(): ?string
     {
         return $this->merchantCustomerId;
     }
 
     /**
-     * @param string $merchantCustomerId
-     * @return LimitedCustomer
+     * @param string|null $merchantCustomerId
+     * @return AbstractCustomer
      */
-    public function setMerchantCustomerId(string $merchantCustomerId): self
+    public function setMerchantCustomerId(?string $merchantCustomerId): self
     {
         $this->merchantCustomerId = $merchantCustomerId;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCompanyName(): ?string
+    {
+        return $this->companyName;
+    }
+
+    /**
+     * @param string|null $companyName
+     * @return AbstractCustomer
+     */
+    public function setCompanyName(?string $companyName): self
+    {
+        $this->companyName = $companyName;
         return $this;
     }
 
@@ -73,7 +94,7 @@ abstract class AbstractCustomer
 
     /**
      * @param string $other
-     * @return LimitedCustomer
+     * @return AbstractCustomer
      */
     public function setOther(string $other): self
     {
@@ -89,6 +110,7 @@ abstract class AbstractCustomer
         return [
             'registered' => $this->registered,
             'merchantCustomerId' => $this->merchantCustomerId,
+            'companyName' => $this->companyName,
             'other' => $this->other,
         ];
     }

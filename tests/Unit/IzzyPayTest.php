@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace IzzyPay\Tests\Unit;
 
 use IzzyPay\Exceptions\AuthenticationException;
+use IzzyPay\Exceptions\InvalidAddressException;
 use IzzyPay\Exceptions\InvalidCartException;
 use IzzyPay\Exceptions\InvalidCartItemException;
 use IzzyPay\Exceptions\InvalidCustomerException;
@@ -73,7 +74,8 @@ class IzzyPayTest extends TestCase
     private const BROWSER = 'Chrome';
     private const OS = 'Linux';
 
-    private const URL = 'https://example.com';
+    private const IPN_URL = 'https://ipn.com';
+    private const CHECKOUT_URL = 'https://checkout.com';
 
     private ResponseValidator|MockInterface $responseValidatorMock;
     private RequestService|MockInterface $requestServiceMock;
@@ -153,7 +155,7 @@ class IzzyPayTest extends TestCase
     {
         $cartItem = CartItem::create(self::NAME, self::CATEGORY, self::SUB_CATEGORY, self::TYPE, self::PRICE, self::QUANTITY, self::MANUFACTURER, self::MERCHANT_ITEM_ID, self::OTHER);
         $cart = Cart::create(self::CURRENCY, self::TOTAL_VALUE, [$cartItem]);
-        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER);
+        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::COMPANY_NAME, self::OTHER);
         $other = Other::create(self::IP, self::BROWSER, self::OS);
         $body = [
             'merchantId' => self::MERCHANT_ID,
@@ -193,7 +195,7 @@ class IzzyPayTest extends TestCase
     {
         $cartItem = CartItem::create(self::NAME, self::CATEGORY, self::SUB_CATEGORY, self::TYPE, self::PRICE, self::QUANTITY, self::MANUFACTURER, self::MERCHANT_ITEM_ID, self::OTHER);
         $cart = Cart::create(self::CURRENCY, self::TOTAL_VALUE, [$cartItem]);
-        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER);
+        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::COMPANY_NAME, self::OTHER);
         $other = Other::create(self::IP, self::BROWSER, self::OS);
         $body = [
             'merchantId' => self::MERCHANT_ID,
@@ -233,7 +235,7 @@ class IzzyPayTest extends TestCase
     {
         $cartItem = CartItem::create(self::NAME, self::CATEGORY, self::SUB_CATEGORY, self::TYPE, self::PRICE, self::QUANTITY, self::MANUFACTURER, self::MERCHANT_ITEM_ID, self::OTHER);
         $cart = Cart::create(self::CURRENCY, self::TOTAL_VALUE, [$cartItem]);
-        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER);
+        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::COMPANY_NAME, self::OTHER);
         $other = Other::create(self::IP, self::BROWSER, self::OS);
         $body = [
             'merchantId' => self::MERCHANT_ID,
@@ -278,7 +280,7 @@ class IzzyPayTest extends TestCase
     {
         $cartItem = CartItem::create(self::NAME, self::CATEGORY, self::SUB_CATEGORY, self::TYPE, self::PRICE, self::QUANTITY, self::MANUFACTURER, self::MERCHANT_ITEM_ID, self::OTHER);
         $cart = Cart::create(self::CURRENCY, self::TOTAL_VALUE, [$cartItem]);
-        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER);
+        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::COMPANY_NAME, self::OTHER);
         $other = Other::create(self::IP, self::BROWSER, self::OS);
         $body = [
             'merchantId' => self::MERCHANT_ID,
@@ -324,7 +326,7 @@ class IzzyPayTest extends TestCase
     {
         $cartItem = CartItem::create(self::NAME, self::CATEGORY, self::SUB_CATEGORY, self::TYPE, self::PRICE, self::QUANTITY, self::MANUFACTURER, self::MERCHANT_ITEM_ID, self::OTHER);
         $cart = Cart::create(self::CURRENCY, self::TOTAL_VALUE, [$cartItem]);
-        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER);
+        $limitedCustomer = LimitedCustomer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::COMPANY_NAME, self::OTHER);
         $other = Other::create(self::IP, self::BROWSER, self::OS);
         $body = [
             'merchantId' => self::MERCHANT_ID,
@@ -375,6 +377,7 @@ class IzzyPayTest extends TestCase
      * @throws PaymentServiceUnavailableException
      * @throws InvalidUrlsException
      * @throws InvalidCartItemException
+     * @throws InvalidAddressException
      */
     public function testStartWithRequestException(): void
     {
@@ -384,7 +387,7 @@ class IzzyPayTest extends TestCase
         $address = Address::create(self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3);
         $customer = Customer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::COMPANY_NAME,self::PHONE, self::EMAIL, $address, $address);
         $other = Other::create(self::IP, self::BROWSER, self::OS);
-        $urls = Urls::create(self::URL);
+        $urls = Urls::create(self::IPN_URL, self::CHECKOUT_URL);
         $body = [
             'merchantId' => self::MERCHANT_ID,
             'merchantCartId' => self::MERCHANT_CART_ID,
@@ -420,6 +423,7 @@ class IzzyPayTest extends TestCase
      * @throws PaymentServiceUnavailableException
      * @throws InvalidUrlsException
      * @throws InvalidCartItemException
+     * @throws InvalidAddressException
      */
     public function testStartWithAuthenticationException(): void
     {
@@ -429,7 +433,7 @@ class IzzyPayTest extends TestCase
         $address = Address::create(self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3);
         $customer = Customer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::COMPANY_NAME, self::PHONE, self::EMAIL, $address, $address);
         $other = Other::create(self::IP, self::BROWSER, self::OS);
-        $urls = Urls::create(self::URL);
+        $urls = Urls::create(self::IPN_URL, self::CHECKOUT_URL);
         $body = [
             'merchantId' => self::MERCHANT_ID,
             'merchantCartId' => self::MERCHANT_CART_ID,
@@ -465,6 +469,7 @@ class IzzyPayTest extends TestCase
      * @throws PaymentServiceUnavailableException
      * @throws InvalidUrlsException
      * @throws InvalidCartItemException
+     * @throws InvalidAddressException
      */
     public function testStartWithInvalidResponseException(): void
     {
@@ -474,7 +479,7 @@ class IzzyPayTest extends TestCase
         $address = Address::create(self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3);
         $customer = Customer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::COMPANY_NAME, self::PHONE, self::EMAIL, $address, $address);
         $other = Other::create(self::IP, self::BROWSER, self::OS);
-        $urls = Urls::create(self::URL);
+        $urls = Urls::create(self::IPN_URL, self::CHECKOUT_URL);
         $body = [
             'merchantId' => self::MERCHANT_ID,
             'merchantCartId' => self::MERCHANT_CART_ID,
@@ -516,6 +521,7 @@ class IzzyPayTest extends TestCase
      * @throws PaymentServiceUnavailableException
      * @throws InvalidUrlsException
      * @throws InvalidCartItemException
+     * @throws InvalidAddressException
      */
     public function testStartWithPaymentServiceUnavailableException(): void
     {
@@ -525,7 +531,7 @@ class IzzyPayTest extends TestCase
         $address = Address::create(self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3);
         $customer = Customer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::COMPANY_NAME, self::PHONE, self::EMAIL, $address, $address);
         $other = Other::create(self::IP, self::BROWSER, self::OS);
-        $urls = Urls::create(self::URL);
+        $urls = Urls::create(self::IPN_URL, self::CHECKOUT_URL);
         $body = [
             'merchantId' => self::MERCHANT_ID,
             'merchantCartId' => self::MERCHANT_CART_ID,
@@ -568,6 +574,7 @@ class IzzyPayTest extends TestCase
      * @throws PaymentServiceUnavailableException
      * @throws InvalidUrlsException
      * @throws InvalidCartItemException
+     * @throws InvalidAddressException
      */
     public function testStart(): void
     {
@@ -577,7 +584,7 @@ class IzzyPayTest extends TestCase
         $address = Address::create(self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3);
         $customer = Customer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::COMPANY_NAME, self::PHONE, self::EMAIL, $address, $address);
         $other = Other::create(self::IP, self::BROWSER, self::OS);
-        $urls = Urls::create(self::URL);
+        $urls = Urls::create(self::IPN_URL, self::CHECKOUT_URL);
         $body = [
             'merchantId' => self::MERCHANT_ID,
             'merchantCartId' => self::MERCHANT_CART_ID,

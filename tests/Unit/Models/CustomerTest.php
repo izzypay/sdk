@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace IzzyPay\Tests\Unit\Models;
 
+use IzzyPay\Exceptions\InvalidAddressException;
 use IzzyPay\Exceptions\InvalidCustomerException;
 use IzzyPay\Models\AbstractCustomer;
 use IzzyPay\Models\Address;
@@ -102,6 +103,7 @@ class CustomerTest extends TestCase
     }
 
     /**
+     * @throws InvalidAddressException
      * @throws ReflectionException
      */
     public function testCreateWithException(): void
@@ -112,13 +114,14 @@ class CustomerTest extends TestCase
     }
 
     /**
+     * @throws InvalidAddressException
      * @throws InvalidCustomerException
      * @throws ReflectionException
      */
     public function testCreate(): void
     {
         $address = $this->invokeConstructor(Address::class, [self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3]);
-        $customer = Customer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::COMPANY_NAME, self::PHONE, self::EMAIL, $address, $address);
+        $customer = Customer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::COMPANY_NAME,self::OTHER, self::NAME, self::SURNAME, self::PHONE, self::EMAIL, $address, $address);
         $this->assertEquals(self::REGISTERED, $customer->getRegistered());
         $this->assertEquals(self::MERCHANT_CUSTOMER_ID, $customer->getMerchantCustomerId());
         $this->assertEquals(self::OTHER, $customer->getOther());

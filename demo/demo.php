@@ -42,7 +42,7 @@ function sendInit(IzzyPay $izzyPay, string $merchantCartId): ?InitResponse
     try {
         $cartItem = CartItem::create('name','category', 'subCategory', 'type', 666.666, 69, 'manufacturer', 'merchantItemId', 'other');
         $cart = Cart::create('HUF', 666.666, [$cartItem]);
-        $limitedCustomer = LimitedCustomer::create('guest', 'merchantCustomerId', 'other');
+        $limitedCustomer = LimitedCustomer::create('guest', null, null, 'other');
         $other = Other::create('127.0.0.1', 'browser', 'os');
         return $izzyPay->init($merchantCartId, $cart, $limitedCustomer, $other);
     } catch (InvalidCustomerException|InvalidCartItemException|InvalidCartException|InvalidOtherException|InvalidResponseException|RequestException|JsonException|AuthenticationException|PaymentServiceUnavailableException $e) {
@@ -57,9 +57,9 @@ function sendStart(IzzyPay $izzyPay, string $merchantCartId, $token): ?StartResp
         $cartItem = CartItem::create('name','category', 'subCategory', 'type', 666.666, 69, 'manufacturer', 'merchantItemId', 'other');
         $cart = Cart::create('HUF', 666.666, [$cartItem]);
         $address = Address::create('8888', 'city', 'street', 'houseNo', 'address1', 'address2', 'address3');
-        $customer = Customer::create('guest', 'merchantCustomerId', 'other', 'name', 'surname', 'company name', 'phone', 'email@emai.com', $address, $address);
+        $customer = Customer::create('merchant', 'merchantCustomerId', null,'other', 'name', 'surname', 'phone', 'email@emai.com', $address, $address);
         $other = Other::create('127.0.0.1', 'browser', 'os');
-        $urls = Urls::create('https://ipn.com');
+        $urls = Urls::create('https://ipn.com', 'https://checkout.com');
         return $izzyPay->start($token, $merchantCartId, $cart, $customer, $other, $urls);
     } catch (InvalidAddressException|InvalidCustomerException|InvalidCartItemException|InvalidCartException|InvalidOtherException|InvalidResponseException|RequestException|JsonException|InvalidUrlsException|AuthenticationException|PaymentServiceUnavailableException $e) {
         var_dump($e->getMessage());

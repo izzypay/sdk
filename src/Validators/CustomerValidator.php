@@ -20,7 +20,11 @@ class CustomerValidator
     {
         $errors = [];
 
-        if (trim($limitedCustomer->getMerchantCustomerId()) === '') {
+        if ($limitedCustomer->getMerchantCustomerId() === null) {
+            if (trim($limitedCustomer->getRegistered()) !== AbstractCustomer::REGISTERED_VALUE_GUEST) {
+                $errors[] = 'merchantCustomerId';
+            }
+        } else if (trim($limitedCustomer->getMerchantCustomerId()) === '') {
             $errors[] = 'merchantCustomerId';
         }
 

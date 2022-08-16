@@ -130,7 +130,6 @@ class IzzyPay
 
         $endpoint = self::START_ENDPOINT . '/' . $token;
         $body = $this->prepareStartRequestData($merchantCartId, $cart, $customer, $other, $urls);
-        var_dump($body);
         $response = $this->requestService->sendPostRequest($endpoint, $body);
         $this->responseValidator->validateStartResponse($response);
         $this->responseValidator->verifyStartAvailability($response);
