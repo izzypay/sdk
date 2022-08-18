@@ -8,7 +8,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Psr7\Response;
 use IzzyPay\Exceptions\AuthenticationException;
-use IzzyPay\Exceptions\InvalidResponseException;
 use IzzyPay\Exceptions\RequestException;
 use IzzyPay\Services\HmacService;
 use IzzyPay\Services\RequestService;
@@ -29,10 +28,14 @@ class RequestServiceTest extends TestCase
 
     private const MERCHANT_ID = 'merchantId';
     private const BASE_URL = 'https://www.example.com';
+    private const PLUGIN_VERSION = 'plugin 1.0';
+    private const SDK_VERSION = '1.0.4';
 
     private Client|MockInterface $guzzleClientMock;
     private HmacService|MockObject $hmacServiceMock;
     private ResponseValidator|MockObject $responseValidatorMock;
+    private string $pluginVersionHeaderWithShopPlugin;
+    private string $pluginVersionHeaderWithoutShopPlugin;
 
     protected function setUp(): void
     {
@@ -43,6 +46,8 @@ class RequestServiceTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $this->guzzleClientMock = Mockery::mock('overload:' . Client::class);
+        $this->pluginVersionHeaderWithoutShopPlugin = '(SDK: ' . self::SDK_VERSION . ')';
+        $this->pluginVersionHeaderWithShopPlugin = self::PLUGIN_VERSION . ' ' . $this->pluginVersionHeaderWithoutShopPlugin;
     }
 
     // <editor-fold desc=sendHeadRequest>
@@ -60,7 +65,7 @@ class RequestServiceTest extends TestCase
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Authorization' => $authorizationHeader,
-                'X-Sdk-Version' => '1.0',
+                'X-Plugin-Version' => $this->pluginVersionHeaderWithShopPlugin,
             ],
         ];
 
@@ -96,7 +101,7 @@ class RequestServiceTest extends TestCase
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Authorization' => $authorizationHeader,
-                'X-Sdk-Version' => '1.0',
+                'X-Plugin-Version' => $this->pluginVersionHeaderWithShopPlugin,
             ],
         ];
         $response = new Response(200);
@@ -126,6 +131,50 @@ class RequestServiceTest extends TestCase
      * @throws RequestException
      * @throws AuthenticationException
      */
+    public function testSendHeadRequestWithoutPlugin(): void
+    {
+        $endpoint = '/endpoint';
+        $authorizationHeader = 'HMAC merchantId:signature';
+        $options = [
+            'timeout' => 20,
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Authorization' => $authorizationHeader,
+                'X-Plugin-Version' => $this->pluginVersionHeaderWithoutShopPlugin,
+            ],
+        ];
+        $response = new Response(200);
+
+        $this->hmacServiceMock
+            ->expects($this->once())
+            ->method('generateAuthorizationHeader')
+            ->with(self::MERCHANT_ID)
+            ->willReturn('HMAC merchantId:signature');
+        $this->guzzleClientMock
+            ->shouldReceive('head')
+            ->once()
+            ->with(self::BASE_URL . $endpoint, $options)
+            ->andReturn($response);
+        $this->responseValidatorMock
+            ->expects($this->once())
+            ->method('validateResponseAuthentication')
+            ->with($response);
+
+        $requestService = new RequestService(
+            self::MERCHANT_ID,
+            self::BASE_URL,
+            null,
+            $this->hmacServiceMock,
+            $this->responseValidatorMock,
+        );
+        $requestService->sendHeadRequest($endpoint);
+        $this->assertTrue(true);
+    }
+
+    /**
+     * @throws RequestException
+     * @throws AuthenticationException
+     */
     public function testSendHeadRequest(): void
     {
         $endpoint = '/endpoint';
@@ -135,7 +184,7 @@ class RequestServiceTest extends TestCase
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Authorization' => $authorizationHeader,
-                'X-Sdk-Version' => '1.0',
+                'X-Plugin-Version' => $this->pluginVersionHeaderWithShopPlugin,
             ],
         ];
         $response = new Response(200);
@@ -163,7 +212,6 @@ class RequestServiceTest extends TestCase
 
     // <editor-fold desc=sendPostRequest>
     /**
-     * @throws InvalidResponseException
      * @throws RequestException
      * @throws JsonException
      * @throws AuthenticationException
@@ -180,7 +228,7 @@ class RequestServiceTest extends TestCase
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Authorization' => $authorizationHeader,
-                'X-Sdk-Version' => '1.0',
+                'X-Plugin-Version' => $this->pluginVersionHeaderWithShopPlugin,
             ],
             'body' => json_encode($body, JSON_THROW_ON_ERROR),
         ];
@@ -221,7 +269,7 @@ class RequestServiceTest extends TestCase
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Authorization' => $authorizationHeader,
-                'X-Sdk-Version' => '1.0',
+                'X-Plugin-Version' => $this->pluginVersionHeaderWithShopPlugin,
             ],
             'body' => json_encode($body, JSON_THROW_ON_ERROR),
         ];
@@ -252,6 +300,65 @@ class RequestServiceTest extends TestCase
      * @throws JsonException
      * @throws AuthenticationException
      */
+    public function testSendPostRequestWithoutPlugin(): void
+    {
+
+        $endpoint = '/endpoint';
+        $body = [
+            'key' => 'value',
+        ];
+        $authorizationHeader = 'HMAC merchantId:signature';
+        $options = [
+            'timeout' => 20,
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Authorization' => $authorizationHeader,
+                'X-Plugin-Version' => $this->pluginVersionHeaderWithoutShopPlugin,
+            ],
+            'body' => json_encode($body, JSON_THROW_ON_ERROR),
+        ];
+
+        $responseData = [
+            'token' => 'token',
+            'available' => true,
+        ];
+        $encodedResponseData = json_encode($responseData, JSON_THROW_ON_ERROR);
+        $responseHeader = [
+            'Authorization' => "HMAC signature",
+        ];
+        $mockResponse = new Response(200, $responseHeader, $encodedResponseData);
+
+        $this->hmacServiceMock
+            ->expects($this->once())
+            ->method('generateAuthorizationHeader')
+            ->with(self::MERCHANT_ID)
+            ->willReturn($authorizationHeader);
+        $this->guzzleClientMock
+            ->shouldReceive('post')
+            ->once()
+            ->with(self::BASE_URL . $endpoint, $options)
+            ->andReturn($mockResponse);
+        $this->responseValidatorMock
+            ->expects($this->once())
+            ->method('validateResponseAuthentication')
+            ->with($mockResponse);
+
+        $requestService = new RequestService(
+            self::MERCHANT_ID,
+            self::BASE_URL,
+            null,
+            $this->hmacServiceMock,
+            $this->responseValidatorMock,
+        );
+        $response = $requestService->sendPostRequest($endpoint, $body);
+        $this->assertEqualsCanonicalizing($responseData, $response);
+    }
+
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     */
     public function testSendPostRequest(): void
     {
 
@@ -265,7 +372,7 @@ class RequestServiceTest extends TestCase
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Authorization' => $authorizationHeader,
-                'X-Sdk-Version' => '1.0',
+                'X-Plugin-Version' => $this->pluginVersionHeaderWithShopPlugin,
             ],
             'body' => json_encode($body, JSON_THROW_ON_ERROR),
         ];
@@ -311,6 +418,7 @@ class RequestServiceTest extends TestCase
         return new RequestService(
             self::MERCHANT_ID,
             self::BASE_URL,
+            self::PLUGIN_VERSION,
             $this->hmacServiceMock,
             $this->responseValidatorMock,
         );
