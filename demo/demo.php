@@ -26,7 +26,7 @@ use IzzyPay\Models\Response\StartResponse;
 use IzzyPay\Models\Urls;
 
 $merchantCartId = '666';
-$izzyPay = new IzzyPay('merchantId', 'abcd1234', 'http://gateway.localhost');
+$izzyPay = new IzzyPay('merchantId', 'abcd1234', 'http://gateway.localhost', 'plugin 1.0');
 
 function verifyCredential(IzzyPay $izzyPay): void
 {

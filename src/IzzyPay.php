@@ -42,13 +42,13 @@ class IzzyPay
     private ResponseValidator $responseValidator;
     private RequestService $requestService;
 
-    public function __construct(string $merchantId, string $merchantSecret, string $baseUrl)
+    public function __construct(string $merchantId, string $merchantSecret, string $baseUrl, ?string $pluginVersion = null)
     {
         $this->merchantId = $merchantId;
 
         $hmacService = new HmacService($merchantSecret);
         $this->responseValidator = new ResponseValidator($hmacService);
-        $this->requestService = new RequestService($merchantId, $baseUrl, $hmacService, $this->responseValidator);
+        $this->requestService = new RequestService($merchantId, $baseUrl, $pluginVersion, $hmacService, $this->responseValidator);
     }
 
     /**
