@@ -2,7 +2,7 @@
     "name": "izzypay/sdk",
     "type": "library",
     "license": "proprietary",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "require": {
         "php": ">=8.0",
         "guzzlehttp/guzzle": "^7.4"
