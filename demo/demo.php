@@ -22,6 +22,7 @@ use IzzyPay\Models\LimitedCustomer;
 use IzzyPay\Models\Customer;
 use IzzyPay\Models\Other;
 use IzzyPay\Models\Response\InitResponse;
+use IzzyPay\Models\Response\ReturnResponse;
 use IzzyPay\Models\Response\StartResponse;
 use IzzyPay\Models\Urls;
 
@@ -67,6 +68,25 @@ function sendStart(IzzyPay $izzyPay, string $merchantCartId, $token): ?StartResp
     return null;
 }
 
+function sendDelivery(IzzyPay $izzyPay, string $merchantCartId, ?string $merchantItemId = null): void
+{
+    try {
+        $izzyPay->delivery($merchantCartId, $merchantItemId);
+    } catch (AuthenticationException|RequestException|JsonException $e) {
+        var_dump($e->getMessage());
+    }
+}
+
+function sendReturn(IzzyPay $izzyPay, string $merchantCartId, ?string $merchantItemId = null): ?ReturnResponse
+{
+    try {
+        return $izzyPay->return($merchantCartId, $merchantItemId);
+    } catch (AuthenticationException|RequestException|JsonException|InvalidResponseException $e) {
+        var_dump($e->getMessage());
+    }
+    return null;
+}
+
 // Used to check whether the configured credentials are correct.
 // Not part of the normal flow, therefore doesn't need to be called before the init.
 verifyCredential($izzyPay);
@@ -81,5 +101,24 @@ if ($initResponse) {
     if ($startResponse) {
         $token = $startResponse->getToken();
         var_dump('Ok');
+
+        // Delivery for the whole cart
+        sendDelivery($izzyPay, $merchantCartId);
+        // Delivery for single item from the cart
+//        sendDelivery($izzyPay, $merchantCartId, 'merchantItemId');
+
+        // Return the whole cart
+        $returnResponse = sendReturn($izzyPay, $merchantCartId);
+        // Return single item from the cart
+//        $returnResponse = sendReturn($izzyPay, $merchantCartId, 'merchantItemId');
+        if ($returnResponse) {
+            $returnDate = $returnResponse->getReturnDate();
+            var_dump($returnDate);
+            $reducedValue = $returnResponse->getReducedValue();
+            // Missing when returning the whole cart
+            if ($reducedValue) {
+                var_dump($reducedValue);
+            }
+        }
     }
 }

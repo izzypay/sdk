@@ -20,6 +20,7 @@ use IzzyPay\Models\Cart;
 use IzzyPay\Models\Customer;
 use IzzyPay\Models\Other;
 use IzzyPay\Models\Response\InitResponse;
+use IzzyPay\Models\Response\ReturnResponse;
 use IzzyPay\Models\Response\StartResponse;
 use IzzyPay\Models\Urls;
 use IzzyPay\Services\HmacService;
@@ -37,6 +38,8 @@ class IzzyPay
     public const CRED_ENDPOINT = '/api/v1/cred';
     public const INIT_ENDPOINT = '/api/v1/init';
     public const START_ENDPOINT = '/api/v1/start';
+    public const DELIVERY_ENDPOINT = '/api/v1/delivery';
+    public const RETURN_ENDPOINT = '/api/v1/return';
 
     private string $merchantId;
     private ResponseValidator $responseValidator;
@@ -134,6 +137,42 @@ class IzzyPay
         $this->responseValidator->validateStartResponse($response);
         $this->responseValidator->verifyStartAvailability($response);
         return new StartResponse($response['token'], $response['merchantId'], $response['merchantCartId']);
+    }
+
+    /**
+     * @param string $merchantCartId
+     * @param string|null $merchantItemId
+     * @throws AuthenticationException
+     * @throws JsonException
+     * @throws RequestException
+     */
+    public function delivery(string $merchantCartId, ?string $merchantItemId = null): void
+    {
+        $endpoint = self::DELIVERY_ENDPOINT . "/$this->merchantId/$merchantCartId";
+        if ($merchantItemId) {
+            $endpoint .= "/$merchantItemId";
+        }
+        $this->requestService->sendPutRequest($endpoint);
+    }
+
+    /**
+     * @param string $merchantCartId
+     * @param string|null $merchantItemId
+     * @return ReturnResponse
+     * @throws AuthenticationException
+     * @throws InvalidResponseException
+     * @throws JsonException
+     * @throws RequestException
+     */
+    public function return(string $merchantCartId, ?string $merchantItemId = null): ReturnResponse
+    {
+        $endpoint = self::RETURN_ENDPOINT . "/$this->merchantId/$merchantCartId";
+        if ($merchantItemId) {
+            $endpoint .= "/$merchantItemId";
+        }
+        $response = $this->requestService->sendPutRequest($endpoint);
+        $this->responseValidator->validateReturnResponse($response, (bool)$merchantItemId);
+        return new ReturnResponse($response['returnDate'], $response['reducedValue'] ?? null);
     }
 
     /**

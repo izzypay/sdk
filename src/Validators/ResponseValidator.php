@@ -80,6 +80,29 @@ class ResponseValidator
 
     /**
      * @param array $response
+     * @param bool $isItemReturn
+     * @return void
+     * @throws InvalidResponseException
+     */
+    public function validateReturnResponse(array $response, bool $isItemReturn): void
+    {
+        $errors = [];
+
+        if (!array_key_exists('returnDate', $response) || trim($response['returnDate']) === '') {
+            $errors[] = 'returnDate';
+        }
+
+        if ($isItemReturn && (!array_key_exists('reducedValue', $response) || !is_float($response['reducedValue']) || ($response['reducedValue'] < 0))) {
+            $errors[] = 'reducedValue';
+        }
+
+        if (count($errors) > 0) {
+            throw new InvalidResponseException($errors);
+        }
+    }
+
+    /**
+     * @param array $response
      * @return void
      * @throws PaymentServiceUnavailableException
      */
