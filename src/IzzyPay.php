@@ -11,6 +11,7 @@ use IzzyPay\Exceptions\InvalidCartItemException;
 use IzzyPay\Exceptions\InvalidCustomerException;
 use IzzyPay\Exceptions\InvalidOtherException;
 use IzzyPay\Exceptions\InvalidResponseException;
+use IzzyPay\Exceptions\InvalidReturnDataException;
 use IzzyPay\Exceptions\InvalidUrlsException;
 use IzzyPay\Exceptions\RequestException;
 use IzzyPay\Exceptions\PaymentServiceUnavailableException;
@@ -20,7 +21,6 @@ use IzzyPay\Models\Cart;
 use IzzyPay\Models\Customer;
 use IzzyPay\Models\Other;
 use IzzyPay\Models\Response\InitResponse;
-use IzzyPay\Models\Response\ReturnResponse;
 use IzzyPay\Models\Response\StartResponse;
 use IzzyPay\Models\Urls;
 use IzzyPay\Services\HmacService;
@@ -29,6 +29,7 @@ use IzzyPay\Validators\CartValidator;
 use IzzyPay\Validators\CustomerValidator;
 use IzzyPay\Validators\OtherValidator;
 use IzzyPay\Validators\ResponseValidator;
+use IzzyPay\Validators\ReturnValidator;
 use IzzyPay\Validators\UrlsValidator;
 use JsonException;
 
@@ -141,38 +142,72 @@ class IzzyPay
 
     /**
      * @param string $merchantCartId
-     * @param string|null $merchantItemId
      * @throws AuthenticationException
      * @throws JsonException
      * @throws RequestException
      */
-    public function delivery(string $merchantCartId, ?string $merchantItemId = null): void
+    public function deliveryCart(string $merchantCartId): void
     {
         $endpoint = self::DELIVERY_ENDPOINT . "/$this->merchantId/$merchantCartId";
-        if ($merchantItemId) {
-            $endpoint .= "/$merchantItemId";
-        }
         $this->requestService->sendPutRequest($endpoint);
     }
 
     /**
      * @param string $merchantCartId
-     * @param string|null $merchantItemId
-     * @return ReturnResponse
+     * @param string $merchantItemId
      * @throws AuthenticationException
-     * @throws InvalidResponseException
      * @throws JsonException
      * @throws RequestException
      */
-    public function return(string $merchantCartId, ?string $merchantItemId = null): ReturnResponse
+    public function deliveryItem(string $merchantCartId, string $merchantItemId): void
     {
+        $endpoint = self::DELIVERY_ENDPOINT . "/$this->merchantId/$merchantCartId/$merchantItemId";
+        $this->requestService->sendPutRequest($endpoint);
+    }
+
+    /**
+     * @param string $merchantCartId
+     * @param string $returnDate
+     * @throws AuthenticationException
+     * @throws JsonException
+     * @throws RequestException
+     * @throws InvalidReturnDataException
+     */
+    public function returnCart(string $merchantCartId, string $returnDate): void
+    {
+        $returnValidator = new ReturnValidator();
+        $returnValidator->validate($returnDate);
+
         $endpoint = self::RETURN_ENDPOINT . "/$this->merchantId/$merchantCartId";
-        if ($merchantItemId) {
-            $endpoint .= "/$merchantItemId";
+        $data = [
+            'returnDate' => $returnDate,
+        ];
+        $this->requestService->sendPutRequest($endpoint, $data);
+    }
+
+    /**
+     * @param string $merchantCartId
+     * @param string $merchantItemId
+     * @param string $returnDate
+     * @param float|null $reducedValue
+     * @throws AuthenticationException
+     * @throws JsonException
+     * @throws RequestException
+     * @throws InvalidReturnDataException
+     */
+    public function returnItem(string $merchantCartId, string $merchantItemId, string $returnDate, ?float $reducedValue = null): void
+    {
+        $returnValidator = new ReturnValidator();
+        $returnValidator->validate($returnDate, $reducedValue);
+
+        $endpoint = self::RETURN_ENDPOINT . "/$this->merchantId/$merchantCartId/$merchantItemId";
+        $data = [
+            'returnDate' => $returnDate,
+        ];
+        if ($reducedValue) {
+            $data['reducedValue'] = $reducedValue;
         }
-        $response = $this->requestService->sendPutRequest($endpoint);
-        $this->responseValidator->validateReturnResponse($response, (bool)$merchantItemId);
-        return new ReturnResponse($response['returnDate'], $response['reducedValue'] ?? null);
+        $this->requestService->sendPutRequest($endpoint, $data);
     }
 
     /**

@@ -121,22 +121,6 @@ class ResponseValidatorTest extends TestCase
     }
 
     /**
-     * @dataProvider getReturnResponseForValidationProvider
-     * @throws InvalidResponseException
-     */
-    public function testValidateReturnResponse(array $response, bool $itemReturn, ?string $expectedExceptionClass): void
-    {
-        $responseValidator = $this->getNewResponseValidator();
-        if ($expectedExceptionClass) {
-            $this->expectException($expectedExceptionClass);
-        }
-        $responseValidator->validateReturnResponse($response, $itemReturn);
-        if (!$expectedExceptionClass) {
-            $this->assertTrue(true);
-        }
-    }
-
-    /**
      * @dataProvider getInitResponseForAvailabilityProvider
      * @throws PaymentServiceUnavailableException
      */
@@ -235,48 +219,6 @@ class ResponseValidatorTest extends TestCase
                     'merchantId' => 'merchant id',
                     'merchantCartId' => 'merchant cart id',
                 ],
-                null,
-            ],
-        ];
-    }
-
-    public function getReturnResponseForValidationProvider(): array
-    {
-        return [
-            [
-                [],
-                false,
-                InvalidResponseException::class,
-            ],
-            [
-                [
-                    'returnDate' => '2022-04-04T12:34:56+0010',
-                ],
-                false,
-                null,
-            ],
-            [
-                [
-                    'returnDate' => '2022-04-04T12:34:56+0010',
-                    'reducedValue' => 'invalid',
-                ],
-                true,
-                InvalidResponseException::class,
-            ],
-            [
-                [
-                    'returnDate' => '2022-04-04T12:34:56+0010',
-                    'reducedValue' => -1,
-                ],
-                true,
-                InvalidResponseException::class,
-            ],
-            [
-                [
-                    'returnDate' => '2022-04-04T12:34:56+0010',
-                    'reducedValue' => 100.2,
-                ],
-                true,
                 null,
             ],
         ];

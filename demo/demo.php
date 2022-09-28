@@ -11,6 +11,7 @@ use IzzyPay\Exceptions\InvalidCustomerException;
 use IzzyPay\Exceptions\InvalidCartException;
 use IzzyPay\Exceptions\InvalidOtherException;
 use IzzyPay\Exceptions\InvalidResponseException;
+use IzzyPay\Exceptions\InvalidReturnDataException;
 use IzzyPay\Exceptions\InvalidUrlsException;
 use IzzyPay\Exceptions\PaymentServiceUnavailableException;
 use IzzyPay\Exceptions\RequestException;
@@ -22,7 +23,6 @@ use IzzyPay\Models\LimitedCustomer;
 use IzzyPay\Models\Customer;
 use IzzyPay\Models\Other;
 use IzzyPay\Models\Response\InitResponse;
-use IzzyPay\Models\Response\ReturnResponse;
 use IzzyPay\Models\Response\StartResponse;
 use IzzyPay\Models\Urls;
 
@@ -68,23 +68,40 @@ function sendStart(IzzyPay $izzyPay, string $merchantCartId, $token): ?StartResp
     return null;
 }
 
-function sendDelivery(IzzyPay $izzyPay, string $merchantCartId, ?string $merchantItemId = null): void
+function sendDeliveryCart(IzzyPay $izzyPay, string $merchantCartId): void
 {
     try {
-        $izzyPay->delivery($merchantCartId, $merchantItemId);
+        $izzyPay->deliveryCart($merchantCartId);
     } catch (AuthenticationException|RequestException|JsonException $e) {
         var_dump($e->getMessage());
     }
 }
 
-function sendReturn(IzzyPay $izzyPay, string $merchantCartId, ?string $merchantItemId = null): ?ReturnResponse
+function sendDeliveryItem(IzzyPay $izzyPay, string $merchantCartId, string $merchantItemId): void
 {
     try {
-        return $izzyPay->return($merchantCartId, $merchantItemId);
-    } catch (AuthenticationException|RequestException|JsonException|InvalidResponseException $e) {
+        $izzyPay->deliveryItem($merchantCartId, $merchantItemId);
+    } catch (AuthenticationException|RequestException|JsonException $e) {
         var_dump($e->getMessage());
     }
-    return null;
+}
+
+function sendReturnCart(IzzyPay $izzyPay, string $merchantCartId, string $returnDate): void
+{
+    try {
+        $izzyPay->returnCart($merchantCartId, $returnDate);
+    } catch (AuthenticationException|RequestException|JsonException|InvalidReturnDataException $e) {
+        var_dump($e->getMessage());
+    }
+}
+
+function sendReturnItem(IzzyPay $izzyPay, string $merchantCartId, string $merchantItemId, string $returnDate, ?float $reducedValue = null): void
+{
+    try {
+        $izzyPay->returnItem($merchantCartId, $merchantItemId, $returnDate, $reducedValue);
+    } catch (AuthenticationException|RequestException|JsonException|InvalidReturnDataException $e) {
+        var_dump($e->getMessage());
+    }
 }
 
 // Used to check whether the configured credentials are correct.
@@ -103,22 +120,13 @@ if ($initResponse) {
         var_dump('Ok');
 
         // Delivery for the whole cart
-        sendDelivery($izzyPay, $merchantCartId);
+        sendDeliveryCart($izzyPay, $merchantCartId);
         // Delivery for single item from the cart
-//        sendDelivery($izzyPay, $merchantCartId, 'merchantItemId');
+        sendDeliveryItem($izzyPay, $merchantCartId, 'merchantItemId');
 
         // Return the whole cart
-        $returnResponse = sendReturn($izzyPay, $merchantCartId);
+        sendReturnCart($izzyPay, $merchantCartId, '2022-04-04T12:34:56+0010');
         // Return single item from the cart
-//        $returnResponse = sendReturn($izzyPay, $merchantCartId, 'merchantItemId');
-        if ($returnResponse) {
-            $returnDate = $returnResponse->getReturnDate();
-            var_dump($returnDate);
-            $reducedValue = $returnResponse->getReducedValue();
-            // Missing when returning the whole cart
-            if ($reducedValue) {
-                var_dump($reducedValue);
-            }
-        }
+        sendReturnItem($izzyPay, $merchantCartId, 'merchantItemId', '2022-04-04T12:34:56+0010', 100.2);
     }
 }
