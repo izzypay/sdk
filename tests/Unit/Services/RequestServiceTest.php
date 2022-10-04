@@ -29,7 +29,8 @@ class RequestServiceTest extends TestCase
     private const MERCHANT_ID = 'merchantId';
     private const BASE_URL = 'https://www.example.com';
     private const PLUGIN_VERSION = 'plugin 1.0';
-    private const SDK_VERSION = '1.0.4';
+    private const SDK_VERSION = '1.0.6';
+    private const REQUEST_TIMEOUT = 0.5;
 
     private Client|MockInterface $guzzleClientMock;
     private HmacService|MockObject $hmacServiceMock;
@@ -61,7 +62,7 @@ class RequestServiceTest extends TestCase
         $endpoint = '/endpoint';
         $authorizationHeader = 'HMAC merchantId:signature';
         $options = [
-            'timeout' => 20,
+            'timeout' => self::REQUEST_TIMEOUT,
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Authorization' => $authorizationHeader,
@@ -97,7 +98,7 @@ class RequestServiceTest extends TestCase
         $endpoint = '/endpoint';
         $authorizationHeader = 'HMAC merchantId:signature';
         $options = [
-            'timeout' => 20,
+            'timeout' => self::REQUEST_TIMEOUT,
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Authorization' => $authorizationHeader,
@@ -136,7 +137,7 @@ class RequestServiceTest extends TestCase
         $endpoint = '/endpoint';
         $authorizationHeader = 'HMAC merchantId:signature';
         $options = [
-            'timeout' => 20,
+            'timeout' => self::REQUEST_TIMEOUT,
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Authorization' => $authorizationHeader,
@@ -180,7 +181,7 @@ class RequestServiceTest extends TestCase
         $endpoint = '/endpoint';
         $authorizationHeader = 'HMAC merchantId:signature';
         $options = [
-            'timeout' => 20,
+            'timeout' => self::REQUEST_TIMEOUT,
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Authorization' => $authorizationHeader,
@@ -224,7 +225,7 @@ class RequestServiceTest extends TestCase
         ];
         $authorizationHeader = 'HMAC merchantId:signature';
         $options = [
-            'timeout' => 20,
+            'timeout' => self::REQUEST_TIMEOUT,
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Authorization' => $authorizationHeader,
@@ -265,7 +266,7 @@ class RequestServiceTest extends TestCase
         ];
         $authorizationHeader = 'HMAC merchantId:signature';
         $options = [
-            'timeout' => 20,
+            'timeout' => self::REQUEST_TIMEOUT,
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Authorization' => $authorizationHeader,
@@ -309,7 +310,7 @@ class RequestServiceTest extends TestCase
         ];
         $authorizationHeader = 'HMAC merchantId:signature';
         $options = [
-            'timeout' => 20,
+            'timeout' => self::REQUEST_TIMEOUT,
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Authorization' => $authorizationHeader,
@@ -368,7 +369,7 @@ class RequestServiceTest extends TestCase
         ];
         $authorizationHeader = 'HMAC merchantId:signature';
         $options = [
-            'timeout' => 20,
+            'timeout' => self::REQUEST_TIMEOUT,
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Authorization' => $authorizationHeader,
