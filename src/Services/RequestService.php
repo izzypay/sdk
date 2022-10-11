@@ -13,9 +13,9 @@ use JsonException;
 
 class RequestService
 {
-    private const REQUEST_TIMEOUT = 20;
+    private const REQUEST_TIMEOUT = 0.5;
     private const SDK_HEADER_FIELD = 'X-Plugin-Version';
-    private const SDK_VERSION = '1.0.4';
+    private const SDK_VERSION = '1.0.6';
 
     private string $merchantId;
     private string $baseUrl;
