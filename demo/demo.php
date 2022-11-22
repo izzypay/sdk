@@ -11,6 +11,7 @@ use IzzyPay\Exceptions\InvalidCustomerException;
 use IzzyPay\Exceptions\InvalidCartException;
 use IzzyPay\Exceptions\InvalidOtherException;
 use IzzyPay\Exceptions\InvalidResponseException;
+use IzzyPay\Exceptions\InvalidReturnDataException;
 use IzzyPay\Exceptions\InvalidUrlsException;
 use IzzyPay\Exceptions\PaymentServiceUnavailableException;
 use IzzyPay\Exceptions\RequestException;
@@ -67,6 +68,42 @@ function sendStart(IzzyPay $izzyPay, string $merchantCartId, $token): ?StartResp
     return null;
 }
 
+function sendDeliveryCart(IzzyPay $izzyPay, string $merchantCartId): void
+{
+    try {
+        $izzyPay->deliveryCart($merchantCartId);
+    } catch (AuthenticationException|RequestException|JsonException $e) {
+        var_dump($e->getMessage());
+    }
+}
+
+function sendDeliveryItem(IzzyPay $izzyPay, string $merchantCartId, string $merchantItemId): void
+{
+    try {
+        $izzyPay->deliveryItem($merchantCartId, $merchantItemId);
+    } catch (AuthenticationException|RequestException|JsonException $e) {
+        var_dump($e->getMessage());
+    }
+}
+
+function sendReturnCart(IzzyPay $izzyPay, string $merchantCartId, string $returnDate): void
+{
+    try {
+        $izzyPay->returnCart($merchantCartId, $returnDate);
+    } catch (AuthenticationException|RequestException|JsonException|InvalidReturnDataException $e) {
+        var_dump($e->getMessage());
+    }
+}
+
+function sendReturnItem(IzzyPay $izzyPay, string $merchantCartId, string $merchantItemId, string $returnDate, ?float $reducedValue = null): void
+{
+    try {
+        $izzyPay->returnItem($merchantCartId, $merchantItemId, $returnDate, $reducedValue);
+    } catch (AuthenticationException|RequestException|JsonException|InvalidReturnDataException $e) {
+        var_dump($e->getMessage());
+    }
+}
+
 // Used to check whether the configured credentials are correct.
 // Not part of the normal flow, therefore doesn't need to be called before the init.
 verifyCredential($izzyPay);
@@ -81,5 +118,15 @@ if ($initResponse) {
     if ($startResponse) {
         $token = $startResponse->getToken();
         var_dump('Ok');
+
+        // Delivery for the whole cart
+        sendDeliveryCart($izzyPay, $merchantCartId);
+        // Delivery for single item from the cart
+        sendDeliveryItem($izzyPay, $merchantCartId, 'merchantItemId');
+
+        // Return the whole cart
+        sendReturnCart($izzyPay, $merchantCartId, '2022-04-04T12:34:56+0010');
+        // Return single item from the cart
+        sendReturnItem($izzyPay, $merchantCartId, 'merchantItemId', '2022-04-04T12:34:56+0010', 100.2);
     }
 }

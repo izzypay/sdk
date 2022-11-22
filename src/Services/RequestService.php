@@ -15,7 +15,7 @@ class RequestService
 {
     private const REQUEST_TIMEOUT = 0.5;
     private const SDK_HEADER_FIELD = 'X-Plugin-Version';
-    private const SDK_VERSION = '1.0.6';
+    private const SDK_VERSION = '1.1.0';
 
     private string $merchantId;
     private string $baseUrl;
@@ -89,6 +89,38 @@ class RequestService
                 ],
                 'body' => $requestBody,
             ]);
+            $this->responseValidator->validateResponseAuthentication($response);
+            return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+        } catch (GuzzleException $exception) {
+            throw new RequestException($exception->getMessage());
+        }
+    }
+
+    /**
+     * @param string $endpoint
+     * @param array $body
+     * @return array
+     * @throws AuthenticationException
+     * @throws JsonException
+     * @throws RequestException
+     */
+    public function sendPutRequest(string $endpoint, array $body = []): array
+    {
+        try {
+            $url = $this->baseUrl . $endpoint;
+            $requestBody = json_encode($body, JSON_THROW_ON_ERROR);
+            $authorizationHeader = $this->hmacService->generateAuthorizationHeader($this->merchantId, $requestBody);
+            $options = [
+                'timeout' => self::REQUEST_TIMEOUT,
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Authorization' => $authorizationHeader,
+                    self::SDK_HEADER_FIELD => $this->pluginVersionHeader,
+                ],
+                'body' => $requestBody,
+            ];
+
+            $response = $this->client->put($url, $options);
             $this->responseValidator->validateResponseAuthentication($response);
             return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         } catch (GuzzleException $exception) {

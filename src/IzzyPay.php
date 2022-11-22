@@ -11,6 +11,7 @@ use IzzyPay\Exceptions\InvalidCartItemException;
 use IzzyPay\Exceptions\InvalidCustomerException;
 use IzzyPay\Exceptions\InvalidOtherException;
 use IzzyPay\Exceptions\InvalidResponseException;
+use IzzyPay\Exceptions\InvalidReturnDataException;
 use IzzyPay\Exceptions\InvalidUrlsException;
 use IzzyPay\Exceptions\RequestException;
 use IzzyPay\Exceptions\PaymentServiceUnavailableException;
@@ -28,6 +29,7 @@ use IzzyPay\Validators\CartValidator;
 use IzzyPay\Validators\CustomerValidator;
 use IzzyPay\Validators\OtherValidator;
 use IzzyPay\Validators\ResponseValidator;
+use IzzyPay\Validators\ReturnValidator;
 use IzzyPay\Validators\UrlsValidator;
 use JsonException;
 
@@ -37,6 +39,8 @@ class IzzyPay
     public const CRED_ENDPOINT = '/api/v1/cred';
     public const INIT_ENDPOINT = '/api/v1/init';
     public const START_ENDPOINT = '/api/v1/start';
+    public const DELIVERY_ENDPOINT = '/api/v1/delivery';
+    public const RETURN_ENDPOINT = '/api/v1/return';
 
     private string $merchantId;
     private ResponseValidator $responseValidator;
@@ -134,6 +138,76 @@ class IzzyPay
         $this->responseValidator->validateStartResponse($response);
         $this->responseValidator->verifyStartAvailability($response);
         return new StartResponse($response['token'], $response['merchantId'], $response['merchantCartId']);
+    }
+
+    /**
+     * @param string $merchantCartId
+     * @throws AuthenticationException
+     * @throws JsonException
+     * @throws RequestException
+     */
+    public function deliveryCart(string $merchantCartId): void
+    {
+        $endpoint = self::DELIVERY_ENDPOINT . "/$this->merchantId/$merchantCartId";
+        $this->requestService->sendPutRequest($endpoint);
+    }
+
+    /**
+     * @param string $merchantCartId
+     * @param string $merchantItemId
+     * @throws AuthenticationException
+     * @throws JsonException
+     * @throws RequestException
+     */
+    public function deliveryItem(string $merchantCartId, string $merchantItemId): void
+    {
+        $endpoint = self::DELIVERY_ENDPOINT . "/$this->merchantId/$merchantCartId/$merchantItemId";
+        $this->requestService->sendPutRequest($endpoint);
+    }
+
+    /**
+     * @param string $merchantCartId
+     * @param string $returnDate
+     * @throws AuthenticationException
+     * @throws JsonException
+     * @throws RequestException
+     * @throws InvalidReturnDataException
+     */
+    public function returnCart(string $merchantCartId, string $returnDate): void
+    {
+        $returnValidator = new ReturnValidator();
+        $returnValidator->validate($returnDate);
+
+        $endpoint = self::RETURN_ENDPOINT . "/$this->merchantId/$merchantCartId";
+        $data = [
+            'returnDate' => $returnDate,
+        ];
+        $this->requestService->sendPutRequest($endpoint, $data);
+    }
+
+    /**
+     * @param string $merchantCartId
+     * @param string $merchantItemId
+     * @param string $returnDate
+     * @param float|null $reducedValue
+     * @throws AuthenticationException
+     * @throws JsonException
+     * @throws RequestException
+     * @throws InvalidReturnDataException
+     */
+    public function returnItem(string $merchantCartId, string $merchantItemId, string $returnDate, ?float $reducedValue = null): void
+    {
+        $returnValidator = new ReturnValidator();
+        $returnValidator->validate($returnDate, $reducedValue);
+
+        $endpoint = self::RETURN_ENDPOINT . "/$this->merchantId/$merchantCartId/$merchantItemId";
+        $data = [
+            'returnDate' => $returnDate,
+        ];
+        if ($reducedValue) {
+            $data['reducedValue'] = $reducedValue;
+        }
+        $this->requestService->sendPutRequest($endpoint, $data);
     }
 
     /**

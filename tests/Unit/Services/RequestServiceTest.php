@@ -29,8 +29,8 @@ class RequestServiceTest extends TestCase
     private const MERCHANT_ID = 'merchantId';
     private const BASE_URL = 'https://www.example.com';
     private const PLUGIN_VERSION = 'plugin 1.0';
-    private const SDK_VERSION = '1.0.6';
     private const REQUEST_TIMEOUT = 0.5;
+    private const SDK_VERSION = '1.1.0';
 
     private Client|MockInterface $guzzleClientMock;
     private HmacService|MockObject $hmacServiceMock;
@@ -405,6 +405,252 @@ class RequestServiceTest extends TestCase
 
         $requestService = $this->getNewRequestService();
         $response = $requestService->sendPostRequest($endpoint, $body);
+        $this->assertEqualsCanonicalizing($responseData, $response);
+    }
+    // </editor-fold>
+
+    // <editor-fold desc=sendPutRequest>
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     */
+    public function testSendPutRequestWithRequestException(): void
+    {
+        $endpoint = '/endpoint';
+        $body = [
+            'key' => 'value',
+        ];
+        $authorizationHeader = 'HMAC merchantId:signature';
+        $options = [
+            'timeout' => self::REQUEST_TIMEOUT,
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Authorization' => $authorizationHeader,
+                'X-Plugin-Version' => $this->pluginVersionHeaderWithShopPlugin,
+            ],
+            'body' => json_encode($body, JSON_THROW_ON_ERROR),
+        ];
+
+        $this->hmacServiceMock
+            ->expects($this->once())
+            ->method('generateAuthorizationHeader')
+            ->with(self::MERCHANT_ID)
+            ->willReturn($authorizationHeader);
+        $this->guzzleClientMock
+            ->shouldReceive('put')
+            ->once()
+            ->with(self::BASE_URL . $endpoint, $options)
+            ->andThrow(new TransferException());
+        $this->responseValidatorMock
+            ->expects($this->exactly(0))
+            ->method('validateResponseAuthentication');
+
+        $this->expectException(RequestException::class);
+        $requestService = $this->getNewRequestService();
+        $requestService->sendPutRequest($endpoint, $body);
+    }
+
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     */
+    public function testSendPutRequestWithAuthenticationException(): void
+    {
+        $endpoint = '/endpoint';
+        $body = [
+            'key' => 'value',
+        ];
+        $authorizationHeader = 'HMAC merchantId:signature';
+        $options = [
+            'timeout' => self::REQUEST_TIMEOUT,
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Authorization' => $authorizationHeader,
+                'X-Plugin-Version' => $this->pluginVersionHeaderWithShopPlugin,
+            ],
+            'body' => json_encode($body, JSON_THROW_ON_ERROR),
+        ];
+        $response = new Response(200);
+
+        $this->hmacServiceMock
+            ->expects($this->once())
+            ->method('generateAuthorizationHeader')
+            ->with(self::MERCHANT_ID)
+            ->willReturn($authorizationHeader);
+        $this->guzzleClientMock
+            ->shouldReceive('put')
+            ->once()
+            ->with(self::BASE_URL . $endpoint, $options)
+            ->andReturn($response);
+        $this->responseValidatorMock
+            ->expects($this->once())
+            ->method('validateResponseAuthentication')
+            ->willThrowException(new AuthenticationException(''));
+
+        $this->expectException(AuthenticationException::class);
+        $requestService = $this->getNewRequestService();
+        $requestService->sendPutRequest($endpoint, $body);
+    }
+
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     */
+    public function testSendPutRequestWithoutPlugin(): void
+    {
+
+        $endpoint = '/endpoint';
+        $body = [
+            'key' => 'value',
+        ];
+        $authorizationHeader = 'HMAC merchantId:signature';
+        $options = [
+            'timeout' => self::REQUEST_TIMEOUT,
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Authorization' => $authorizationHeader,
+                'X-Plugin-Version' => $this->pluginVersionHeaderWithoutShopPlugin,
+            ],
+            'body' => json_encode($body, JSON_THROW_ON_ERROR),
+        ];
+
+        $responseData = [
+            'token' => 'token',
+            'available' => true,
+        ];
+        $encodedResponseData = json_encode($responseData, JSON_THROW_ON_ERROR);
+        $responseHeader = [
+            'Authorization' => "HMAC signature",
+        ];
+        $mockResponse = new Response(200, $responseHeader, $encodedResponseData);
+
+        $this->hmacServiceMock
+            ->expects($this->once())
+            ->method('generateAuthorizationHeader')
+            ->with(self::MERCHANT_ID)
+            ->willReturn($authorizationHeader);
+        $this->guzzleClientMock
+            ->shouldReceive('put')
+            ->once()
+            ->with(self::BASE_URL . $endpoint, $options)
+            ->andReturn($mockResponse);
+        $this->responseValidatorMock
+            ->expects($this->once())
+            ->method('validateResponseAuthentication')
+            ->with($mockResponse);
+
+        $requestService = new RequestService(
+            self::MERCHANT_ID,
+            self::BASE_URL,
+            null,
+            $this->hmacServiceMock,
+            $this->responseValidatorMock,
+        );
+        $response = $requestService->sendPutRequest($endpoint, $body);
+        $this->assertEqualsCanonicalizing($responseData, $response);
+    }
+
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     */
+    public function testSendPutRequestWithoutData(): void
+    {
+
+        $endpoint = '/endpoint';
+        $body = [];
+        $authorizationHeader = 'HMAC merchantId:signature';
+        $options = [
+            'timeout' => self::REQUEST_TIMEOUT,
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Authorization' => $authorizationHeader,
+                'X-Plugin-Version' => $this->pluginVersionHeaderWithShopPlugin,
+            ],
+            'body' => json_encode($body, JSON_THROW_ON_ERROR),
+        ];
+
+        $responseData = [];
+        $encodedResponseData = json_encode($responseData, JSON_THROW_ON_ERROR);
+        $responseHeader = [
+            'Authorization' => "HMAC signature",
+        ];
+        $mockResponse = new Response(200, $responseHeader, $encodedResponseData);
+
+        $this->hmacServiceMock
+            ->expects($this->once())
+            ->method('generateAuthorizationHeader')
+            ->with(self::MERCHANT_ID)
+            ->willReturn($authorizationHeader);
+        $this->guzzleClientMock
+            ->shouldReceive('put')
+            ->once()
+            ->with(self::BASE_URL . $endpoint, $options)
+            ->andReturn($mockResponse);
+        $this->responseValidatorMock
+            ->expects($this->once())
+            ->method('validateResponseAuthentication')
+            ->with($mockResponse);
+
+        $requestService = $this->getNewRequestService();
+        $response = $requestService->sendPutRequest($endpoint);
+        $this->assertEqualsCanonicalizing($responseData, $response);
+    }
+
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     */
+    public function testSendPutRequestWithData(): void
+    {
+
+        $endpoint = '/endpoint';
+        $body = [
+            'key' => 'value',
+        ];
+        $authorizationHeader = 'HMAC merchantId:signature';
+        $options = [
+            'timeout' => self::REQUEST_TIMEOUT,
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Authorization' => $authorizationHeader,
+                'X-Plugin-Version' => $this->pluginVersionHeaderWithShopPlugin,
+            ],
+            'body' => json_encode($body, JSON_THROW_ON_ERROR),
+        ];
+
+        $responseData = [
+            'returnDate' => '2022-04-04T12:34:56+0010',
+            'reducedValue' => 100.2,
+        ];
+        $encodedResponseData = json_encode($responseData, JSON_THROW_ON_ERROR);
+        $responseHeader = [
+            'Authorization' => "HMAC signature",
+        ];
+        $mockResponse = new Response(200, $responseHeader, $encodedResponseData);
+
+        $this->hmacServiceMock
+            ->expects($this->once())
+            ->method('generateAuthorizationHeader')
+            ->with(self::MERCHANT_ID)
+            ->willReturn($authorizationHeader);
+        $this->guzzleClientMock
+            ->shouldReceive('put')
+            ->once()
+            ->with(self::BASE_URL . $endpoint, $options)
+            ->andReturn($mockResponse);
+        $this->responseValidatorMock
+            ->expects($this->once())
+            ->method('validateResponseAuthentication')
+            ->with($mockResponse);
+
+        $requestService = $this->getNewRequestService();
+        $response = $requestService->sendPutRequest($endpoint, $body);
         $this->assertEqualsCanonicalizing($responseData, $response);
     }
     // </editor-fold>

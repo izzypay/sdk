@@ -11,6 +11,7 @@ use IzzyPay\Exceptions\InvalidCartItemException;
 use IzzyPay\Exceptions\InvalidCustomerException;
 use IzzyPay\Exceptions\InvalidOtherException;
 use IzzyPay\Exceptions\InvalidResponseException;
+use IzzyPay\Exceptions\InvalidReturnDataException;
 use IzzyPay\Exceptions\InvalidUrlsException;
 use IzzyPay\Exceptions\PaymentServiceUnavailableException;
 use IzzyPay\Exceptions\RequestException;
@@ -28,6 +29,7 @@ use IzzyPay\Models\Urls;
 use IzzyPay\Services\HmacService;
 use IzzyPay\Services\RequestService;
 use IzzyPay\Validators\ResponseValidator;
+use IzzyPay\Validators\ReturnValidator;
 use JsonException;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -79,12 +81,14 @@ class IzzyPayTest extends TestCase
 
     private ResponseValidator|MockInterface $responseValidatorMock;
     private RequestService|MockInterface $requestServiceMock;
+    private ReturnValidator|MockInterface $returnValidatorMock;
 
     protected function setUp(): void
     {
         Mockery::mock('overload:' . HmacService::class);
         $this->responseValidatorMock = Mockery::mock('overload:' . ResponseValidator::class);
         $this->requestServiceMock = Mockery::mock('overload:' . RequestService::class);
+        $this->returnValidatorMock = Mockery::mock('overload:' . ReturnValidator::class);
     }
 
     // <editor-fold desc=cred()>
@@ -616,6 +620,338 @@ class IzzyPayTest extends TestCase
         $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $result = $izzyPay->start($token, self::MERCHANT_CART_ID, $cart, $customer, $other, $urls);
         $this->assertEquals($startResponse, $result);
+    }
+
+    // </editor-fold>
+
+    // <editor-fold desc=delivery()>
+
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     */
+    public function testDeliveryCartWithRequestException(): void
+    {
+        $this->requestServiceMock
+            ->shouldReceive('sendPutRequest')
+            ->once()
+            ->with(IzzyPay::DELIVERY_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID)
+            ->andThrow(new RequestException('reason'));
+
+        $this->expectException(RequestException::class);
+        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->deliveryCart(self::MERCHANT_CART_ID);
+    }
+
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     */
+    public function testDeliveryCartWithAuthenticationException(): void
+    {
+        $this->requestServiceMock
+            ->shouldReceive('sendPutRequest')
+            ->once()
+            ->with(IzzyPay::DELIVERY_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID)
+            ->andThrow(new AuthenticationException('reason'));
+
+        $this->expectException(AuthenticationException::class);
+        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->deliveryCart(self::MERCHANT_CART_ID);
+    }
+
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     */
+    public function testDelivery(): void
+    {
+        $this->requestServiceMock
+            ->shouldReceive('sendPutRequest')
+            ->once()
+            ->with(IzzyPay::DELIVERY_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID)
+            ->andReturn([]);
+
+        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->deliveryCart(self::MERCHANT_CART_ID);
+        $this->assertTrue(true);
+    }
+
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     */
+    public function testDeliveryItemWithRequestException(): void
+    {
+        $this->requestServiceMock
+            ->shouldReceive('sendPutRequest')
+            ->once()
+            ->with(IzzyPay::DELIVERY_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID)
+            ->andThrow(new RequestException('reason'));
+
+        $this->expectException(RequestException::class);
+        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->deliveryItem(self::MERCHANT_CART_ID, self::MERCHANT_ITEM_ID);
+    }
+
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     */
+    public function testDeliveryItemWithAuthenticationException(): void
+    {
+        $this->requestServiceMock
+            ->shouldReceive('sendPutRequest')
+            ->once()
+            ->with(IzzyPay::DELIVERY_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID)
+            ->andThrow(new AuthenticationException('reason'));
+
+        $this->expectException(AuthenticationException::class);
+        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->deliveryItem(self::MERCHANT_CART_ID, self::MERCHANT_ITEM_ID);
+    }
+
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     */
+    public function testDeliveryItem(): void
+    {
+        $this->requestServiceMock
+            ->shouldReceive('sendPutRequest')
+            ->once()
+            ->with(IzzyPay::DELIVERY_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID)
+            ->andReturn([]);
+
+        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->deliveryItem(self::MERCHANT_CART_ID, self::MERCHANT_ITEM_ID);
+        $this->assertTrue(true);
+    }
+
+    // </editor-fold>
+
+    // <editor-fold desc=return()>
+
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     * @throws InvalidReturnDataException
+     */
+    public function testReturnCartWithInvalidReturnDataException(): void
+    {
+        $returnDate = 'invalid';
+        $this->returnValidatorMock
+            ->shouldReceive('validate')
+            ->once()
+            ->with($returnDate)
+            ->andThrow(new InvalidReturnDataException(['returnDate']));
+        $this->requestServiceMock
+            ->shouldNotHaveReceived('sendPutRequest');
+
+        $this->expectException(InvalidReturnDataException::class);
+        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->returnCart(self::MERCHANT_CART_ID, $returnDate);
+    }
+
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     * @throws InvalidReturnDataException
+     */
+    public function testReturnCartWithRequestException(): void
+    {
+        $returnDate = '2022-04-04T12:34:56+0010';
+        $this->returnValidatorMock
+            ->shouldReceive('validate')
+            ->once()
+            ->with($returnDate);
+        $this->requestServiceMock
+            ->shouldReceive('sendPutRequest')
+            ->once()
+            ->with(IzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID, ['returnDate' => $returnDate])
+            ->andThrow(new RequestException('reason'));
+
+        $this->expectException(RequestException::class);
+        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->returnCart(self::MERCHANT_CART_ID, $returnDate);
+    }
+
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     * @throws InvalidReturnDataException
+     */
+    public function testReturnCartWithAuthenticationException(): void
+    {
+        $returnDate = '2022-04-04T12:34:56+0010';
+        $this->returnValidatorMock
+            ->shouldReceive('validate')
+            ->once()
+            ->with($returnDate);
+        $this->requestServiceMock
+            ->shouldReceive('sendPutRequest')
+            ->once()
+            ->with(IzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID, ['returnDate' => $returnDate])
+            ->andThrow(new AuthenticationException('reason'));
+
+        $this->expectException(AuthenticationException::class);
+        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->returnCart(self::MERCHANT_CART_ID, $returnDate);
+    }
+
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     * @throws InvalidReturnDataException
+     */
+    public function testReturnCart(): void
+    {
+        $returnDate = '2022-04-04T12:34:56+0010';
+        $this->returnValidatorMock
+            ->shouldReceive('validate')
+            ->once()
+            ->with($returnDate);
+        $this->requestServiceMock
+            ->shouldReceive('sendPutRequest')
+            ->once()
+            ->with(IzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID, ['returnDate' => $returnDate])
+            ->andReturn([]);
+
+        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->returnCart(self::MERCHANT_CART_ID, $returnDate);
+        $this->assertTrue(true);
+    }
+
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     * @throws InvalidReturnDataException
+     */
+    public function testReturnItemWithInvalidReturnDataException(): void
+    {
+        $returnDate = '2022-04-04T12:34:56+0010';
+        $reducedValue = -100.2;
+        $this->returnValidatorMock
+            ->shouldReceive('validate')
+            ->once()
+            ->with($returnDate, $reducedValue)
+            ->andThrow(new InvalidReturnDataException(['returnDate']));
+        $this->requestServiceMock
+            ->shouldNotHaveReceived('sendPutRequest');
+
+        $this->expectException(InvalidReturnDataException::class);
+        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->returnItem(self::MERCHANT_CART_ID, self::MERCHANT_ITEM_ID, $returnDate, $reducedValue);
+    }
+
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     * @throws InvalidReturnDataException
+     */
+    public function testReturnItemWithRequestException(): void
+    {
+        $returnDate = '2022-04-04T12:34:56+0010';
+        $reducedValue = 100.2;
+        $this->returnValidatorMock
+            ->shouldReceive('validate')
+            ->once()
+            ->with($returnDate, $reducedValue);
+        $this->requestServiceMock
+            ->shouldReceive('sendPutRequest')
+            ->once()
+            ->with(IzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID, ['returnDate' => $returnDate, 'reducedValue' => $reducedValue])
+            ->andThrow(new RequestException('reason'));
+
+        $this->expectException(RequestException::class);
+        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->returnItem(self::MERCHANT_CART_ID, self::MERCHANT_ITEM_ID, $returnDate, $reducedValue);
+    }
+
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     * @throws InvalidReturnDataException
+     */
+    public function testReturnItemWithAuthenticationException(): void
+    {
+        $returnDate = '2022-04-04T12:34:56+0010';
+        $reducedValue = 100.2;
+        $this->returnValidatorMock
+            ->shouldReceive('validate')
+            ->once()
+            ->with($returnDate, $reducedValue);
+        $this->requestServiceMock
+            ->shouldReceive('sendPutRequest')
+            ->once()
+            ->with(IzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID, ['returnDate' => $returnDate, 'reducedValue' => $reducedValue])
+            ->andThrow(new AuthenticationException('reason'));
+
+        $this->expectException(AuthenticationException::class);
+        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->returnItem(self::MERCHANT_CART_ID, self::MERCHANT_ITEM_ID, $returnDate, $reducedValue);
+    }
+
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     * @throws InvalidReturnDataException
+     */
+    public function testReturnItemWithoutReducedValue(): void
+    {
+        $returnDate = '2022-04-04T12:34:56+0010';
+        $this->returnValidatorMock
+            ->shouldReceive('validate')
+            ->once()
+            ->with($returnDate, null);
+        $this->requestServiceMock
+            ->shouldReceive('sendPutRequest')
+            ->once()
+            ->with(IzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID, ['returnDate' => $returnDate])
+            ->andReturn([]);
+
+        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->returnItem(self::MERCHANT_CART_ID, self::MERCHANT_ITEM_ID, $returnDate);
+        $this->assertTrue(true);
+    }
+
+    /**
+     * @throws RequestException
+     * @throws JsonException
+     * @throws AuthenticationException
+     * @throws InvalidReturnDataException
+     */
+    public function testReturnItemWithReducedValue(): void
+    {
+        $returnDate = '2022-04-04T12:34:56+0010';
+        $reducedValue = 100.2;
+        $this->returnValidatorMock
+            ->shouldReceive('validate')
+            ->once()
+            ->with($returnDate, $reducedValue);
+        $this->requestServiceMock
+            ->shouldReceive('sendPutRequest')
+            ->once()
+            ->with(IzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID, ['returnDate' => $returnDate, 'reducedValue' => $reducedValue])
+            ->andReturn([]);
+
+        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->returnItem(self::MERCHANT_CART_ID, self::MERCHANT_ITEM_ID, $returnDate, $reducedValue);
+        $this->assertTrue(true);
     }
 
     // </editor-fold>
