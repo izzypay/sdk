@@ -26,7 +26,7 @@ use IzzyPay\Models\Response\InitResponse;
 use IzzyPay\Models\Response\StartResponse;
 use IzzyPay\Models\Urls;
 
-$merchantCartId = '666';
+$merchantCartId = '123';
 $izzyPay = new IzzyPay('merchantId', 'abcd1234', 'http://gateway.localhost', 'plugin 1.0');
 
 function verifyCredential(IzzyPay $izzyPay): void
@@ -41,8 +41,8 @@ function verifyCredential(IzzyPay $izzyPay): void
 function sendInit(IzzyPay $izzyPay, string $merchantCartId): ?InitResponse
 {
     try {
-        $cartItem = CartItem::create('name','category', 'subCategory', 'type', 666.666, 69, 'manufacturer', 'merchantItemId', 'other');
-        $cart = Cart::create('HUF', 666.666, [$cartItem]);
+        $cartItem = CartItem::create('name','category', 'subCategory', 'type', 12500, 69, 'manufacturer', 'merchantItemId', 'other');
+        $cart = Cart::create('HUF', 12500, [$cartItem]);
         $limitedCustomer = LimitedCustomer::create('guest', null, null, 'other');
         $other = Other::create('127.0.0.1', 'browser', 'os');
         return $izzyPay->init($merchantCartId, $cart, $limitedCustomer, $other);
@@ -55,8 +55,8 @@ function sendInit(IzzyPay $izzyPay, string $merchantCartId): ?InitResponse
 function sendStart(IzzyPay $izzyPay, string $merchantCartId, $token): ?StartResponse
 {
     try {
-        $cartItem = CartItem::create('name','category', 'subCategory', 'type', 666.666, 69, 'manufacturer', 'merchantItemId', 'other');
-        $cart = Cart::create('HUF', 666.666, [$cartItem]);
+        $cartItem = CartItem::create('name','category', 'subCategory', 'type', 12500, 69, 'manufacturer', 'merchantItemId', 'other');
+        $cart = Cart::create('HUF', 12500, [$cartItem]);
         $address = Address::create('8888', 'city', 'street', 'houseNo', 'address1', 'address2', 'address3');
         $customer = Customer::create('merchant', 'merchantCustomerId', null,'other', 'name', 'surname', 'phone', 'email@emai.com', $address, $address);
         $other = Other::create('127.0.0.1', 'browser', 'os');
