@@ -20,6 +20,9 @@ class CustomerValidator
     {
         $errors = [];
 
+        if (!in_array($limitedCustomer->getRegistered(), AbstractCustomer::ALLOWED_REGISTERED_VALUES)) {
+            $errors[] = 'registered';
+        }
         if ($limitedCustomer->getMerchantCustomerId() === null) {
             if (trim($limitedCustomer->getRegistered()) !== AbstractCustomer::REGISTERED_VALUE_GUEST) {
                 $errors[] = 'merchantCustomerId';
@@ -27,9 +30,11 @@ class CustomerValidator
         } else if (trim($limitedCustomer->getMerchantCustomerId()) === '') {
             $errors[] = 'merchantCustomerId';
         }
-
-        if (!in_array($limitedCustomer->getRegistered(), AbstractCustomer::ALLOWED_REGISTERED_VALUES)) {
-            $errors[] = 'registered';
+        if (($limitedCustomer->getCompanyName() !== null) && (trim($limitedCustomer->getCompanyName()) === '')) {
+            $errors[] = 'companyName';
+        }
+        if (($limitedCustomer->getOther() !== null) && (trim($limitedCustomer->getOther()) === '')) {
+            $errors[] = 'other';
         }
 
         if (count($errors) > 0) {
@@ -65,7 +70,7 @@ class CustomerValidator
             $errors[] = 'email';
         }
 
-        if (trim($detailedCustomer->getPhone()) === '') {
+        if (($detailedCustomer->getPhone() !== null) && (trim($detailedCustomer->getPhone()) === '')) {
             $errors[] = 'phone';
         }
 

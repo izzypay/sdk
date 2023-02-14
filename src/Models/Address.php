@@ -11,22 +11,22 @@ class Address
 {
     private string $zip;
     private string $city;
-    private string $street;
-    private string $houseNo;
-    private string $address1;
-    private string $address2;
-    private string $address3;
+    private ?string $street;
+    private ?string $houseNo;
+    private ?string $address1;
+    private ?string $address2;
+    private ?string $address3;
 
     /**
      * @param string $zip
      * @param string $city
-     * @param string $street
-     * @param string $houseNo
-     * @param string $address1
-     * @param string $address2
-     * @param string $address3
+     * @param string|null $street
+     * @param string|null $houseNo
+     * @param string|null $address1
+     * @param string|null $address2
+     * @param string|null $address3
      */
-    private function __construct(string $zip, string $city, string $street, string $houseNo, string $address1, string $address2, string $address3)
+    private function __construct(string $zip, string $city, ?string $street, ?string $houseNo, ?string $address1, ?string $address2, ?string $address3)
     {
         $this->zip = $zip;
         $this->city = $city;
@@ -168,29 +168,40 @@ class Address
      */
     public function toArray(): array
     {
-        return [
+        $data = [
             'zip' => $this->zip,
             'city' => $this->city,
-            'street' => $this->street,
-            'houseNo' => $this->houseNo,
-            'address1' => $this->address1,
-            'address2' => $this->address2,
-            'address3' => $this->address3,
         ];
+        if (!is_null($this->street)) {
+            $data['street'] = $this->street;
+        }
+        if (!is_null($this->houseNo)) {
+            $data['houseNo'] = $this->houseNo;
+        }
+        if (!is_null($this->address1)) {
+            $data['address1'] = $this->address1;
+        }
+        if (!is_null($this->address2)) {
+            $data['address2'] = $this->address2;
+        }
+        if (!is_null($this->address3)) {
+            $data['address3'] = $this->address3;
+        }
+        return $data;
     }
 
     /**
      * @param string $zip
      * @param string $city
-     * @param string $street
-     * @param string $houseNo
-     * @param string $address1
-     * @param string $address2
-     * @param string $address3
+     * @param string|null $street
+     * @param string|null $houseNo
+     * @param string|null $address1
+     * @param string|null $address2
+     * @param string|null $address3
      * @return Address
      * @throws InvalidAddressException
      */
-    public static function create(string $zip, string $city, string $street, string $houseNo, string $address1, string $address2, string $address3): self
+    public static function create(string $zip, string $city, ?string $street, ?string $houseNo, ?string $address1, ?string $address2, ?string $address3): self
     {
         $address = new Address($zip, $city, $street, $houseNo, $address1, $address2, $address3);
 

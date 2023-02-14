@@ -12,7 +12,7 @@ class Customer extends AbstractCustomer
 {
     private string $name;
     private string $surname;
-    private string $phone;
+    private ?string $phone;
     private string $email;
     private Address $deliveryAddress;
     private Address $invoiceAddress;
@@ -21,15 +21,15 @@ class Customer extends AbstractCustomer
      * @param string $registered
      * @param string|null $merchantCustomerId
      * @param string|null $companyName
-     * @param string $other
+     * @param string|null $other
      * @param string $name
      * @param string $surname
-     * @param string $phone
+     * @param string|null $phone
      * @param string $email
      * @param Address $deliveryAddress
      * @param Address $invoiceAddress
      */
-    private function __construct(string $registered, ?string $merchantCustomerId, ?string $companyName, string $other, string $name, string $surname, string $phone, string $email, Address $deliveryAddress, Address $invoiceAddress)
+    private function __construct(string $registered, ?string $merchantCustomerId, ?string $companyName, ?string $other, string $name, string $surname, ?string $phone, string $email, Address $deliveryAddress, Address $invoiceAddress)
     {
         parent::__construct($registered, $merchantCustomerId, $companyName, $other);
         $this->name = $name;
@@ -77,18 +77,18 @@ class Customer extends AbstractCustomer
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPhone(): string
+    public function getPhone(): ?string
     {
         return $this->phone;
     }
 
     /**
-     * @param string $phone
+     * @param string|null $phone
      * @return Customer
      */
-    public function setPhone(string $phone): self
+    public function setPhone(?string $phone): self
     {
         $this->phone = $phone;
         return $this;
@@ -156,7 +156,9 @@ class Customer extends AbstractCustomer
         $arrayData = parent::toArray();
         $arrayData['name'] = $this->name;
         $arrayData['surname'] = $this->surname;
-        $arrayData['phone'] = $this->phone;
+        if ($this->phone !== null) {
+            $arrayData['phone'] = $this->phone;
+        }
         $arrayData['email'] = $this->email;
         $arrayData['deliveryAddress'] = $this->deliveryAddress->toArray();
         $arrayData['invoiceAddress'] = $this->invoiceAddress->toArray();
@@ -166,11 +168,11 @@ class Customer extends AbstractCustomer
     /**
      * @param string $registered
      * @param string|null $merchantCustomerId
+     * @param string|null $companyName
      * @param string $other
      * @param string $name
      * @param string $surname
-     * @param string|null $companyName
-     * @param string $phone
+     * @param string|null $phone
      * @param string $email
      * @param Address $deliveryAddress
      * @param Address $invoiceAddress
@@ -178,7 +180,7 @@ class Customer extends AbstractCustomer
      * @throws InvalidAddressException
      * @throws InvalidCustomerException
      */
-    public static function create(string $registered, ?string $merchantCustomerId, ?string $companyName, string $other, string $name, string $surname, string $phone, string $email, Address $deliveryAddress, Address $invoiceAddress): self
+    public static function create(string $registered, ?string $merchantCustomerId, ?string $companyName, string $other, string $name, string $surname, ?string $phone, string $email, Address $deliveryAddress, Address $invoiceAddress): self
     {
         $detailedCustomer = new Customer($registered, $merchantCustomerId, $companyName, $other, $name, $surname, $phone, $email, $deliveryAddress, $invoiceAddress);
 

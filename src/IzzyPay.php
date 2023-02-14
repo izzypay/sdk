@@ -22,6 +22,7 @@ use IzzyPay\Models\Customer;
 use IzzyPay\Models\Other;
 use IzzyPay\Models\Response\InitResponse;
 use IzzyPay\Models\Response\StartResponse;
+use IzzyPay\Models\StartOther;
 use IzzyPay\Models\Urls;
 use IzzyPay\Services\HmacService;
 use IzzyPay\Services\RequestService;
@@ -118,7 +119,7 @@ class IzzyPay
      * @throws InvalidOtherException
      * @throws InvalidUrlsException
      */
-    public function start(string $token, string $merchantCartId, Cart $cart, Customer $customer, Other $other, Urls $urls): StartResponse
+    public function start(string $token, string $merchantCartId, Cart $cart, Customer $customer, StartOther $other, Urls $urls): StartResponse
     {
         $cartValidator = new CartValidator();
         $cartValidator->validateCart($cart);
@@ -127,7 +128,7 @@ class IzzyPay
         $customerValidator->validateCustomer($customer);
 
         $otherValidator = new OtherValidator();
-        $otherValidator->validateOther($other);
+        $otherValidator->validateStartOther($other);
 
         $urlsValidator = new UrlsValidator();
         $urlsValidator->validateUrls($urls);
@@ -232,14 +233,19 @@ class IzzyPay
      * @param string $merchantCartId
      * @param Cart $cart
      * @param AbstractCustomer $customer
-     * @param Other $other
+     * @param StartOther $other
      * @param Urls $urls
      * @return array
      */
-    private function prepareStartRequestData(string $merchantCartId, Cart $cart, AbstractCustomer $customer, Other $other, Urls $urls): array
+    private function prepareStartRequestData(string $merchantCartId, Cart $cart, AbstractCustomer $customer, StartOther $other, Urls $urls): array
     {
-        $data = $this->prepareInitRequestData($merchantCartId, $cart, $customer, $other);
-        $data['urls'] = $urls->toArray();
-        return $data;
+        return [
+            'merchantId' => $this->merchantId,
+            'merchantCartId' => $merchantCartId,
+            'cart' => $cart->toArray(),
+            'customer' => $customer->toArray(),
+            'other' => $other->toArray(),
+            'urls' => $urls->toArray(),
+        ];
     }
 }
