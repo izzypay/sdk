@@ -19,12 +19,12 @@ class CartTest extends TestCase
     use SetterAndGetterTesterTrait;
 
     private const CURRENCY = 'HUF';
-    private const TOTAL_VALUE = 666.666;
+    private const TOTAL_VALUE = 46000.00;
     private const NAME = 'name';
     private const CATEGORY = 'category';
     private const SUB_CATEGORY = 'subCategory';
-    private const TYPE = 'type';
-    private const PRICE = 666.666;
+    private const TYPE = 'product';
+    private const PRICE = 666.66;
     private const QUANTITY = 69;
     private const MANUFACTURER = 'manufacturer';
     private const MERCHANT_ITEM_ID = 'merchantItemId';
