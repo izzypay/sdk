@@ -169,7 +169,7 @@ class Customer extends AbstractCustomer
      * @param string $registered
      * @param string|null $merchantCustomerId
      * @param string|null $companyName
-     * @param string $other
+     * @param string|null $other
      * @param string $name
      * @param string $surname
      * @param string|null $phone
@@ -180,7 +180,7 @@ class Customer extends AbstractCustomer
      * @throws InvalidAddressException
      * @throws InvalidCustomerException
      */
-    public static function create(string $registered, ?string $merchantCustomerId, ?string $companyName, string $other, string $name, string $surname, ?string $phone, string $email, Address $deliveryAddress, Address $invoiceAddress): self
+    public static function create(string $registered, ?string $merchantCustomerId, ?string $companyName, ?string $other, string $name, string $surname, ?string $phone, string $email, Address $deliveryAddress, Address $invoiceAddress): self
     {
         $detailedCustomer = new Customer($registered, $merchantCustomerId, $companyName, $other, $name, $surname, $phone, $email, $deliveryAddress, $invoiceAddress);
 
