@@ -4,6 +4,7 @@
     "license": "proprietary",
     "version": "1.0.0",
     "require": {
+        "php": ">=7.4",
         "izzypay/sdk": "^1.0"
     },
     "repositories": [

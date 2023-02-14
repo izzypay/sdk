@@ -22,7 +22,7 @@ class UrlsValidator
             $errors[] = 'ipn';
         }
 
-        if (($urls->getCheckoutUrl() !== null) && !filter_var($urls->getCheckoutUrl(), FILTER_VALIDATE_URL)) {
+        if (!filter_var($urls->getCheckoutUrl(), FILTER_VALIDATE_URL)) {
             $errors[] = 'checkoutUrl';
         }
 

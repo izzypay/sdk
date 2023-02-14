@@ -10,13 +10,13 @@ use IzzyPay\Validators\UrlsValidator;
 class Urls
 {
     private string $ipn;
-    private ?string $checkoutUrl;
+    private string $checkoutUrl;
 
     /**
      * @param string $ipn
-     * @param string|null $checkoutUrl
+     * @param string $checkoutUrl
      */
-    private function __construct(string $ipn, ?string $checkoutUrl)
+    private function __construct(string $ipn, string $checkoutUrl)
     {
         $this->ipn = $ipn;
         $this->checkoutUrl = $checkoutUrl;
@@ -41,18 +41,18 @@ class Urls
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getCheckoutUrl(): ?string
+    public function getCheckoutUrl(): string
     {
         return $this->checkoutUrl;
     }
 
     /**
-     * @param string|null $checkoutUrl
+     * @param string $checkoutUrl
      * @return Urls
      */
-    public function setCheckoutUrl(?string $checkoutUrl): self
+    public function setCheckoutUrl(string $checkoutUrl): self
     {
         $this->checkoutUrl = $checkoutUrl;
         return $this;

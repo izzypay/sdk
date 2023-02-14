@@ -10,8 +10,14 @@ use IzzyPay\Validators\CartValidator;
 
 class Cart
 {
+    public const CURRENCY_HUF = 'HUF';
+    public const ALLOWED_CURRENCIES = [
+        self::CURRENCY_HUF,
+    ];
+
     private string $currency;
     private float $totalValue;
+
     /**
      * @var CartItem[]
      */

@@ -24,10 +24,11 @@ use IzzyPay\Models\Customer;
 use IzzyPay\Models\Other;
 use IzzyPay\Models\Response\InitResponse;
 use IzzyPay\Models\Response\StartResponse;
+use IzzyPay\Models\StartOther;
 use IzzyPay\Models\Urls;
 
 $merchantCartId = '666';
-$izzyPay = new IzzyPay('merchantId', 'abcd1234', 'http://gateway.localhost', 'plugin 1.0');
+$izzyPay = new IzzyPay('1', 'abcd1234', 'http://gatewaydmz.localhost', 'plugin 1.0');
 
 function verifyCredential(IzzyPay $izzyPay): void
 {
@@ -41,10 +42,10 @@ function verifyCredential(IzzyPay $izzyPay): void
 function sendInit(IzzyPay $izzyPay, string $merchantCartId): ?InitResponse
 {
     try {
-        $cartItem = CartItem::create('name','category', 'subCategory', 'type', 666.666, 69, 'manufacturer', 'merchantItemId', 'other');
-        $cart = Cart::create('HUF', 666.666, [$cartItem]);
+        $cartItem = CartItem::create('name','category', 'subCategory', 'product', 6666.00, 1, 'manufacturer', 'merchantItemId', 'other');
+        $cart = Cart::create('HUF', 6666.00, [$cartItem]);
         $limitedCustomer = LimitedCustomer::create('guest', null, null, 'other');
-        $other = Other::create('127.0.0.1', 'browser', 'os');
+        $other = Other::create('browser');
         return $izzyPay->init($merchantCartId, $cart, $limitedCustomer, $other);
     } catch (InvalidCustomerException|InvalidCartItemException|InvalidCartException|InvalidOtherException|InvalidResponseException|RequestException|JsonException|AuthenticationException|PaymentServiceUnavailableException $e) {
         var_dump($e->getMessage());
@@ -55,11 +56,11 @@ function sendInit(IzzyPay $izzyPay, string $merchantCartId): ?InitResponse
 function sendStart(IzzyPay $izzyPay, string $merchantCartId, $token): ?StartResponse
 {
     try {
-        $cartItem = CartItem::create('name','category', 'subCategory', 'type', 666.666, 69, 'manufacturer', 'merchantItemId', 'other');
-        $cart = Cart::create('HUF', 666.666, [$cartItem]);
+        $cartItem = CartItem::create('name','category', 'subCategory', 'product', 6666.00, 1, 'manufacturer', 'merchantItemId', 'other');
+        $cart = Cart::create('HUF', 6666.00, [$cartItem]);
         $address = Address::create('8888', 'city', 'street', 'houseNo', 'address1', 'address2', 'address3');
         $customer = Customer::create('merchant', 'merchantCustomerId', null,'other', 'name', 'surname', 'phone', 'email@emai.com', $address, $address);
-        $other = Other::create('127.0.0.1', 'browser', 'os');
+        $other = StartOther::create('127.0.0.1', 'browser');
         $urls = Urls::create('https://ipn.com', 'https://checkout.com');
         return $izzyPay->start($token, $merchantCartId, $cart, $customer, $other, $urls);
     } catch (InvalidAddressException|InvalidCustomerException|InvalidCartItemException|InvalidCartException|InvalidOtherException|InvalidResponseException|RequestException|JsonException|InvalidUrlsException|AuthenticationException|PaymentServiceUnavailableException $e) {

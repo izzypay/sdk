@@ -7,16 +7,37 @@ namespace IzzyPay\Models;
 use IzzyPay\Exceptions\InvalidOtherException;
 use IzzyPay\Validators\OtherValidator;
 
-class Other
+class StartOther
 {
-    private string $browser;
+    private string $ip;
+    protected string $browser;
 
     /**
+     * @param string $ip
      * @param string $browser
      */
-    private function __construct(string $browser)
+    private function __construct(string $ip, string $browser)
     {
+        $this->ip = $ip;
         $this->browser = $browser;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIp(): string
+    {
+        return $this->ip;
+    }
+
+    /**
+     * @param string $ip
+     * @return StartOther
+     */
+    public function setIp(string $ip): self
+    {
+        $this->ip = $ip;
+        return $this;
     }
 
     /**
@@ -29,7 +50,7 @@ class Other
 
     /**
      * @param string $browser
-     * @return Other
+     * @return StartOther
      */
     public function setBrowser(string $browser): self
     {
@@ -43,21 +64,23 @@ class Other
     public function toArray(): array
     {
         return [
+            'ip' => $this->ip,
             'browser' => $this->browser,
         ];
     }
 
     /**
+     * @param string $ip
      * @param string $browser
      * @return static
      * @throws InvalidOtherException
      */
-    public static function create(string $browser): self
+    public static function create(string $ip, string $browser): self
     {
-        $other = new Other($browser);
+        $other = new StartOther($ip, $browser);
 
         $otherValidator = new OtherValidator();
-        $otherValidator->validateOther($other);
+        $otherValidator->validateStartOther($other);
 
         return $other;
     }
