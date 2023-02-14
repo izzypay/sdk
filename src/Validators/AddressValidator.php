@@ -34,9 +34,24 @@ class AddressValidator
         if (trim($address->getCity()) === '') {
             $errors[] = 'city';
         }
+        if (($address->getStreet() !== null) && (trim($address->getStreet()) === '')) {
+            $errors[] = 'street';
+        }
+        if (($address->getHouseNo() !== null) && (trim($address->getHouseNo()) === '')) {
+            $errors[] = 'houseNo';
+        }
+        if (($address->getAddress1() !== null) && (trim($address->getAddress1()) === '')) {
+            $errors[] = 'address1';
+        }
+        if (($address->getAddress2() !== null) && (trim($address->getAddress2()) === '')) {
+            $errors[] = 'address2';
+        }
+        if (($address->getAddress3() !== null) && (trim($address->getAddress3()) === '')) {
+            $errors[] = 'address3';
+        }
 
-        $hasSeparateStreetAddress = (trim($address->getStreet()) !== '') && (trim($address->getHouseNo()) !== '');
-        if (!($hasSeparateStreetAddress || (trim($address->getAddress1()) !== ''))) {
+        $hasSeparateStreetAddress = (($address->getStreet() !== null) && trim($address->getStreet()) !== '') && ($address->getHouseNo() !== null) && (trim($address->getHouseNo()) !== '');
+        if (!($hasSeparateStreetAddress || (($address->getAddress1() !== null) && trim($address->getAddress1()) !== ''))) {
             $errors[] = 'street';
             $errors[] = 'houseNo';
             $errors[] = 'address1';

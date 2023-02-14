@@ -12,24 +12,6 @@ use IzzyPay\Models\CartItem;
 class CartValidator
 {
     /**
-     * @param string|null $currency
-     * @return bool
-     */
-    private function validateCurrency(?string $currency): bool
-    {
-        return $currency === 'HUF';
-    }
-
-    /**
-     * @param int $quantity
-     * @return bool
-     */
-    private function validateQuantity(int $quantity): bool
-    {
-        return $quantity > 0;
-    }
-
-    /**
      * @param CartItem $cartItem
      * @return void
      * @throws InvalidCartItemException
@@ -42,20 +24,35 @@ class CartValidator
             $errors[] = 'name';
         }
 
-        if ((trim($cartItem->getType()) !== CartItem::TYPE_DELIVERY) && trim($cartItem->getCategory()) === '') {
+        if (($cartItem->getCategory() === null)) {
+            if (!in_array(trim($cartItem->getType()), CartItem::CATEGORY_NULLABLE_TYPES, true)) {
+                $errors[] = 'category';
+            }
+        } else if (trim($cartItem->getCategory()) === '') {
             $errors[] = 'category';
         }
-
-        if (trim($cartItem->getType()) === '') {
+        if (($cartItem->getSubCategory() !== null) && (trim($cartItem->getSubCategory()) === '')) {
+            $errors[] = 'subCategory';
+        }
+        if (!in_array(trim($cartItem->getType()), CartItem::ALL_TYPES, true)) {
             $errors[] = 'type';
         }
-
-        if (!$this->validateQuantity($cartItem->getQuantity())) {
+        if (preg_match('/^-?\d+(\.\d{1,2})?$/', (string) $cartItem->getPrice()) === 0) {
+            $errors[] = 'price';
+        } else if (($cartItem->getPrice() < 0) && !in_array(trim($cartItem->getType()), CartItem::DISCOUNT_TYPES, true)) {
+            $errors[] = 'price';
+        }
+        if ($cartItem->getQuantity() <= 0) {
             $errors[] = 'quantity';
         }
-
-        if (trim($cartItem->getMerchantItemId()) === '') {
+        if (($cartItem->getManufacturer() !== null) && (trim($cartItem->getManufacturer()) === '')) {
+            $errors[] = 'manufacturer';
+        }
+        if (($cartItem->getMerchantItemId() !== null) && (trim($cartItem->getMerchantItemId()) === '')) {
             $errors[] = 'merchantItemId';
+        }
+        if (($cartItem->getOther() !== null) && (trim($cartItem->getOther()) === '')) {
+            $errors[] = 'other';
         }
 
         if (count($errors) > 0) {
@@ -71,18 +68,24 @@ class CartValidator
      */
     public function validateCart(Cart $cart): void
     {
+        $totalValue = 0;
         foreach ($cart->getItems() as $cartItem) {
             $this->validateCartItem($cartItem);
+            $totalValue += round(round($cartItem->getPrice(), 2) * $cartItem->getQuantity(), 2);
         }
 
         $errors = [];
 
-        if (!$this->validateCurrency($cart->getCurrency())) {
+        if (!in_array(trim($cart->getCurrency()), Cart::ALLOWED_CURRENCIES, true)) {
             $errors[] = 'currency';
         }
 
-        if ($cart->getTotalValue() < 0) {
+        if (preg_match('/^\d+(\.\d{1,2})?$/', (string) $cart->getTotalValue()) === 0) {
             $errors[] = 'totalValue';
+        } else if (($cart->getTotalValue() < 0)) {
+            $errors[] = 'totalValue';
+        } else if (($cart->getCurrency() === Cart::CURRENCY_HUF) && ($cart->getTotalValue() !== round($totalValue, 0))) {
+            $errors[] = 'totalValue'.$cart->getTotalValue().round($totalValue, 0);
         }
 
         if (count($cart->getItems()) === 0) {

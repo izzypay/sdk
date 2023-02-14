@@ -56,8 +56,8 @@ class AddressValidatorTest extends TestCase
     public function getAddressProvider(): array
     {
         $invalidAddress = $this->invokeConstructor(Address::class, [' ', ' ', '', '', '', '', '']);
-        $validAddress1 = $this->invokeConstructor(Address::class, ['1234', 'city', 'street', 'houseNo', '', '', '']);
-        $validAddress2 = $this->invokeConstructor(Address::class, ['1234', 'city', '', '', 'address1', '', '']);
+        $validAddress1 = $this->invokeConstructor(Address::class, ['1234', 'city', 'street', 'houseNo', null, null, null]);
+        $validAddress2 = $this->invokeConstructor(Address::class, ['1234', 'city', null, null, 'address1', null, null]);
         $validAddress3 = $this->invokeConstructor(Address::class, ['1234', 'city', 'street', 'houseNo', 'address1', 'address2', 'address3']);
         return [
             [$invalidAddress, InvalidAddressException::class],

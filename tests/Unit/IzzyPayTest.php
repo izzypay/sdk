@@ -25,6 +25,7 @@ use IzzyPay\Models\Customer;
 use IzzyPay\Models\Other;
 use IzzyPay\Models\Response\InitResponse;
 use IzzyPay\Models\Response\StartResponse;
+use IzzyPay\Models\StartOther;
 use IzzyPay\Models\Urls;
 use IzzyPay\Services\HmacService;
 use IzzyPay\Services\RequestService;
@@ -46,12 +47,12 @@ class IzzyPayTest extends TestCase
     private const MERCHANT_CART_ID = 'merchantCartId';
 
     private const CURRENCY = 'HUF';
-    private const TOTAL_VALUE = 666.666;
+    private const TOTAL_VALUE = 46000.00;
     private const NAME = 'name';
     private const CATEGORY = 'category';
     private const SUB_CATEGORY = 'subCategory';
-    private const TYPE = 'type';
-    private const PRICE = 666.666;
+    private const TYPE = 'product';
+    private const PRICE = 666.66;
     private const QUANTITY = 69;
     private const MANUFACTURER = 'manufacturer';
     private const MERCHANT_ITEM_ID = 'merchantItemId';
@@ -390,7 +391,7 @@ class IzzyPayTest extends TestCase
         $cart = Cart::create(self::CURRENCY, self::TOTAL_VALUE, [$cartItem]);
         $address = Address::create(self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3);
         $customer = Customer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::COMPANY_NAME,self::PHONE, self::EMAIL, $address, $address);
-        $other = Other::create(self::IP, self::BROWSER, self::OS);
+        $other = StartOther::create(self::IP, self::BROWSER, self::OS);
         $urls = Urls::create(self::IPN_URL, self::CHECKOUT_URL);
         $body = [
             'merchantId' => self::MERCHANT_ID,
@@ -436,7 +437,7 @@ class IzzyPayTest extends TestCase
         $cart = Cart::create(self::CURRENCY, self::TOTAL_VALUE, [$cartItem]);
         $address = Address::create(self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3);
         $customer = Customer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::COMPANY_NAME, self::PHONE, self::EMAIL, $address, $address);
-        $other = Other::create(self::IP, self::BROWSER, self::OS);
+        $other = StartOther::create(self::IP, self::BROWSER, self::OS);
         $urls = Urls::create(self::IPN_URL, self::CHECKOUT_URL);
         $body = [
             'merchantId' => self::MERCHANT_ID,
@@ -482,7 +483,7 @@ class IzzyPayTest extends TestCase
         $cart = Cart::create(self::CURRENCY, self::TOTAL_VALUE, [$cartItem]);
         $address = Address::create(self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3);
         $customer = Customer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::COMPANY_NAME, self::PHONE, self::EMAIL, $address, $address);
-        $other = Other::create(self::IP, self::BROWSER, self::OS);
+        $other = StartOther::create(self::IP, self::BROWSER, self::OS);
         $urls = Urls::create(self::IPN_URL, self::CHECKOUT_URL);
         $body = [
             'merchantId' => self::MERCHANT_ID,
@@ -534,7 +535,7 @@ class IzzyPayTest extends TestCase
         $cart = Cart::create(self::CURRENCY, self::TOTAL_VALUE, [$cartItem]);
         $address = Address::create(self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3);
         $customer = Customer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::COMPANY_NAME, self::PHONE, self::EMAIL, $address, $address);
-        $other = Other::create(self::IP, self::BROWSER, self::OS);
+        $other = StartOther::create(self::IP, self::BROWSER, self::OS);
         $urls = Urls::create(self::IPN_URL, self::CHECKOUT_URL);
         $body = [
             'merchantId' => self::MERCHANT_ID,
@@ -587,7 +588,7 @@ class IzzyPayTest extends TestCase
         $cart = Cart::create(self::CURRENCY, self::TOTAL_VALUE, [$cartItem]);
         $address = Address::create(self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3);
         $customer = Customer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::COMPANY_NAME, self::PHONE, self::EMAIL, $address, $address);
-        $other = Other::create(self::IP, self::BROWSER, self::OS);
+        $other = StartOther::create(self::IP, self::BROWSER, self::OS);
         $urls = Urls::create(self::IPN_URL, self::CHECKOUT_URL);
         $body = [
             'merchantId' => self::MERCHANT_ID,

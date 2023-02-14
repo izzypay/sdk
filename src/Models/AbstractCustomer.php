@@ -14,15 +14,15 @@ abstract class AbstractCustomer
     protected string $registered;
     protected ?string $merchantCustomerId;
     protected ?string $companyName;
-    protected string $other;
+    protected ?string $other;
 
     /**
      * @param string $registered
      * @param string|null $merchantCustomerId
      * @param string|null $companyName
-     * @param string $other
+     * @param string|null $other
      */
-    protected function __construct(string $registered, ?string $merchantCustomerId, ?string $companyName, string $other)
+    protected function __construct(string $registered, ?string $merchantCustomerId, ?string $companyName, ?string $other)
     {
         $this->registered = $registered;
         $this->merchantCustomerId = $merchantCustomerId;
@@ -85,18 +85,18 @@ abstract class AbstractCustomer
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getOther(): string
+    public function getOther(): ?string
     {
         return $this->other;
     }
 
     /**
-     * @param string $other
+     * @param string|null $other
      * @return AbstractCustomer
      */
-    public function setOther(string $other): self
+    public function setOther(?string $other): self
     {
         $this->other = $other;
         return $this;
@@ -107,11 +107,18 @@ abstract class AbstractCustomer
      */
     public function toArray(): array
     {
-        return [
+        $data = [
             'registered' => $this->registered,
-            'merchantCustomerId' => $this->merchantCustomerId,
-            'companyName' => $this->companyName,
-            'other' => $this->other,
         ];
+        if ($this->merchantCustomerId !== null) {
+            $data['merchantCustomerId'] = $this->merchantCustomerId;
+        }
+        if ($this->companyName !== null) {
+            $data['companyName'] = $this->companyName;
+        }
+        if ($this->other !== null) {
+            $data['other'] = $this->other;
+        }
+        return $data;
     }
 }
