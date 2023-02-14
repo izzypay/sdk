@@ -42,7 +42,7 @@ function verifyCredential(IzzyPay $izzyPay): void
 function sendInit(IzzyPay $izzyPay, string $merchantCartId): ?InitResponse
 {
     try {
-        $cartItem = CartItem::create('name','category', 'subCategory', 'product', 6666.66, 1, 'manufacturer', 'merchantItemId', 'other');
+        $cartItem = CartItem::create('name','category', 'subCategory', 'product', 6666.6, 1, 'manufacturer', 'merchantItemId', 'other');
         $cart = Cart::create('HUF', 6667.00, [$cartItem]);
         $limitedCustomer = LimitedCustomer::create('guest', null, null, 'other');
         $other = Other::create('browser');
