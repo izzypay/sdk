@@ -49,7 +49,7 @@ class CartItem
     private string $type;
     private float $price;
     private int $quantity;
-    private string $manufacturer;
+    private ?string $manufacturer;
     private string $merchantItemId;
     private ?string $other;
 
@@ -60,11 +60,11 @@ class CartItem
      * @param string $type
      * @param float $price
      * @param int $quantity
-     * @param string $manufacturer
+     * @param ?string $manufacturer
      * @param string $merchantItemId
      * @param string|null $other
      */
-    private function __construct(string $name, ?string $category, ?string $subCategory, string $type, float $price, int $quantity, string $manufacturer, string $merchantItemId, ?string $other)
+    private function __construct(string $name, ?string $category, ?string $subCategory, string $type, float $price, int $quantity, ?string $manufacturer, string $merchantItemId, ?string $other)
     {
         $this->name = $name;
         $this->category = $category;
@@ -187,18 +187,18 @@ class CartItem
     }
 
     /**
-     * @return string
+     * @return ?string
      */
-    public function getManufacturer(): string
+    public function getManufacturer(): ?string
     {
         return $this->manufacturer;
     }
 
     /**
-     * @param string $manufacturer
+     * @param ?string $manufacturer
      * @return CartItem
      */
-    public function setManufacturer(string $manufacturer): self
+    public function setManufacturer(?string $manufacturer): self
     {
         $this->manufacturer = $manufacturer;
         return $this;
@@ -272,13 +272,13 @@ class CartItem
      * @param string $type
      * @param float $price
      * @param int $quantity
-     * @param string $manufacturer
+     * @param ?string $manufacturer
      * @param string $merchantItemId
      * @param string|null $other
      * @return static
      * @throws InvalidCartItemException
      */
-    public static function create(string $name, ?string $category, ?string $subCategory, string $type, float $price, int $quantity, string $manufacturer, string $merchantItemId, ?string $other): self
+    public static function create(string $name, ?string $category, ?string $subCategory, string $type, float $price, int $quantity, ?string $manufacturer, string $merchantItemId, ?string $other): self
     {
         $cartItem = new CartItem($name, $category, $subCategory, $type, $price, $quantity, $manufacturer, $merchantItemId, $other);
 

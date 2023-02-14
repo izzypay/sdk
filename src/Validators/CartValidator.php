@@ -39,7 +39,7 @@ class CartValidator
         }
         if (preg_match('/^-?\d+(\.\d{1,2})?$/', (string) $cartItem->getPrice()) === 0) {
             $errors[] = 'price';
-        } else if (($cartItem->getPrice() <= 0) && !in_array(trim($cartItem->getType()), CartItem::DISCOUNT_TYPES, true)) {
+        } else if (($cartItem->getPrice() < 0) && !in_array(trim($cartItem->getType()), CartItem::DISCOUNT_TYPES, true)) {
             $errors[] = 'price';
         }
         if ($cartItem->getQuantity() <= 0) {
