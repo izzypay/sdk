@@ -56,8 +56,8 @@ class CartValidatorTest extends TestCase
     public function getCartItemsProvider(): array
     {
         $invalidCartItem1 = $this->invokeConstructor(CartItem::class, [' ', ' ', '', ' ', 0, 0, ' ', '', '']);
-        $validCartItem1 = $this->invokeConstructor(CartItem::class, ['name', 'category', 'subCategory', 'type', 666.666, 666, 'merchantItemId', 'manufacturer', 'other']);
-        $validCartItem2 = $this->invokeConstructor(CartItem::class, ['name', 'category', '', CartItem::TYPE_DELIVERY, 666.666, 666, 'merchantItemId', 'manufacturer', 'other']);
+        $validCartItem1 = $this->invokeConstructor(CartItem::class, ['name', 'category', 'subCategory', 'product', 666.66, 666, 'merchantItemId', 'manufacturer', 'other']);
+        $validCartItem2 = $this->invokeConstructor(CartItem::class, ['name', 'category', null, CartItem::TYPE_DELIVERY, 666.66, 666, 'merchantItemId', 'manufacturer', 'other']);
         return [
             [$invalidCartItem1, InvalidCartItemException::class],
             [$validCartItem1, null],
@@ -71,15 +71,15 @@ class CartValidatorTest extends TestCase
     public function getCartsProvider(): array
     {
         $invalidCartItem = $this->invokeConstructor(CartItem::class, [' ', ' ', '', ' ', 0, 0, ' ', '', '']);
-        $validCartItem = $this->invokeConstructor(CartItem::class, ['name', 'category', 'subCategory', 'type', 666.666, 666, 'merchantItemId', 'manufacturer', 'other']);
-        $invalidCart1 = $this->invokeConstructor(Cart::class, ['', -666.666]);
-        $invalidCart2 = $this->invokeConstructor(Cart::class, ['', -666.666]);
+        $validCartItem = $this->invokeConstructor(CartItem::class, ['name', 'category', 'subCategory', 'product', 666.66, 666, 'merchantItemId', 'manufacturer', 'other']);
+        $invalidCart1 = $this->invokeConstructor(Cart::class, ['', -666.66]);
+        $invalidCart2 = $this->invokeConstructor(Cart::class, ['', -666.66]);
         $invalidCart2->addItem($invalidCartItem);
-        $invalidCart3 = $this->invokeConstructor(Cart::class, ['', -666.666]);
+        $invalidCart3 = $this->invokeConstructor(Cart::class, ['', -666.66]);
         $invalidCart3->addItem($validCartItem);
-        $invalidCart4 = $this->invokeConstructor(Cart::class, ['huf', -666.666]);
+        $invalidCart4 = $this->invokeConstructor(Cart::class, ['huf', -666.66]);
         $invalidCart4->addItem($validCartItem);
-        $validCart = $this->invokeConstructor(Cart::class, ['HUF', 666.666]);
+        $validCart = $this->invokeConstructor(Cart::class, ['HUF', 443996]);
         $validCart->addItem($validCartItem);
         return [
             [$invalidCart1, InvalidCartException::class],

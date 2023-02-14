@@ -85,7 +85,7 @@ class CartValidator
         } else if (($cart->getTotalValue() < 0)) {
             $errors[] = 'totalValue';
         } else if (($cart->getCurrency() === Cart::CURRENCY_HUF) && ($cart->getTotalValue() !== round($totalValue, 0))) {
-            $errors[] = 'totalValue';
+            $errors[] = 'totalValue'.$cart->getTotalValue().round($totalValue, 0);
         }
 
         if (count($cart->getItems()) === 0) {

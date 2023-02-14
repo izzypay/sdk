@@ -57,11 +57,11 @@ class CustomerValidatorTest extends TestCase
         $invalidLimitedCustomer2 = $this->invokeConstructor(LimitedCustomer::class, ['invalid', ' ', '', '']);
         $invalidLimitedCustomer3 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_MERCHANT, null, null, '']);
         $invalidLimitedCustomer4 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_3RDPARTY, null, null, '']);
-        $validLimitedCustomer1 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_GUEST, 'merchantCustomerId', 'company name', '']);
-        $validLimitedCustomer2 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_MERCHANT, 'merchantCustomerId', 'company name', '']);
-        $validLimitedCustomer3 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_3RDPARTY, 'merchantCustomerId', 'company name', '']);
+        $validLimitedCustomer1 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_GUEST, 'merchantCustomerId', 'company name', null]);
+        $validLimitedCustomer2 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_MERCHANT, 'merchantCustomerId', 'company name', null]);
+        $validLimitedCustomer3 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_3RDPARTY, 'merchantCustomerId', 'company name', null]);
         $validLimitedCustomer4 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_GUEST, 'merchantCustomerId', 'company name', 'other']);
-        $validLimitedCustomer5 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_GUEST, null, null, '']);
+        $validLimitedCustomer5 = $this->invokeConstructor(LimitedCustomer::class, [AbstractCustomer::REGISTERED_VALUE_GUEST, null, null, null]);
         return [
             [$invalidLimitedCustomer1, true],
             [$invalidLimitedCustomer2, true],

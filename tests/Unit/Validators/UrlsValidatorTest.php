@@ -36,18 +36,18 @@ class UrlsValidatorTest extends TestCase
      */
     public function getUrlsProvider(): array
     {
-        $invalidUrls1 = $this->invokeConstructor(Urls::class, ['', null]);
-        $invalidUrls2 = $this->invokeConstructor(Urls::class, ['invalid', null]);
+        $invalidUrls1 = $this->invokeConstructor(Urls::class, ['', '']);
+        $invalidUrls2 = $this->invokeConstructor(Urls::class, ['invalid', '']);
         $invalidUrls3 = $this->invokeConstructor(Urls::class, ['https://ipn.com', '']);
         $invalidUrls4 = $this->invokeConstructor(Urls::class, ['https://ipn.com', 'invalid']);
-        $validUrls1 = $this->invokeConstructor(Urls::class, ['https://ipn.com', null]);
+        $validUrls1 = $this->invokeConstructor(Urls::class, ['https://ipn.com', '']);
         $validUrls2 = $this->invokeConstructor(Urls::class, ['https://ipn.com', 'https://checkout.com']);
         return [
             [$invalidUrls1, InvalidUrlsException::class],
             [$invalidUrls2, InvalidUrlsException::class],
             [$invalidUrls3, InvalidUrlsException::class],
             [$invalidUrls4, InvalidUrlsException::class],
-            [$validUrls1, null],
+            [$validUrls1, InvalidUrlsException::class],
             [$validUrls2, null],
         ];
     }

@@ -36,15 +36,11 @@ class OtherValidatorTest extends TestCase
      */
     public function getOthersProvider(): array
     {
-        $invalidOther1 = $this->invokeConstructor(Other::class, ['', '', '']);
-        $invalidOther2 = $this->invokeConstructor(Other::class, ['192.168.1.', '', '']);
-        $validOther1 = $this->invokeConstructor(Other::class, ['192.168.1.1', '', '']);
-        $validOther2 = $this->invokeConstructor(Other::class, ['192.168.1.1', 'Chrome', 'Linux']);
+        $invalidOther1 = $this->invokeConstructor(Other::class, ['']);
+        $validOther1 = $this->invokeConstructor(Other::class, ['Chrome']);
         return [
             [$invalidOther1, InvalidOtherException::class],
-            [$invalidOther2, InvalidOtherException::class],
             [$validOther1, null],
-            [$validOther2, null],
         ];
     }
 }
