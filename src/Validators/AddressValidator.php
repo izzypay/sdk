@@ -50,8 +50,8 @@ class AddressValidator
             $errors[] = 'address3';
         }
 
-        $hasSeparateStreetAddress = (trim($address->getStreet()) !== '') && (trim($address->getHouseNo()) !== '');
-        if (!($hasSeparateStreetAddress || (trim($address->getAddress1()) !== ''))) {
+        $hasSeparateStreetAddress = (($address->getStreet() !== null) && trim($address->getStreet()) !== '') && ($address->getHouseNo() !== null) && (trim($address->getHouseNo()) !== '');
+        if (!($hasSeparateStreetAddress || (($address->getAddress1() !== null) && trim($address->getAddress1()) !== ''))) {
             $errors[] = 'street';
             $errors[] = 'houseNo';
             $errors[] = 'address1';
