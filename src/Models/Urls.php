@@ -71,11 +71,11 @@ class Urls
 
     /**
      * @param string $ipn
-     * @param string|null $checkoutUrl
+     * @param string $checkoutUrl
      * @return static
      * @throws InvalidUrlsException
      */
-    public static function create(string $ipn, ?string $checkoutUrl): self
+    public static function create(string $ipn, string $checkoutUrl): self
     {
         $urls = new Urls($ipn, $checkoutUrl);
 
