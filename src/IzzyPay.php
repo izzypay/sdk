@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace IzzyPay;
 
-use DateTime;
+use DateTimeImmutable;
 use IzzyPay\Exceptions\AuthenticationException;
 use IzzyPay\Exceptions\InvalidAddressException;
 use IzzyPay\Exceptions\InvalidCartException;
@@ -169,16 +169,16 @@ class IzzyPay
 
     /**
      * @param string $merchantCartId
-     * @param DateTime $returnDate
+     * @param DateTimeImmutable $returnDate
      * @throws AuthenticationException
      * @throws JsonException
      * @throws RequestException
      */
-    public function returnCart(string $merchantCartId, DateTime $returnDate): void
+    public function returnCart(string $merchantCartId, DateTimeImmutable $returnDate): void
     {
         $endpoint = self::RETURN_ENDPOINT . "/$this->merchantId/$merchantCartId";
         $data = [
-            'returnDate' => $returnDate->format(DateTime::ISO8601),
+            'returnDate' => $returnDate->format(DateTimeImmutable::ISO8601),
         ];
         $this->requestService->sendPutRequest($endpoint, $data);
     }
@@ -186,21 +186,21 @@ class IzzyPay
     /**
      * @param string $merchantCartId
      * @param string $merchantItemId
-     * @param DateTime $returnDate
+     * @param DateTimeImmutable $returnDate
      * @param float|null $reducedValue
      * @throws AuthenticationException
      * @throws InvalidReturnDataException
      * @throws JsonException
      * @throws RequestException
      */
-    public function returnItem(string $merchantCartId, string $merchantItemId, DateTime $returnDate, ?float $reducedValue = null): void
+    public function returnItem(string $merchantCartId, string $merchantItemId, DateTimeImmutable $returnDate, ?float $reducedValue = null): void
     {
         $returnValidator = new ReturnValidator();
         $returnValidator->validate($reducedValue);
 
         $endpoint = self::RETURN_ENDPOINT . "/$this->merchantId/$merchantCartId/$merchantItemId";
         $data = [
-            'returnDate' => $returnDate->format(DateTime::ISO8601),
+            'returnDate' => $returnDate->format(DateTimeImmutable::ISO8601),
         ];
         if ($reducedValue) {
             $data['reducedValue'] = $reducedValue;
