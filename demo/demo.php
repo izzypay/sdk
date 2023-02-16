@@ -87,7 +87,7 @@ function sendDeliveryItem(IzzyPay $izzyPay, string $merchantCartId, string $merc
     }
 }
 
-function sendReturnCart(IzzyPay $izzyPay, string $merchantCartId, string $returnDate): void
+function sendReturnCart(IzzyPay $izzyPay, string $merchantCartId, DateTime $returnDate): void
 {
     try {
         $izzyPay->returnCart($merchantCartId, $returnDate);
@@ -96,7 +96,7 @@ function sendReturnCart(IzzyPay $izzyPay, string $merchantCartId, string $return
     }
 }
 
-function sendReturnItem(IzzyPay $izzyPay, string $merchantCartId, string $merchantItemId, string $returnDate, ?float $reducedValue = null): void
+function sendReturnItem(IzzyPay $izzyPay, string $merchantCartId, string $merchantItemId, DateTime $returnDate, ?float $reducedValue = null): void
 {
     try {
         $izzyPay->returnItem($merchantCartId, $merchantItemId, $returnDate, $reducedValue);
@@ -126,8 +126,8 @@ if ($initResponse) {
         sendDeliveryItem($izzyPay, $merchantCartId, 'merchantItemId');
 
         // Return the whole cart
-        sendReturnCart($izzyPay, $merchantCartId, '2022-04-04T12:34:56+0010');
+        sendReturnCart($izzyPay, $merchantCartId, new DateTime('2022-04-04T12:34:56+0010'));
         // Return single item from the cart
-        sendReturnItem($izzyPay, $merchantCartId, 'merchantItemId', '2022-04-04T12:34:56+0010', 100.2);
+        sendReturnItem($izzyPay, $merchantCartId, 'merchantItemId', new DateTime('2022-04-04T12:34:56+0010'), 100.2);
     }
 }

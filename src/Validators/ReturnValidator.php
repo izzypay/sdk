@@ -4,27 +4,20 @@ declare(strict_types=1);
 
 namespace IzzyPay\Validators;
 
-use DateTime;
 use IzzyPay\Exceptions\InvalidReturnDataException;
 
 class ReturnValidator
 {
     /**
-     * @param string $returnDate
      * @param float|null $reducedValue
      * @return void
      * @throws InvalidReturnDataException
      */
-    public function validate(string $returnDate, ?float $reducedValue = null): void
+    public function validate(?float $reducedValue): void
     {
         $errors = [];
 
-        $dateTime = DateTime::createFromFormat('Y-m-d\TH:i:sP', $returnDate);
-        if (!$dateTime) {
-            $errors[] = 'returnDate';
-        }
-
-        if ($reducedValue && ($reducedValue < 0)) {
+        if (($reducedValue !== null) && ($reducedValue < 0)) {
             $errors[] = 'reducedValue';
         }
 

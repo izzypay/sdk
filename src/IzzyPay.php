@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace IzzyPay;
 
+use DateTime;
 use IzzyPay\Exceptions\AuthenticationException;
 use IzzyPay\Exceptions\InvalidAddressException;
 use IzzyPay\Exceptions\InvalidCartException;
@@ -168,20 +169,16 @@ class IzzyPay
 
     /**
      * @param string $merchantCartId
-     * @param string $returnDate
+     * @param DateTime $returnDate
      * @throws AuthenticationException
      * @throws JsonException
      * @throws RequestException
-     * @throws InvalidReturnDataException
      */
-    public function returnCart(string $merchantCartId, string $returnDate): void
+    public function returnCart(string $merchantCartId, DateTime $returnDate): void
     {
-        $returnValidator = new ReturnValidator();
-        $returnValidator->validate($returnDate);
-
         $endpoint = self::RETURN_ENDPOINT . "/$this->merchantId/$merchantCartId";
         $data = [
-            'returnDate' => $returnDate,
+            'returnDate' => $returnDate->format(DateTime::ISO8601),
         ];
         $this->requestService->sendPutRequest($endpoint, $data);
     }
@@ -189,21 +186,21 @@ class IzzyPay
     /**
      * @param string $merchantCartId
      * @param string $merchantItemId
-     * @param string $returnDate
+     * @param DateTime $returnDate
      * @param float|null $reducedValue
      * @throws AuthenticationException
+     * @throws InvalidReturnDataException
      * @throws JsonException
      * @throws RequestException
-     * @throws InvalidReturnDataException
      */
-    public function returnItem(string $merchantCartId, string $merchantItemId, string $returnDate, ?float $reducedValue = null): void
+    public function returnItem(string $merchantCartId, string $merchantItemId, DateTime $returnDate, ?float $reducedValue = null): void
     {
         $returnValidator = new ReturnValidator();
-        $returnValidator->validate($returnDate, $reducedValue);
+        $returnValidator->validate($reducedValue);
 
         $endpoint = self::RETURN_ENDPOINT . "/$this->merchantId/$merchantCartId/$merchantItemId";
         $data = [
-            'returnDate' => $returnDate,
+            'returnDate' => $returnDate->format(DateTime::ISO8601),
         ];
         if ($reducedValue) {
             $data['reducedValue'] = $reducedValue;
