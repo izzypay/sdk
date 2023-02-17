@@ -114,15 +114,15 @@ class ResponseValidator
     {
         $errors = [];
 
-        if (!array_key_exists('token', $response) || trim($response['token']) === '') {
+        if (!array_key_exists('token', $response) || ($response['token'] === null) || (trim($response['token']) === '')) {
             $errors[] = 'token';
         }
 
-        if (!array_key_exists('merchantId', $response) || trim($response['merchantId']) === '') {
+        if (!array_key_exists('merchantId', $response) || ($response['merchantId'] === null) || (trim($response['merchantId']) === '')) {
             $errors[] = 'merchantId';
         }
 
-        if (!array_key_exists('merchantCartId', $response) || trim($response['merchantCartId']) === '') {
+        if (!array_key_exists('merchantCartId', $response) || ($response['merchantCartId'] === null) || (trim($response['merchantCartId']) === '')) {
             $errors[] = 'merchantCartId';
         }
 
