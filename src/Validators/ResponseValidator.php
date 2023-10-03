@@ -81,6 +81,19 @@ class ResponseValidator
     /**
      * @param array $response
      * @return void
+     * @throws InvalidResponseException
+     */
+    public function validateCreateResponse(array $response): void
+    {
+        $errors = $this->validate($response);
+        if (count($errors) > 0) {
+            throw new InvalidResponseException($errors);
+        }
+    }
+
+    /**
+     * @param array $response
+     * @return void
      * @throws PaymentServiceUnavailableException
      */
     public function verifyInitAvailability(array $response): void
@@ -100,6 +113,18 @@ class ResponseValidator
      * @throws PaymentServiceUnavailableException
      */
     public function verifyStartAvailability(array $response): void
+    {
+        if (array_key_exists('errors', $response) && (count($response['errors']) > 0)) {
+            throw new PaymentServiceUnavailableException($response['errors']);
+        }
+    }
+
+    /**
+     * @param array $response
+     * @return void
+     * @throws PaymentServiceUnavailableException
+     */
+    public function verifyCreateAvailability(array $response): void
     {
         if (array_key_exists('errors', $response) && (count($response['errors']) > 0)) {
             throw new PaymentServiceUnavailableException($response['errors']);

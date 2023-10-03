@@ -16,18 +16,18 @@ use IzzyPay\Exceptions\InvalidReturnDataException;
 use IzzyPay\Exceptions\InvalidUrlsException;
 use IzzyPay\Exceptions\PaymentServiceUnavailableException;
 use IzzyPay\Exceptions\RequestException;
-use IzzyPay\IzzyPay;
 use IzzyPay\Models\AbstractCustomer;
 use IzzyPay\Models\Address;
+use IzzyPay\Models\CreateOther;
 use IzzyPay\Models\LimitedCustomer;
 use IzzyPay\Models\Cart;
 use IzzyPay\Models\CartItem;
 use IzzyPay\Models\Customer;
 use IzzyPay\Models\Other;
+use IzzyPay\Models\RedirectUrls;
+use IzzyPay\Models\Response\CreateResponse;
 use IzzyPay\Models\Response\InitResponse;
-use IzzyPay\Models\Response\StartResponse;
-use IzzyPay\Models\StartOther;
-use IzzyPay\Models\Urls;
+use IzzyPay\RedirectIzzyPay;
 use IzzyPay\Services\HmacService;
 use IzzyPay\Services\RequestService;
 use IzzyPay\Validators\ResponseValidator;
@@ -40,7 +40,7 @@ use Mockery;
 /**
  * @runTestsInSeparateProcesses
  */
-class IzzyPayTest extends TestCase
+class RedirectIzzyPayTest extends TestCase
 {
     private const MERCHANT_ID = 'merchantId';
     private const MERCHANT_SECRET = 'merchantSecret';
@@ -77,6 +77,9 @@ class IzzyPayTest extends TestCase
     private const IP = '192.168.1.1';
     private const BROWSER = 'Chrome';
 
+    private const ACCEPTED_URL = 'https://accepted.com';
+    private const REJECTED_URL = 'https://rejected.com';
+    private const CANCELLED_URL = 'https://cancelled.com';
     private const IPN_URL = 'https://ipn.com';
     private const CHECKOUT_URL = 'https://checkout.com';
 
@@ -103,9 +106,9 @@ class IzzyPayTest extends TestCase
         $this->requestServiceMock
             ->shouldReceive('sendHeadRequest')
             ->once()
-            ->with(IzzyPay::CRED_ENDPOINT)
+            ->with(RedirectIzzyPay::CRED_ENDPOINT)
             ->andThrow(new RequestException(''));
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $this->expectException(RequestException::class);
         $izzyPay->cred();
     }
@@ -119,9 +122,9 @@ class IzzyPayTest extends TestCase
         $this->requestServiceMock
             ->shouldReceive('sendHeadRequest')
             ->once()
-            ->with(IzzyPay::CRED_ENDPOINT)
+            ->with(RedirectIzzyPay::CRED_ENDPOINT)
             ->andThrow(new AuthenticationException(''));
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $this->expectException(AuthenticationException::class);
         $izzyPay->cred();
     }
@@ -135,8 +138,8 @@ class IzzyPayTest extends TestCase
         $this->requestServiceMock
             ->shouldReceive('sendHeadRequest')
             ->once()
-            ->with(IzzyPay::CRED_ENDPOINT);
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+            ->with(RedirectIzzyPay::CRED_ENDPOINT);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $izzyPay->cred();
         $this->assertTrue(true);
     }
@@ -173,7 +176,7 @@ class IzzyPayTest extends TestCase
         $this->requestServiceMock
             ->shouldReceive('sendPostRequest')
             ->once()
-            ->with(IzzyPay::INIT_ENDPOINT, $body)
+            ->with(RedirectIzzyPay::INIT_ENDPOINT, $body)
             ->andThrow(new RequestException('reason'));
         $this->responseValidatorMock
             ->shouldNotHaveReceived('validateInitResponse');
@@ -181,7 +184,7 @@ class IzzyPayTest extends TestCase
             ->shouldNotHaveReceived('verifyInitAvailability');
 
         $this->expectException(RequestException::class);
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $izzyPay->init(self::MERCHANT_CART_ID, $cart, $limitedCustomer, $other);
     }
 
@@ -213,7 +216,7 @@ class IzzyPayTest extends TestCase
         $this->requestServiceMock
             ->shouldReceive('sendPostRequest')
             ->once()
-            ->with(IzzyPay::INIT_ENDPOINT, $body)
+            ->with(RedirectIzzyPay::INIT_ENDPOINT, $body)
             ->andThrow(new AuthenticationException('reason'));
         $this->responseValidatorMock
             ->shouldNotHaveReceived('validateInitResponse');
@@ -221,7 +224,7 @@ class IzzyPayTest extends TestCase
             ->shouldNotHaveReceived('verifyInitAvailability');
 
         $this->expectException(AuthenticationException::class);
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $izzyPay->init(self::MERCHANT_CART_ID, $cart, $limitedCustomer, $other);
     }
 
@@ -255,7 +258,7 @@ class IzzyPayTest extends TestCase
         $this->requestServiceMock
             ->shouldReceive('sendPostRequest')
             ->once()
-            ->with(IzzyPay::INIT_ENDPOINT, $body)
+            ->with(RedirectIzzyPay::INIT_ENDPOINT, $body)
             ->andReturn($response);
         $this->responseValidatorMock
             ->shouldReceive('validateInitResponse')
@@ -266,7 +269,7 @@ class IzzyPayTest extends TestCase
             ->shouldNotHaveReceived('verifyInitAvailability');
 
         $this->expectException(InvalidResponseException::class);
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $izzyPay->init(self::MERCHANT_CART_ID, $cart, $limitedCustomer, $other);
     }
 
@@ -300,7 +303,7 @@ class IzzyPayTest extends TestCase
         $this->requestServiceMock
             ->shouldReceive('sendPostRequest')
             ->once()
-            ->with(IzzyPay::INIT_ENDPOINT, $body)
+            ->with(RedirectIzzyPay::INIT_ENDPOINT, $body)
             ->andReturn($response);
         $this->responseValidatorMock
             ->shouldReceive('validateInitResponse')
@@ -312,7 +315,7 @@ class IzzyPayTest extends TestCase
             ->andThrow(new PaymentServiceUnavailableException(['token']));
 
         $this->expectException(PaymentServiceUnavailableException::class);
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $izzyPay->init(self::MERCHANT_CART_ID, $cart, $limitedCustomer, $other);
     }
 
@@ -351,7 +354,7 @@ class IzzyPayTest extends TestCase
         $this->requestServiceMock
             ->shouldReceive('sendPostRequest')
             ->once()
-            ->with(IzzyPay::INIT_ENDPOINT, $body)
+            ->with(RedirectIzzyPay::INIT_ENDPOINT, $body)
             ->andReturn($response);
         $this->responseValidatorMock
             ->shouldReceive('validateInitResponse')
@@ -362,14 +365,14 @@ class IzzyPayTest extends TestCase
             ->once()
             ->andReturn();
 
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $result = $izzyPay->init(self::MERCHANT_CART_ID, $cart, $limitedCustomer, $other);
         $this->assertEquals($initResponse, $result);
     }
 
     // </editor-fold>
 
-    // <editor-fold desc=start()>
+    // <editor-fold desc=create()>
 
     /**
      * @throws RequestException
@@ -384,15 +387,21 @@ class IzzyPayTest extends TestCase
      * @throws InvalidCartItemException
      * @throws InvalidAddressException
      */
-    public function testStartWithRequestException(): void
+    public function testCreateWithRequestException(): void
     {
         $token = 'token';
         $cartItem = CartItem::create(self::NAME, self::CATEGORY, self::SUB_CATEGORY, self::TYPE, self::PRICE, self::QUANTITY, self::MANUFACTURER, self::MERCHANT_ITEM_ID, self::OTHER);
         $cart = Cart::create(self::CURRENCY, self::TOTAL_VALUE, [$cartItem]);
         $address = Address::create(self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3);
         $customer = Customer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::COMPANY_NAME,self::PHONE, self::EMAIL, $address, $address);
-        $other = StartOther::create(self::IP, self::BROWSER);
-        $urls = Urls::create(self::IPN_URL, self::CHECKOUT_URL);
+        $other = CreateOther::create(self::IP, self::BROWSER);
+        $urls = RedirectUrls::create(
+            self::ACCEPTED_URL,
+            self::REJECTED_URL,
+            self::CANCELLED_URL,
+            self::IPN_URL,
+            self::CHECKOUT_URL
+        );
         $body = [
             'merchantId' => self::MERCHANT_ID,
             'merchantCartId' => self::MERCHANT_CART_ID,
@@ -405,16 +414,16 @@ class IzzyPayTest extends TestCase
         $this->requestServiceMock
             ->shouldReceive('sendPostRequest')
             ->once()
-            ->with(IzzyPay::START_ENDPOINT . '/' . $token, $body)
+            ->with(RedirectIzzyPay::CREATE_ENDPOINT . '/' . $token, $body)
             ->andThrow(new RequestException('reason'));
         $this->responseValidatorMock
-            ->shouldNotHaveReceived('validateStartResponse');
+            ->shouldNotHaveReceived('validateCreateResponse');
         $this->responseValidatorMock
-            ->shouldNotHaveReceived('verifyStartAvailability');
+            ->shouldNotHaveReceived('verifyCreateAvailability');
 
         $this->expectException(RequestException::class);
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
-        $izzyPay->start($token, self::MERCHANT_CART_ID, $cart, $customer, $other, $urls);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->create($token, self::MERCHANT_CART_ID, $cart, $customer, $other, $urls);
     }
 
     /**
@@ -430,15 +439,21 @@ class IzzyPayTest extends TestCase
      * @throws InvalidCartItemException
      * @throws InvalidAddressException
      */
-    public function testStartWithAuthenticationException(): void
+    public function testCreateWithAuthenticationException(): void
     {
         $token = 'token';
         $cartItem = CartItem::create(self::NAME, self::CATEGORY, self::SUB_CATEGORY, self::TYPE, self::PRICE, self::QUANTITY, self::MANUFACTURER, self::MERCHANT_ITEM_ID, self::OTHER);
         $cart = Cart::create(self::CURRENCY, self::TOTAL_VALUE, [$cartItem]);
         $address = Address::create(self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3);
         $customer = Customer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::COMPANY_NAME, self::PHONE, self::EMAIL, $address, $address);
-        $other = StartOther::create(self::IP, self::BROWSER);
-        $urls = Urls::create(self::IPN_URL, self::CHECKOUT_URL);
+        $other = CreateOther::create(self::IP, self::BROWSER);
+        $urls = RedirectUrls::create(
+            self::ACCEPTED_URL,
+            self::REJECTED_URL,
+            self::CANCELLED_URL,
+            self::IPN_URL,
+            self::CHECKOUT_URL
+        );
         $body = [
             'merchantId' => self::MERCHANT_ID,
             'merchantCartId' => self::MERCHANT_CART_ID,
@@ -451,16 +466,16 @@ class IzzyPayTest extends TestCase
         $this->requestServiceMock
             ->shouldReceive('sendPostRequest')
             ->once()
-            ->with(IzzyPay::START_ENDPOINT . '/' . $token, $body)
+            ->with(RedirectIzzyPay::CREATE_ENDPOINT . '/' . $token, $body)
             ->andThrow(new AuthenticationException('reason'));
         $this->responseValidatorMock
-            ->shouldNotHaveReceived('validateStartResponse');
+            ->shouldNotHaveReceived('validateCreateResponse');
         $this->responseValidatorMock
-            ->shouldNotHaveReceived('verifyStartAvailability');
+            ->shouldNotHaveReceived('verifyCreateAvailability');
 
         $this->expectException(AuthenticationException::class);
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
-        $izzyPay->start($token, self::MERCHANT_CART_ID, $cart, $customer, $other, $urls);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->create($token, self::MERCHANT_CART_ID, $cart, $customer, $other, $urls);
     }
 
     /**
@@ -476,15 +491,21 @@ class IzzyPayTest extends TestCase
      * @throws InvalidCartItemException
      * @throws InvalidAddressException
      */
-    public function testStartWithInvalidResponseException(): void
+    public function testCreateWithInvalidResponseException(): void
     {
         $token = 'token';
         $cartItem = CartItem::create(self::NAME, self::CATEGORY, self::SUB_CATEGORY, self::TYPE, self::PRICE, self::QUANTITY, self::MANUFACTURER, self::MERCHANT_ITEM_ID, self::OTHER);
         $cart = Cart::create(self::CURRENCY, self::TOTAL_VALUE, [$cartItem]);
         $address = Address::create(self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3);
         $customer = Customer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::COMPANY_NAME, self::PHONE, self::EMAIL, $address, $address);
-        $other = StartOther::create(self::IP, self::BROWSER);
-        $urls = Urls::create(self::IPN_URL, self::CHECKOUT_URL);
+        $other = CreateOther::create(self::IP, self::BROWSER);
+        $urls = RedirectUrls::create(
+            self::ACCEPTED_URL,
+            self::REJECTED_URL,
+            self::CANCELLED_URL,
+            self::IPN_URL,
+            self::CHECKOUT_URL
+        );
         $body = [
             'merchantId' => self::MERCHANT_ID,
             'merchantCartId' => self::MERCHANT_CART_ID,
@@ -500,19 +521,19 @@ class IzzyPayTest extends TestCase
         $this->requestServiceMock
             ->shouldReceive('sendPostRequest')
             ->once()
-            ->with(IzzyPay::START_ENDPOINT . '/' . $token, $body)
+            ->with(RedirectIzzyPay::CREATE_ENDPOINT . '/' . $token, $body)
             ->andReturn($response);
         $this->responseValidatorMock
-            ->shouldReceive('validateStartResponse')
+            ->shouldReceive('validateCreateResponse')
             ->once()
             ->with($response)
             ->andThrow(new InvalidResponseException(['merchantId', 'available']));
         $this->responseValidatorMock
-            ->shouldNotHaveReceived('verifyStartAvailability');
+            ->shouldNotHaveReceived('verifyCreateAvailability');
 
         $this->expectException(InvalidResponseException::class);
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
-        $izzyPay->start($token, self::MERCHANT_CART_ID, $cart, $customer, $other, $urls);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->create($token, self::MERCHANT_CART_ID, $cart, $customer, $other, $urls);
     }
 
     /**
@@ -528,15 +549,21 @@ class IzzyPayTest extends TestCase
      * @throws InvalidCartItemException
      * @throws InvalidAddressException
      */
-    public function testStartWithPaymentServiceUnavailableException(): void
+    public function testCreateWithPaymentServiceUnavailableException(): void
     {
         $token = 'token';
         $cartItem = CartItem::create(self::NAME, self::CATEGORY, self::SUB_CATEGORY, self::TYPE, self::PRICE, self::QUANTITY, self::MANUFACTURER, self::MERCHANT_ITEM_ID, self::OTHER);
         $cart = Cart::create(self::CURRENCY, self::TOTAL_VALUE, [$cartItem]);
         $address = Address::create(self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3);
         $customer = Customer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::COMPANY_NAME, self::PHONE, self::EMAIL, $address, $address);
-        $other = StartOther::create(self::IP, self::BROWSER);
-        $urls = Urls::create(self::IPN_URL, self::CHECKOUT_URL);
+        $other = CreateOther::create(self::IP, self::BROWSER);
+        $urls = RedirectUrls::create(
+            self::ACCEPTED_URL,
+            self::REJECTED_URL,
+            self::CANCELLED_URL,
+            self::IPN_URL,
+            self::CHECKOUT_URL
+        );
         $body = [
             'merchantId' => self::MERCHANT_ID,
             'merchantCartId' => self::MERCHANT_CART_ID,
@@ -552,20 +579,20 @@ class IzzyPayTest extends TestCase
         $this->requestServiceMock
             ->shouldReceive('sendPostRequest')
             ->once()
-            ->with(IzzyPay::START_ENDPOINT . '/' . $token, $body)
+            ->with(RedirectIzzyPay::CREATE_ENDPOINT . '/' . $token, $body)
             ->andReturn($response);
         $this->responseValidatorMock
-            ->shouldReceive('validateStartResponse')
+            ->shouldReceive('validateCreateResponse')
             ->once()
             ->with($response);
         $this->responseValidatorMock
-            ->shouldReceive('verifyStartAvailability')
+            ->shouldReceive('verifyCreateAvailability')
             ->once()
             ->andThrow(new PaymentServiceUnavailableException(['token']));
 
         $this->expectException(PaymentServiceUnavailableException::class);
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
-        $izzyPay->start($token, self::MERCHANT_CART_ID, $cart, $customer, $other, $urls);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->create($token, self::MERCHANT_CART_ID, $cart, $customer, $other, $urls);
     }
 
     /**
@@ -581,15 +608,21 @@ class IzzyPayTest extends TestCase
      * @throws InvalidCartItemException
      * @throws InvalidAddressException
      */
-    public function testStart(): void
+    public function testCreate(): void
     {
         $token = 'token';
         $cartItem = CartItem::create(self::NAME, self::CATEGORY, self::SUB_CATEGORY, self::TYPE, self::PRICE, self::QUANTITY, self::MANUFACTURER, self::MERCHANT_ITEM_ID, self::OTHER);
         $cart = Cart::create(self::CURRENCY, self::TOTAL_VALUE, [$cartItem]);
         $address = Address::create(self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3);
         $customer = Customer::create(self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::COMPANY_NAME, self::PHONE, self::EMAIL, $address, $address);
-        $other = StartOther::create(self::IP, self::BROWSER);
-        $urls = Urls::create(self::IPN_URL, self::CHECKOUT_URL);
+        $other = CreateOther::create(self::IP, self::BROWSER);
+        $urls = RedirectUrls::create(
+            self::ACCEPTED_URL,
+            self::REJECTED_URL,
+            self::CANCELLED_URL,
+            self::IPN_URL,
+            self::CHECKOUT_URL
+        );
         $body = [
             'merchantId' => self::MERCHANT_ID,
             'merchantCartId' => self::MERCHANT_CART_ID,
@@ -603,24 +636,24 @@ class IzzyPayTest extends TestCase
             'merchantId' => 'merchant id',
             'merchantCartId' => 'merchant cart id',
         ];
-        $startResponse = new StartResponse($response['token'], $response['merchantId'], $response['merchantCartId']);
+        $createResponse = new CreateResponse($response['token'], $response['merchantId'], $response['merchantCartId']);
 
         $this->requestServiceMock
             ->shouldReceive('sendPostRequest')
             ->once()
-            ->with(IzzyPay::START_ENDPOINT . '/' . $token, $body)
+            ->with(RedirectIzzyPay::CREATE_ENDPOINT . '/' . $token, $body)
             ->andReturn($response);
         $this->responseValidatorMock
-            ->shouldReceive('validateStartResponse')
+            ->shouldReceive('validateCreateResponse')
             ->once()
             ->with($response);
         $this->responseValidatorMock
-            ->shouldReceive('verifyStartAvailability')
+            ->shouldReceive('verifyCreateAvailability')
             ->once();
 
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
-        $result = $izzyPay->start($token, self::MERCHANT_CART_ID, $cart, $customer, $other, $urls);
-        $this->assertEquals($startResponse, $result);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $result = $izzyPay->create($token, self::MERCHANT_CART_ID, $cart, $customer, $other, $urls);
+        $this->assertEquals($createResponse, $result);
     }
 
     // </editor-fold>
@@ -637,11 +670,11 @@ class IzzyPayTest extends TestCase
         $this->requestServiceMock
             ->shouldReceive('sendPutRequest')
             ->once()
-            ->with(IzzyPay::DELIVERY_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID)
+            ->with(RedirectIzzyPay::DELIVERY_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID)
             ->andThrow(new RequestException('reason'));
 
         $this->expectException(RequestException::class);
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $izzyPay->deliveryCart(self::MERCHANT_CART_ID);
     }
 
@@ -655,11 +688,11 @@ class IzzyPayTest extends TestCase
         $this->requestServiceMock
             ->shouldReceive('sendPutRequest')
             ->once()
-            ->with(IzzyPay::DELIVERY_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID)
+            ->with(RedirectIzzyPay::DELIVERY_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID)
             ->andThrow(new AuthenticationException('reason'));
 
         $this->expectException(AuthenticationException::class);
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $izzyPay->deliveryCart(self::MERCHANT_CART_ID);
     }
 
@@ -673,10 +706,10 @@ class IzzyPayTest extends TestCase
         $this->requestServiceMock
             ->shouldReceive('sendPutRequest')
             ->once()
-            ->with(IzzyPay::DELIVERY_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID)
+            ->with(RedirectIzzyPay::DELIVERY_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID)
             ->andReturn([]);
 
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $izzyPay->deliveryCart(self::MERCHANT_CART_ID);
         $this->assertTrue(true);
     }
@@ -691,11 +724,11 @@ class IzzyPayTest extends TestCase
         $this->requestServiceMock
             ->shouldReceive('sendPutRequest')
             ->once()
-            ->with(IzzyPay::DELIVERY_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID)
+            ->with(RedirectIzzyPay::DELIVERY_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID)
             ->andThrow(new RequestException('reason'));
 
         $this->expectException(RequestException::class);
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $izzyPay->deliveryItem(self::MERCHANT_CART_ID, self::MERCHANT_ITEM_ID);
     }
 
@@ -709,11 +742,11 @@ class IzzyPayTest extends TestCase
         $this->requestServiceMock
             ->shouldReceive('sendPutRequest')
             ->once()
-            ->with(IzzyPay::DELIVERY_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID)
+            ->with(RedirectIzzyPay::DELIVERY_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID)
             ->andThrow(new AuthenticationException('reason'));
 
         $this->expectException(AuthenticationException::class);
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $izzyPay->deliveryItem(self::MERCHANT_CART_ID, self::MERCHANT_ITEM_ID);
     }
 
@@ -727,10 +760,10 @@ class IzzyPayTest extends TestCase
         $this->requestServiceMock
             ->shouldReceive('sendPutRequest')
             ->once()
-            ->with(IzzyPay::DELIVERY_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID)
+            ->with(RedirectIzzyPay::DELIVERY_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID)
             ->andReturn([]);
 
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $izzyPay->deliveryItem(self::MERCHANT_CART_ID, self::MERCHANT_ITEM_ID);
         $this->assertTrue(true);
     }
@@ -752,13 +785,13 @@ class IzzyPayTest extends TestCase
             ->shouldReceive('sendPutRequest')
             ->once()
             ->with(
-                IzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID,
+                RedirectIzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID,
                 ['returnDate' => $returnDate->format(DateTimeImmutable::ISO8601)]
             )
             ->andThrow(new RequestException('reason'));
 
         $this->expectException(RequestException::class);
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $izzyPay->returnCart(self::MERCHANT_CART_ID, $returnDate);
     }
 
@@ -775,13 +808,13 @@ class IzzyPayTest extends TestCase
             ->shouldReceive('sendPutRequest')
             ->once()
             ->with(
-                IzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID,
+                RedirectIzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID,
                 ['returnDate' => $returnDate->format(DateTimeImmutable::ISO8601)]
             )
             ->andThrow(new AuthenticationException('reason'));
 
         $this->expectException(AuthenticationException::class);
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $izzyPay->returnCart(self::MERCHANT_CART_ID, $returnDate);
     }
 
@@ -798,12 +831,12 @@ class IzzyPayTest extends TestCase
             ->shouldReceive('sendPutRequest')
             ->once()
             ->with(
-                IzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID,
+                RedirectIzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID,
                 ['returnDate' => $returnDate->format(DateTimeImmutable::ISO8601)]
             )
             ->andReturn([]);
 
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $izzyPay->returnCart(self::MERCHANT_CART_ID, $returnDate);
         $this->assertTrue(true);
     }
@@ -827,7 +860,7 @@ class IzzyPayTest extends TestCase
             ->shouldNotHaveReceived('sendPutRequest');
 
         $this->expectException(InvalidReturnDataException::class);
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $izzyPay->returnItem(self::MERCHANT_CART_ID, self::MERCHANT_ITEM_ID, $returnDate, $reducedValue);
     }
 
@@ -849,13 +882,13 @@ class IzzyPayTest extends TestCase
             ->shouldReceive('sendPutRequest')
             ->once()
             ->with(
-                IzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID,
+                RedirectIzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID,
                 ['returnDate' => $returnDate->format(DateTimeImmutable::ISO8601), 'reducedValue' => $reducedValue]
             )
             ->andThrow(new RequestException('reason'));
 
         $this->expectException(RequestException::class);
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $izzyPay->returnItem(self::MERCHANT_CART_ID, self::MERCHANT_ITEM_ID, $returnDate, $reducedValue);
     }
 
@@ -877,13 +910,13 @@ class IzzyPayTest extends TestCase
             ->shouldReceive('sendPutRequest')
             ->once()
             ->with(
-                IzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID,
+                RedirectIzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID,
                 ['returnDate' => $returnDate->format(DateTimeImmutable::ISO8601), 'reducedValue' => $reducedValue]
             )
             ->andThrow(new AuthenticationException('reason'));
 
         $this->expectException(AuthenticationException::class);
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $izzyPay->returnItem(self::MERCHANT_CART_ID, self::MERCHANT_ITEM_ID, $returnDate, $reducedValue);
     }
 
@@ -904,12 +937,12 @@ class IzzyPayTest extends TestCase
             ->shouldReceive('sendPutRequest')
             ->once()
             ->with(
-                IzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID,
+                RedirectIzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID,
                 ['returnDate' => $returnDate->format(DateTimeImmutable::ISO8601)]
             )
             ->andReturn([]);
 
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $izzyPay->returnItem(self::MERCHANT_CART_ID, self::MERCHANT_ITEM_ID, $returnDate);
         $this->assertTrue(true);
     }
@@ -932,12 +965,12 @@ class IzzyPayTest extends TestCase
             ->shouldReceive('sendPutRequest')
             ->once()
             ->with(
-                IzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID,
+                RedirectIzzyPay::RETURN_ENDPOINT . '/' . self::MERCHANT_ID . '/' . self::MERCHANT_CART_ID . '/' . self::MERCHANT_ITEM_ID,
                 ['returnDate' => $returnDate->format(DateTimeImmutable::ISO8601), 'reducedValue' => $reducedValue]
             )
             ->andReturn([]);
 
-        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay = new RedirectIzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
         $izzyPay->returnItem(self::MERCHANT_CART_ID, self::MERCHANT_ITEM_ID, $returnDate, $reducedValue);
         $this->assertTrue(true);
     }

@@ -32,6 +32,7 @@ class UrlsValidatorTest extends TestCase
     }
 
     /**
+     * @return array<int, array<int, object|string|null>>
      * @throws ReflectionException
      */
     public function getUrlsProvider(): array

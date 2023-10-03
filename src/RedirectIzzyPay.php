@@ -16,49 +16,55 @@ use IzzyPay\Exceptions\RequestException;
 use IzzyPay\Exceptions\PaymentServiceUnavailableException;
 use IzzyPay\Models\AbstractCustomer;
 use IzzyPay\Models\Cart;
+use IzzyPay\Models\CreateOther;
 use IzzyPay\Models\Customer;
-use IzzyPay\Models\Response\StartResponse;
-use IzzyPay\Models\StartOther;
-use IzzyPay\Models\Urls;
+use IzzyPay\Models\RedirectUrls;
+use IzzyPay\Models\Response\CreateResponse;
 use IzzyPay\Validators\CartValidator;
 use IzzyPay\Validators\CustomerValidator;
 use IzzyPay\Validators\OtherValidator;
-use IzzyPay\Validators\UrlsValidator;
+use IzzyPay\Validators\RedirectUrlsValidator;
 use JsonException;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class IzzyPay extends AbstractIzzyPay
+class RedirectIzzyPay extends AbstractIzzyPay
 {
-    public const CRED_ENDPOINT = '/api/v1/cred';
-    public const INIT_ENDPOINT = '/api/v1/init';
-    public const START_ENDPOINT = '/api/v1/start';
-    public const DELIVERY_ENDPOINT = '/api/v1/delivery';
-    public const RETURN_ENDPOINT = '/api/v1/return';
+    public const CRED_ENDPOINT = '/api/r1/cred';
+    public const INIT_ENDPOINT = '/api/r1/init';
+    public const CREATE_ENDPOINT = '/api/r1/start';
+    public const DELIVERY_ENDPOINT = '/api/r1/delivery';
+    public const RETURN_ENDPOINT = '/api/r1/return';
 
     /**
-     * @param string $token
+     * @param string|null $token
      * @param string $merchantCartId
      * @param Cart $cart
      * @param Customer $customer
-     * @param StartOther $other
-     * @param Urls $urls
-     * @return StartResponse
+     * @param CreateOther $other
+     * @param RedirectUrls $urls
+     * @return CreateResponse
      * @throws AuthenticationException
-     * @throws InvalidResponseException
-     * @throws JsonException
-     * @throws RequestException
-     * @throws PaymentServiceUnavailableException
-     * @throws InvalidCartItemException
-     * @throws InvalidCartException
      * @throws InvalidAddressException
+     * @throws InvalidCartException
+     * @throws InvalidCartItemException
      * @throws InvalidCustomerException
      * @throws InvalidOtherException
+     * @throws InvalidResponseException
      * @throws InvalidUrlsException
+     * @throws JsonException
+     * @throws PaymentServiceUnavailableException
+     * @throws RequestException
      */
-    public function start(string $token, string $merchantCartId, Cart $cart, Customer $customer, StartOther $other, Urls $urls): StartResponse
-    {
+    public function create(
+        ?string $token,
+        string $merchantCartId,
+        Cart $cart,
+        Customer $customer,
+        CreateOther $other,
+        RedirectUrls $urls
+    ): CreateResponse {
         $cartValidator = new CartValidator();
         $cartValidator->validateCart($cart);
 
@@ -68,27 +74,32 @@ class IzzyPay extends AbstractIzzyPay
         $otherValidator = new OtherValidator();
         $otherValidator->validateStartOther($other);
 
-        $urlsValidator = new UrlsValidator();
+        $urlsValidator = new RedirectUrlsValidator();
         $urlsValidator->validateUrls($urls);
 
-        $endpoint = static::START_ENDPOINT . '/' . $token;
-        $body = $this->prepareStartRequestData($merchantCartId, $cart, $customer, $other, $urls);
+        $endpoint = static::CREATE_ENDPOINT . '/' . $token;
+        $body = $this->prepareCreateRequestData($merchantCartId, $cart, $customer, $other, $urls);
         $response = $this->requestService->sendPostRequest($endpoint, $body);
-        $this->responseValidator->validateStartResponse($response);
-        $this->responseValidator->verifyStartAvailability($response);
-        return new StartResponse($response['token'], $response['merchantId'], $response['merchantCartId']);
+        $this->responseValidator->validateCreateResponse($response);
+        $this->responseValidator->verifyCreateAvailability($response);
+        return new CreateResponse($response['token'], $response['merchantId'], $response['merchantCartId']);
     }
 
     /**
      * @param string $merchantCartId
      * @param Cart $cart
      * @param AbstractCustomer $customer
-     * @param StartOther $other
-     * @param Urls $urls
+     * @param CreateOther $other
+     * @param RedirectUrls $urls
      * @return array<string, mixed>
      **/
-    private function prepareStartRequestData(string $merchantCartId, Cart $cart, AbstractCustomer $customer, StartOther $other, Urls $urls): array
-    {
+    private function prepareCreateRequestData(
+        string $merchantCartId,
+        Cart $cart,
+        AbstractCustomer $customer,
+        CreateOther $other,
+        RedirectUrls $urls
+    ): array {
         return [
             'merchantId' => $this->merchantId,
             'merchantCartId' => $merchantCartId,
