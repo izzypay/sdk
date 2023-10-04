@@ -43,7 +43,7 @@ class UrlsTest extends TestCase
     {
         $urls = $this->invokeConstructor(Urls::class, [self::IPN_URL, self::CHECKOUT_URL]);
         $urlsAsArray = $urls->toArray();
-        $this->assertEqualsCanonicalizing([
+        $this->assertEquals([
             'ipn' => self::IPN_URL,
             'checkoutUrl' => self::CHECKOUT_URL,
         ], $urlsAsArray);

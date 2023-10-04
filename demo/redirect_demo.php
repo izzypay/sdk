@@ -24,7 +24,7 @@ use IzzyPay\Models\Customer;
 use IzzyPay\Models\Other;
 use IzzyPay\Models\RedirectUrls;
 use IzzyPay\Models\Response\CreateResponse;
-use IzzyPay\Models\Response\InitResponse;
+use IzzyPay\Models\Response\RedirectInitResponse;
 use IzzyPay\RedirectIzzyPay;
 
 $merchantCartId = '666';
@@ -39,7 +39,7 @@ function verifyCredential(RedirectIzzyPay $izzyPay): void
     }
 }
 
-function sendInit(RedirectIzzyPay $izzyPay, string $merchantCartId): ?InitResponse
+function sendInit(RedirectIzzyPay $izzyPay, string $merchantCartId): ?RedirectInitResponse
 {
     try {
         $cartItem = CartItem::create('name','category', 'subCategory', 'product', 6666.6, 1, 'manufacturer', 'merchantItemId', 'other');

@@ -70,6 +70,20 @@ class ResponseValidator
      * @return void
      * @throws InvalidResponseException
      */
+    public function validateRedirectInitResponse(array $response): void
+    {
+        $errors = $this->validate($response);
+
+        if (count($errors) > 0) {
+            throw new InvalidResponseException($errors);
+        }
+    }
+
+    /**
+     * @param array $response
+     * @return void
+     * @throws InvalidResponseException
+     */
     public function validateStartResponse(array $response): void
     {
         $errors = $this->validate($response);

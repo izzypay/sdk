@@ -41,7 +41,7 @@ class OtherTest extends TestCase
     {
         $other = $this->invokeConstructor(Other::class, [self::BROWSER]);
         $otherAsArray = $other->toArray();
-        $this->assertEqualsCanonicalizing([
+        $this->assertEquals([
             'browser' => self::BROWSER,
         ], $otherAsArray);
     }

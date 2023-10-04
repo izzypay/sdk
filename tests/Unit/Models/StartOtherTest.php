@@ -45,7 +45,7 @@ class StartOtherTest extends TestCase
         /** @var StartOther $other */
         $other = $this->invokeConstructor(StartOther::class, [self::IP, self::BROWSER]);
         $otherAsArray = $other->toArray();
-        $this->assertEqualsCanonicalizing(
+        $this->assertEquals(
             [
                 'ip' => self::IP,
                 'browser' => self::BROWSER

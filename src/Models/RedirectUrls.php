@@ -127,9 +127,9 @@ class RedirectUrls
     public function toArray(): array
     {
         return [
-            'accepted' => $this->accepted,
-            'rejected' => $this->rejected,
-            'cancelled' => $this->cancelled,
+            'acceptedUrl' => $this->accepted,
+            'rejectedUrl' => $this->rejected,
+            'cancelledUrl' => $this->cancelled,
             'ipn' => $this->ipn,
             'checkoutUrl' => $this->checkoutUrl,
         ];

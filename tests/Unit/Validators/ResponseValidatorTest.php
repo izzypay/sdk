@@ -85,7 +85,7 @@ class ResponseValidatorTest extends TestCase
     {
         $responseValidator = $this->getNewResponseValidator();
         $errors = $this->invokeMethod($responseValidator, 'validate', [$response]);
-        $this->assertEqualsCanonicalizing($expected, $errors);
+        $this->assertEquals($expected, $errors);
     }
 
     /**
@@ -93,6 +93,22 @@ class ResponseValidatorTest extends TestCase
      * @throws InvalidResponseException
      */
     public function testValidateInitResponse(array $response, ?string $expectedExceptionClass): void
+    {
+        $responseValidator = $this->getNewResponseValidator();
+        if ($expectedExceptionClass) {
+            $this->expectException($expectedExceptionClass);
+        }
+        $responseValidator->validateInitResponse($response);
+        if (!$expectedExceptionClass) {
+            $this->assertTrue(true);
+        }
+    }
+
+    /**
+     * @dataProvider getRedirectInitResponseForValidationProvider
+     * @throws InvalidResponseException
+     */
+    public function testValidateRedirectInitResponse(array $response, ?string $expectedExceptionClass): void
     {
         $responseValidator = $this->getNewResponseValidator();
         if ($expectedExceptionClass) {
@@ -202,6 +218,25 @@ class ResponseValidatorTest extends TestCase
                     'jsUrl' => 'https://www.example.com'
                 ],
                 null
+            ],
+        ];
+    }
+
+    public function getRedirectInitResponseForValidationProvider(): array
+    {
+        return [
+            [
+                [],
+                InvalidResponseException::class,
+            ],
+            [
+                [
+                    'token' => 'token',
+                    'merchantId' => 'merchant id',
+                    'merchantCartId' => 'merchant cart id',
+                    'jsUrl' => 'https://www.example.com'
+                ],
+                null,
             ],
         ];
     }

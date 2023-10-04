@@ -17,6 +17,9 @@ use IzzyPay\Exceptions\PaymentServiceUnavailableException;
 use IzzyPay\Models\AbstractCustomer;
 use IzzyPay\Models\Cart;
 use IzzyPay\Models\Customer;
+use IzzyPay\Models\LimitedCustomer;
+use IzzyPay\Models\Other;
+use IzzyPay\Models\Response\InitResponse;
 use IzzyPay\Models\Response\StartResponse;
 use IzzyPay\Models\StartOther;
 use IzzyPay\Models\Urls;
@@ -36,6 +39,40 @@ class IzzyPay extends AbstractIzzyPay
     public const START_ENDPOINT = '/api/v1/start';
     public const DELIVERY_ENDPOINT = '/api/v1/delivery';
     public const RETURN_ENDPOINT = '/api/v1/return';
+
+    /**
+     * @param string $merchantCartId
+     * @param Cart $cart
+     * @param LimitedCustomer $limitedCustomer
+     * @param Other $other
+     * @return InitResponse
+     * @throws AuthenticationException
+     * @throws InvalidResponseException
+     * @throws JsonException
+     * @throws PaymentServiceUnavailableException
+     * @throws RequestException
+     * @throws InvalidCartItemException
+     * @throws InvalidCartException
+     * @throws InvalidCustomerException
+     * @throws InvalidOtherException
+     */
+    public function init(string $merchantCartId, Cart $cart, LimitedCustomer $limitedCustomer, Other $other): InitResponse
+    {
+        $cartValidator = new CartValidator();
+        $cartValidator->validateCart($cart);
+
+        $customerValidator = new CustomerValidator();
+        $customerValidator->validateLimitedCustomer($limitedCustomer);
+
+        $otherValidator = new OtherValidator();
+        $otherValidator->validateOther($other);
+
+        $body = $this->prepareInitRequestData($merchantCartId, $cart, $limitedCustomer, $other);
+        $response = $this->requestService->sendPostRequest(static::INIT_ENDPOINT, $body);
+        $this->responseValidator->validateInitResponse($response);
+        $this->responseValidator->verifyInitAvailability($response);
+        return new InitResponse($response['token'], $response['merchantId'], $response['merchantCartId'], $response['jsUrl']);
+    }
 
     /**
      * @param string $token

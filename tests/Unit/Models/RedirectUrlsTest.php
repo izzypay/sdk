@@ -57,11 +57,11 @@ class RedirectUrlsTest extends TestCase
             [self::ACCEPTED_URL, self::REJECTED_URL, self::CANCELLED_URL, self::IPN_URL, self::CHECKOUT_URL]
         );
         $urlsAsArray = $urls->toArray();
-        $this->assertEqualsCanonicalizing(
+        $this->assertEquals(
             [
-                'accepted' => self::ACCEPTED_URL,
-                'rejected' => self::REJECTED_URL,
-                'cancelled' => self::CANCELLED_URL,
+                'acceptedUrl' => self::ACCEPTED_URL,
+                'rejectedUrl' => self::REJECTED_URL,
+                'cancelledUrl' => self::CANCELLED_URL,
                 'ipn' => self::IPN_URL,
                 'checkoutUrl' => self::CHECKOUT_URL
             ],

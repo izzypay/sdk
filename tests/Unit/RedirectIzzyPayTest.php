@@ -26,7 +26,7 @@ use IzzyPay\Models\Customer;
 use IzzyPay\Models\Other;
 use IzzyPay\Models\RedirectUrls;
 use IzzyPay\Models\Response\CreateResponse;
-use IzzyPay\Models\Response\InitResponse;
+use IzzyPay\Models\Response\RedirectInitResponse;
 use IzzyPay\RedirectIzzyPay;
 use IzzyPay\Services\HmacService;
 use IzzyPay\Services\RequestService;
@@ -179,7 +179,7 @@ class RedirectIzzyPayTest extends TestCase
             ->with(RedirectIzzyPay::INIT_ENDPOINT, $body)
             ->andThrow(new RequestException('reason'));
         $this->responseValidatorMock
-            ->shouldNotHaveReceived('validateInitResponse');
+            ->shouldNotHaveReceived('validateRedirectInitResponse');
         $this->responseValidatorMock
             ->shouldNotHaveReceived('verifyInitAvailability');
 
@@ -219,7 +219,7 @@ class RedirectIzzyPayTest extends TestCase
             ->with(RedirectIzzyPay::INIT_ENDPOINT, $body)
             ->andThrow(new AuthenticationException('reason'));
         $this->responseValidatorMock
-            ->shouldNotHaveReceived('validateInitResponse');
+            ->shouldNotHaveReceived('validateRedirectInitResponse');
         $this->responseValidatorMock
             ->shouldNotHaveReceived('verifyInitAvailability');
 
@@ -261,7 +261,7 @@ class RedirectIzzyPayTest extends TestCase
             ->with(RedirectIzzyPay::INIT_ENDPOINT, $body)
             ->andReturn($response);
         $this->responseValidatorMock
-            ->shouldReceive('validateInitResponse')
+            ->shouldReceive('validateRedirectInitResponse')
             ->once()
             ->with($response)
             ->andThrow(new InvalidResponseException(['merchantId', 'available']));
@@ -306,7 +306,7 @@ class RedirectIzzyPayTest extends TestCase
             ->with(RedirectIzzyPay::INIT_ENDPOINT, $body)
             ->andReturn($response);
         $this->responseValidatorMock
-            ->shouldReceive('validateInitResponse')
+            ->shouldReceive('validateRedirectInitResponse')
             ->once()
             ->with($response);
         $this->responseValidatorMock
@@ -350,14 +350,14 @@ class RedirectIzzyPayTest extends TestCase
             'jsUrl' => 'https://www.example.com',
             'available' => true,
         ];
-        $initResponse = new InitResponse($response['token'], $response['merchantId'], $response['merchantCartId'], $response['jsUrl']);
+        $initResponse = new RedirectInitResponse($response['token'], $response['merchantId'], $response['merchantCartId'], $response['jsUrl']);
         $this->requestServiceMock
             ->shouldReceive('sendPostRequest')
             ->once()
             ->with(RedirectIzzyPay::INIT_ENDPOINT, $body)
             ->andReturn($response);
         $this->responseValidatorMock
-            ->shouldReceive('validateInitResponse')
+            ->shouldReceive('validateRedirectInitResponse')
             ->once()
             ->with($response);
         $this->responseValidatorMock

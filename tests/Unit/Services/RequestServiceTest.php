@@ -352,7 +352,7 @@ class RequestServiceTest extends TestCase
             $this->responseValidatorMock,
         );
         $response = $requestService->sendPostRequest($endpoint, $body);
-        $this->assertEqualsCanonicalizing($responseData, $response);
+        $this->assertEquals($responseData, $response);
     }
 
     /**
@@ -405,7 +405,7 @@ class RequestServiceTest extends TestCase
 
         $requestService = $this->getNewRequestService();
         $response = $requestService->sendPostRequest($endpoint, $body);
-        $this->assertEqualsCanonicalizing($responseData, $response);
+        $this->assertEquals($responseData, $response);
     }
     // </editor-fold>
 
@@ -550,7 +550,7 @@ class RequestServiceTest extends TestCase
             $this->responseValidatorMock,
         );
         $response = $requestService->sendPutRequest($endpoint, $body);
-        $this->assertEqualsCanonicalizing($responseData, $response);
+        $this->assertEquals($responseData, $response);
     }
 
     /**
@@ -598,7 +598,7 @@ class RequestServiceTest extends TestCase
 
         $requestService = $this->getNewRequestService();
         $response = $requestService->sendPutRequest($endpoint);
-        $this->assertEqualsCanonicalizing($responseData, $response);
+        $this->assertEquals($responseData, $response);
     }
 
     /**
@@ -651,7 +651,7 @@ class RequestServiceTest extends TestCase
 
         $requestService = $this->getNewRequestService();
         $response = $requestService->sendPutRequest($endpoint, $body);
-        $this->assertEqualsCanonicalizing($responseData, $response);
+        $this->assertEquals($responseData, $response);
     }
     // </editor-fold>
 
