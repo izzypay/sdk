@@ -119,7 +119,7 @@ if ($initResponse) {
 $createResponse = sendCreate($izzyPay, $merchantCartId, $token);
 if ($createResponse) {
     $token = $createResponse->getToken();
-    var_dump('Ok');
+    var_dump($createResponse->getRedirectUrl());
 
     // Delivery for the whole cart
     sendDeliveryCart($izzyPay, $merchantCartId);

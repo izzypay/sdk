@@ -635,8 +635,9 @@ class RedirectIzzyPayTest extends TestCase
             'token' => $token,
             'merchantId' => 'merchant id',
             'merchantCartId' => 'merchant cart id',
+            'redirectUrl' => 'https://redirect.com',
         ];
-        $createResponse = new CreateResponse($response['token'], $response['merchantId'], $response['merchantCartId']);
+        $createResponse = new CreateResponse($response['token'], $response['merchantId'], $response['merchantCartId'], $response['redirectUrl']);
 
         $this->requestServiceMock
             ->shouldReceive('sendPostRequest')

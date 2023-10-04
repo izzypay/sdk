@@ -12,12 +12,14 @@ class CreateResponseTest extends TestCase
     private const TOKEN = 'token';
     private const MERCHANT_ID = 'merchantId';
     private const MERCHANT_CART_ID = 'merchantCartId';
+    private const REDIRECT_URL = 'https://redirect.com';
 
     public function testGetters(): void
     {
-        $startResponse = new CreateResponse(self::TOKEN, self::MERCHANT_ID, self::MERCHANT_CART_ID);
+        $startResponse = new CreateResponse(self::TOKEN, self::MERCHANT_ID, self::MERCHANT_CART_ID, self::REDIRECT_URL);
         $this->assertEquals(self::TOKEN, $startResponse->getToken());
         $this->assertEquals(self::MERCHANT_ID, $startResponse->getMerchantId());
         $this->assertEquals(self::MERCHANT_CART_ID, $startResponse->getMerchantCartId());
+        $this->assertEquals(self::REDIRECT_URL, $startResponse->getRedirectUrl());
     }
 }

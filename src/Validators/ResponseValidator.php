@@ -100,6 +100,11 @@ class ResponseValidator
     public function validateCreateResponse(array $response): void
     {
         $errors = $this->validate($response);
+
+        if (!array_key_exists('redirectUrl', $response) || !filter_var($response['redirectUrl'], FILTER_VALIDATE_URL)) {
+            $errors[] = 'redirectUrl';
+        }
+
         if (count($errors) > 0) {
             throw new InvalidResponseException($errors);
         }

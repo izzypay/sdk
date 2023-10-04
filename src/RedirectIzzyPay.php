@@ -119,7 +119,7 @@ class RedirectIzzyPay extends AbstractIzzyPay
         $response = $this->requestService->sendPostRequest($endpoint, $body);
         $this->responseValidator->validateCreateResponse($response);
         $this->responseValidator->verifyCreateAvailability($response);
-        return new CreateResponse($response['token'], $response['merchantId'], $response['merchantCartId']);
+        return new CreateResponse($response['token'], $response['merchantId'], $response['merchantCartId'], $response['redirectUrl']);
     }
 
     /**

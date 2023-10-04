@@ -137,6 +137,22 @@ class ResponseValidatorTest extends TestCase
     }
 
     /**
+     * @dataProvider getCreateResponseForValidationProvider
+     * @throws InvalidResponseException
+     */
+    public function testValidateCreateResponse(array $response, ?string $expectedExceptionClass): void
+    {
+        $responseValidator = $this->getNewResponseValidator();
+        if ($expectedExceptionClass) {
+            $this->expectException($expectedExceptionClass);
+        }
+        $responseValidator->validateCreateResponse($response);
+        if (!$expectedExceptionClass) {
+            $this->assertTrue(true);
+        }
+    }
+
+    /**
      * @dataProvider getInitResponseForAvailabilityProvider
      * @throws PaymentServiceUnavailableException
      */
@@ -255,6 +271,42 @@ class ResponseValidatorTest extends TestCase
                     'merchantCartId' => 'merchant cart id',
                 ],
                 null,
+            ],
+        ];
+    }
+
+    public function getCreateResponseForValidationProvider(): array
+    {
+        return [
+            [
+                [],
+                InvalidResponseException::class,
+            ],
+            [
+                [
+                    'token' => 'token',
+                    'merchantId' => 'merchant id',
+                    'merchantCartId' => 'merchant cart id',
+                ],
+                InvalidResponseException::class,
+            ],
+            [
+                [
+                    'token' => 'token',
+                    'merchantId' => 'merchant id',
+                    'merchantCartId' => 'merchant cart id',
+                    'redirectUrl' => 'redirect url'
+                ],
+                InvalidResponseException::class,
+            ],
+            [
+                [
+                    'token' => 'token',
+                    'merchantId' => 'merchant id',
+                    'merchantCartId' => 'merchant cart id',
+                    'redirectUrl' => 'https://www.example.com'
+                ],
+                null
             ],
         ];
     }
