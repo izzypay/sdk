@@ -32,9 +32,9 @@ class RequestServiceTest extends TestCase
     private const REQUEST_TIMEOUT = 0.5;
     private const SDK_VERSION = '1.1.0';
 
-    private Client|MockInterface $guzzleClientMock;
-    private HmacService|MockObject $hmacServiceMock;
-    private ResponseValidator|MockObject $responseValidatorMock;
+    private MockInterface $guzzleClientMock;
+    private MockObject $hmacServiceMock;
+    private MockObject $responseValidatorMock;
     private string $pluginVersionHeaderWithShopPlugin;
     private string $pluginVersionHeaderWithoutShopPlugin;
 

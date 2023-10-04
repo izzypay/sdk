@@ -19,7 +19,7 @@ class ResponseValidatorTest extends TestCase
 {
     use InvokeMethodTrait;
 
-    private HmacService|MockObject $hmacServiceMock;
+    private MockObject $hmacServiceMock;
 
     protected function setUp(): void
     {

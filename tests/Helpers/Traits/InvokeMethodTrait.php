@@ -14,7 +14,7 @@ trait InvokeMethodTrait
      * @return mixed
      * @throws ReflectionException
      */
-    public function invokeMethod(&$object, $methodName, array $parameters = array()): mixed
+    public function invokeMethod(&$object, $methodName, array $parameters = array()): array
     {
         $reflection = new ReflectionClass(get_class($object));
         $method = $reflection->getMethod($methodName);

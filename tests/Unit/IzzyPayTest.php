@@ -80,9 +80,9 @@ class IzzyPayTest extends TestCase
     private const IPN_URL = 'https://ipn.com';
     private const CHECKOUT_URL = 'https://checkout.com';
 
-    private ResponseValidator|MockInterface $responseValidatorMock;
-    private RequestService|MockInterface $requestServiceMock;
-    private ReturnValidator|MockInterface $returnValidatorMock;
+    private MockInterface $responseValidatorMock;
+    private MockInterface $requestServiceMock;
+    private MockInterface $returnValidatorMock;
 
     protected function setUp(): void
     {
