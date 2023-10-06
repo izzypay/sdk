@@ -49,40 +49,40 @@ class RedirectUrlsValidatorTest extends TestCase
         );
         $invalidUrls3 = $this->invokeConstructor(
             RedirectUrls::class,
-            ['https://accepted.com', '', '', '', '']
+            ['https://webshop.url/accepted', '', '', '', '']
         );
         $invalidUrls4 = $this->invokeConstructor(
             RedirectUrls::class,
-            ['https://accepted.com', 'invalid', '', '', '']
+            ['https://webshop.url/accepted', 'invalid', '', '', '']
         );
         $invalidUrls5 = $this->invokeConstructor(
             RedirectUrls::class,
-            ['https://accepted.com', 'https://rejected.com', '', '', '']
+            ['https://webshop.url/accepted', 'https://webshop.url/rejected', '', '', '']
         );
         $invalidUrls6 = $this->invokeConstructor(
             RedirectUrls::class,
-            ['https://accepted.com', 'https://rejected.com', 'invalid', '', '']
+            ['https://webshop.url/accepted', 'https://webshop.url/rejected', 'invalid', '', '']
         );
         $invalidUrls7 = $this->invokeConstructor(
             RedirectUrls::class,
-            ['https://accepted.com', 'https://rejected.com', 'https://cancelled.com', '', '']
+            ['https://webshop.url/accepted', 'https://webshop.url/rejected', 'https://webshop.url/cancelled', '', '']
         );
         $invalidUrls8 = $this->invokeConstructor(
             RedirectUrls::class,
-            ['https://accepted.com', 'https://rejected.com', 'https://cancelled.com', 'invalid', '']
+            ['https://webshop.url/accepted', 'https://webshop.url/rejected', 'https://webshop.url/cancelled', 'invalid', '']
         );
         $invalidUrls9 = $this->invokeConstructor(
             RedirectUrls::class,
-            ['https://accepted.com', 'https://rejected.com', 'https://cancelled.com', 'https://ipn.com', '']
+            ['https://webshop.url/accepted', 'https://webshop.url/rejected', 'https://webshop.url/cancelled', 'https://webshop.url/ipn', '']
         );
         $invalidUrls10 = $this->invokeConstructor(
             RedirectUrls::class,
-            ['https://accepted.com', 'https://rejected.com', 'https://cancelled.com', 'https://ipn.com', 'invalid']
+            ['https://webshop.url/accepted', 'https://webshop.url/rejected', 'https://webshop.url/cancelled', 'https://webshop.url/ipn', 'invalid']
         );
 
         $validUrls1 = $this->invokeConstructor(
             RedirectUrls::class,
-            ['https://accepted.com', 'https://rejected.com', 'https://cancelled.com', 'https://ipn.com', 'https://checkout.com']
+            ['https://webshop.url/accepted', 'https://webshop.url/rejected', 'https://webshop.url/cancelled', 'https://webshop.url/ipn', 'https://webshop.url/checkout']
         );
 
         return [

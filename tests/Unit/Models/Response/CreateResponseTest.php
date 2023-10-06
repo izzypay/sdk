@@ -12,7 +12,7 @@ class CreateResponseTest extends TestCase
     private const TOKEN = 'token';
     private const MERCHANT_ID = 'merchantId';
     private const MERCHANT_CART_ID = 'merchantCartId';
-    private const REDIRECT_URL = 'https://redirect.com';
+    private const REDIRECT_URL = 'https://test.izzpay.hu/redirect';
 
     public function testGetters(): void
     {

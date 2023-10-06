@@ -27,7 +27,7 @@ class RequestServiceTest extends TestCase
     use InvokeMethodTrait;
 
     private const MERCHANT_ID = 'merchantId';
-    private const BASE_URL = 'https://www.example.com';
+    private const BASE_URL = 'https://test.izzypay.hu';
     private const PLUGIN_VERSION = 'plugin 1.0';
     private const REQUEST_TIMEOUT = 0.5;
     private const SDK_VERSION = '1.1.0';

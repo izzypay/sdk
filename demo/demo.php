@@ -27,8 +27,8 @@ use IzzyPay\Models\Response\StartResponse;
 use IzzyPay\Models\StartOther;
 use IzzyPay\Models\Urls;
 
-$merchantCartId = '666';
-$izzyPay = new IzzyPay('1', 'abcd1234', 'http://gatewaydmz.localhost', 'plugin 1.0');
+$merchantCartId = '8';
+$izzyPay = new IzzyPay('merchant1', 'abcd1234', 'https://test.izzpay.hu', 'plugin 1.0');
 
 function verifyCredential(IzzyPay $izzyPay): void
 {
@@ -61,7 +61,7 @@ function sendStart(IzzyPay $izzyPay, string $merchantCartId, $token): ?StartResp
         $address = Address::create('8888', 'city', 'street', 'houseNo', 'address1', 'address2', 'address3');
         $customer = Customer::create('merchant', 'merchantCustomerId', null,'other', 'name', 'surname', 'phone', 'email@emai.com', $address, $address);
         $other = StartOther::create('127.0.0.1', 'browser');
-        $urls = Urls::create('https://ipn.com', 'https://checkout.com');
+        $urls = Urls::create('https://webshop.url/ipn', 'https://webshop.url/checkout');
         return $izzyPay->start($token, $merchantCartId, $cart, $customer, $other, $urls);
     } catch (InvalidAddressException|InvalidCustomerException|InvalidCartItemException|InvalidCartException|InvalidOtherException|InvalidResponseException|RequestException|JsonException|InvalidUrlsException|AuthenticationException|PaymentServiceUnavailableException $e) {
         var_dump($e->getMessage());

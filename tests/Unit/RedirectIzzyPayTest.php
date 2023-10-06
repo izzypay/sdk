@@ -44,7 +44,7 @@ class RedirectIzzyPayTest extends TestCase
 {
     private const MERCHANT_ID = 'merchantId';
     private const MERCHANT_SECRET = 'merchantSecret';
-    private const BASE_URL = 'https://example.com';
+    private const BASE_URL = 'https://test.izzypay.hu';
     private const MERCHANT_CART_ID = 'merchantCartId';
 
     private const CURRENCY = 'HUF';
@@ -77,11 +77,11 @@ class RedirectIzzyPayTest extends TestCase
     private const IP = '192.168.1.1';
     private const BROWSER = 'Chrome';
 
-    private const ACCEPTED_URL = 'https://accepted.com';
-    private const REJECTED_URL = 'https://rejected.com';
-    private const CANCELLED_URL = 'https://cancelled.com';
-    private const IPN_URL = 'https://ipn.com';
-    private const CHECKOUT_URL = 'https://checkout.com';
+    private const ACCEPTED_URL = 'https://webshop.url/accepted';
+    private const REJECTED_URL = 'https://webshop.url/rejected';
+    private const CANCELLED_URL = 'https://webshop.url/cancelled';
+    private const IPN_URL = 'https://webshop.url/ipn';
+    private const CHECKOUT_URL = 'https://webshop.url/checkout';
 
     private MockInterface $responseValidatorMock;
     private MockInterface $requestServiceMock;
@@ -347,10 +347,9 @@ class RedirectIzzyPayTest extends TestCase
             'token' => 'token',
             'merchantId' => 'merchant id',
             'merchantCartId' => 'merchant cart id',
-            'jsUrl' => 'https://www.example.com',
             'available' => true,
         ];
-        $initResponse = new RedirectInitResponse($response['token'], $response['merchantId'], $response['merchantCartId'], $response['jsUrl']);
+        $initResponse = new RedirectInitResponse($response['token'], $response['merchantId'], $response['merchantCartId']);
         $this->requestServiceMock
             ->shouldReceive('sendPostRequest')
             ->once()
@@ -635,7 +634,7 @@ class RedirectIzzyPayTest extends TestCase
             'token' => $token,
             'merchantId' => 'merchant id',
             'merchantCartId' => 'merchant cart id',
-            'redirectUrl' => 'https://redirect.com',
+            'redirectUrl' => 'https://test.izzpay.hu/redirect',
         ];
         $createResponse = new CreateResponse($response['token'], $response['merchantId'], $response['merchantCartId'], $response['redirectUrl']);
 

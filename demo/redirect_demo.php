@@ -27,8 +27,8 @@ use IzzyPay\Models\Response\CreateResponse;
 use IzzyPay\Models\Response\RedirectInitResponse;
 use IzzyPay\RedirectIzzyPay;
 
-$merchantCartId = '666';
-$izzyPay = new RedirectIzzyPay('1', 'abcd1234', 'http://gatewaydmz.localhost', 'plugin 1.0');
+$merchantCartId = '8';
+$izzyPay = new RedirectIzzyPay('merchant1', 'abcd1234', 'https://test.izzpay.hu', 'plugin 1.0');
 
 function verifyCredential(RedirectIzzyPay $izzyPay): void
 {
@@ -61,7 +61,7 @@ function sendCreate(RedirectIzzyPay $izzyPay, string $merchantCartId, ?string $t
         $address = Address::create('8888', 'city', 'street', 'houseNo', 'address1', 'address2', 'address3');
         $customer = Customer::create('merchant', 'merchantCustomerId', null,'other', 'name', 'surname', 'phone', 'email@emai.com', $address, $address);
         $other = CreateOther::create('127.0.0.1', 'browser');
-        $urls = RedirectUrls::create('https://accepted.com', 'https://rejected.com', 'https://cancelled.com', 'https://ipn.com', 'https://checkout.com');
+        $urls = RedirectUrls::create('https://webshop.url/accepted', 'https://webshop.url/rejected', 'https://webshop.url/cancelled', 'https://webshop.url/ipn', 'https://webshop.url/checkout');
         return $izzyPay->create($token, $merchantCartId, $cart, $customer, $other, $urls);
     } catch (InvalidAddressException|InvalidCustomerException|InvalidCartItemException|InvalidCartException|InvalidOtherException|InvalidResponseException|RequestException|JsonException|InvalidUrlsException|AuthenticationException|PaymentServiceUnavailableException $e) {
         var_dump($e->getMessage());

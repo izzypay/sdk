@@ -44,7 +44,7 @@ class IzzyPayTest extends TestCase
 {
     private const MERCHANT_ID = 'merchantId';
     private const MERCHANT_SECRET = 'merchantSecret';
-    private const BASE_URL = 'https://example.com';
+    private const BASE_URL = 'https://test.izzypay.hu';
     private const MERCHANT_CART_ID = 'merchantCartId';
 
     private const CURRENCY = 'HUF';
@@ -77,8 +77,8 @@ class IzzyPayTest extends TestCase
     private const IP = '192.168.1.1';
     private const BROWSER = 'Chrome';
 
-    private const IPN_URL = 'https://ipn.com';
-    private const CHECKOUT_URL = 'https://checkout.com';
+    private const IPN_URL = 'https://webshop.url/ipn';
+    private const CHECKOUT_URL = 'https://webshop.url/checkout';
 
     private MockInterface $responseValidatorMock;
     private MockInterface $requestServiceMock;
@@ -344,7 +344,7 @@ class IzzyPayTest extends TestCase
             'token' => 'token',
             'merchantId' => 'merchant id',
             'merchantCartId' => 'merchant cart id',
-            'jsUrl' => 'https://www.example.com',
+            'jsUrl' => 'https://webshop.url/js-url',
             'available' => true,
         ];
         $initResponse = new InitResponse($response['token'], $response['merchantId'], $response['merchantCartId'], $response['jsUrl']);

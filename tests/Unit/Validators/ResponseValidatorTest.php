@@ -114,7 +114,7 @@ class ResponseValidatorTest extends TestCase
         if ($expectedExceptionClass) {
             $this->expectException($expectedExceptionClass);
         }
-        $responseValidator->validateInitResponse($response);
+        $responseValidator->validateRedirectInitResponse($response);
         if (!$expectedExceptionClass) {
             $this->assertTrue(true);
         }
@@ -231,7 +231,7 @@ class ResponseValidatorTest extends TestCase
                     'token' => 'token',
                     'merchantId' => 'merchant id',
                     'merchantCartId' => 'merchant cart id',
-                    'jsUrl' => 'https://www.example.com'
+                    'jsUrl' => 'https://www.webshop.url/js-url'
                 ],
                 null
             ],
@@ -250,7 +250,6 @@ class ResponseValidatorTest extends TestCase
                     'token' => 'token',
                     'merchantId' => 'merchant id',
                     'merchantCartId' => 'merchant cart id',
-                    'jsUrl' => 'https://www.example.com'
                 ],
                 null,
             ],
@@ -304,7 +303,7 @@ class ResponseValidatorTest extends TestCase
                     'token' => 'token',
                     'merchantId' => 'merchant id',
                     'merchantCartId' => 'merchant cart id',
-                    'redirectUrl' => 'https://www.example.com'
+                    'redirectUrl' => 'https://webshop.url/redirect'
                 ],
                 null
             ],
