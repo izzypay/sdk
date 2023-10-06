@@ -26,9 +26,9 @@ class RedirectUrlsTest extends TestCase
     protected function setUp(): void
     {
         $this->fields = [
-            'accepted' => 'https://www.webshop.url/accepted',
-            'rejected' => 'https://www.webshop.url/rejected',
-            'cancelled' => 'https://www.webshop.url/cancelled',
+            'acceptedUrl' => 'https://www.webshop.url/accepted',
+            'rejectedUrl' => 'https://www.webshop.url/rejected',
+            'cancelledUrl' => 'https://www.webshop.url/cancelled',
             'ipn' => 'https://www.webshop.url/ipn',
             'checkoutUrl' => 'https://www.webshop.url/checkout'
         ];
@@ -87,9 +87,9 @@ class RedirectUrlsTest extends TestCase
             self::IPN_URL,
             self::CHECKOUT_URL
         );
-        $this->assertEquals(self::ACCEPTED_URL, $urls->getAccepted());
-        $this->assertEquals(self::REJECTED_URL, $urls->getRejected());
-        $this->assertEquals(self::CANCELLED_URL, $urls->getCancelled());
+        $this->assertEquals(self::ACCEPTED_URL, $urls->getAcceptedUrl());
+        $this->assertEquals(self::REJECTED_URL, $urls->getRejectedUrl());
+        $this->assertEquals(self::CANCELLED_URL, $urls->getCancelledUrl());
         $this->assertEquals(self::IPN_URL, $urls->getIpn());
         $this->assertEquals(self::CHECKOUT_URL, $urls->getCheckoutUrl());
     }

@@ -18,15 +18,15 @@ class RedirectUrlsValidator
     {
         $errors = [];
 
-        if (!filter_var($urls->getAccepted(), FILTER_VALIDATE_URL)) {
+        if (!filter_var($urls->getAcceptedUrl(), FILTER_VALIDATE_URL)) {
             $errors[] = 'accepted';
         }
 
-        if (!filter_var($urls->getRejected(), FILTER_VALIDATE_URL)) {
+        if (!filter_var($urls->getRejectedUrl(), FILTER_VALIDATE_URL)) {
             $errors[] = 'rejected';
         }
 
-        if (!filter_var($urls->getCancelled(), FILTER_VALIDATE_URL)) {
+        if (!filter_var($urls->getCancelledUrl(), FILTER_VALIDATE_URL)) {
             $errors[] = 'cancelled';
         }
 

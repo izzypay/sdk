@@ -9,24 +9,24 @@ use IzzyPay\Validators\RedirectUrlsValidator;
 
 class RedirectUrls
 {
-    private string $accepted;
-    private string $rejected;
-    private string $cancelled;
+    private string $acceptedUrl;
+    private string $rejectedUrl;
+    private string $cancelledUrl;
     private string $ipn;
     private string $checkoutUrl;
 
     /**
-     * @param string $accepted
-     * @param string $rejected
-     * @param string $cancelled
+     * @param string $acceptedUrl
+     * @param string $rejectedUrl
+     * @param string $cancelledUrl
      * @param string $ipn
      * @param string $checkoutUrl
      */
-    private function __construct(string $accepted, string $rejected, string $cancelled, string $ipn, string $checkoutUrl)
+    private function __construct(string $acceptedUrl, string $rejectedUrl, string $cancelledUrl, string $ipn, string $checkoutUrl)
     {
-        $this->accepted = $accepted;
-        $this->rejected = $rejected;
-        $this->cancelled = $cancelled;
+        $this->acceptedUrl = $acceptedUrl;
+        $this->rejectedUrl = $rejectedUrl;
+        $this->cancelledUrl = $cancelledUrl;
         $this->ipn = $ipn;
         $this->checkoutUrl = $checkoutUrl;
     }
@@ -34,54 +34,54 @@ class RedirectUrls
     /**
      * @return string
      */
-    public function getAccepted(): string
+    public function getAcceptedUrl(): string
     {
-        return $this->accepted;
+        return $this->acceptedUrl;
     }
 
     /**
-     * @param string $accepted
+     * @param string $acceptedUrl
      * @return RedirectUrls
      */
-    public function setAccepted(string $accepted): self
+    public function setAcceptedUrl(string $acceptedUrl): self
     {
-        $this->accepted = $accepted;
+        $this->acceptedUrl = $acceptedUrl;
         return $this;
     }
 
     /**
      * @return string
      */
-    public function getRejected(): string
+    public function getRejectedUrl(): string
     {
-        return $this->rejected;
+        return $this->rejectedUrl;
     }
 
     /**
-     * @param string $rejected
+     * @param string $rejectedUrl
      * @return RedirectUrls
      */
-    public function setRejected(string $rejected): self
+    public function setRejectedUrl(string $rejectedUrl): self
     {
-        $this->rejected = $rejected;
+        $this->rejectedUrl = $rejectedUrl;
         return $this;
     }
 
     /**
      * @return string
      */
-    public function getCancelled(): string
+    public function getCancelledUrl(): string
     {
-        return $this->cancelled;
+        return $this->cancelledUrl;
     }
 
     /**
-     * @param string $cancelled
+     * @param string $cancelledUrl
      * @return RedirectUrls
      */
-    public function setCancelled(string $cancelled): self
+    public function setCancelledUrl(string $cancelledUrl): self
     {
-        $this->cancelled = $cancelled;
+        $this->cancelledUrl = $cancelledUrl;
         return $this;
     }
 
@@ -127,26 +127,26 @@ class RedirectUrls
     public function toArray(): array
     {
         return [
-            'acceptedUrl' => $this->accepted,
-            'rejectedUrl' => $this->rejected,
-            'cancelledUrl' => $this->cancelled,
+            'acceptedUrl' => $this->acceptedUrl,
+            'rejectedUrl' => $this->rejectedUrl,
+            'cancelledUrl' => $this->cancelledUrl,
             'ipn' => $this->ipn,
             'checkoutUrl' => $this->checkoutUrl,
         ];
     }
 
     /**
-     * @param string $accepted
-     * @param string $rejected
-     * @param string $cancelled
+     * @param string $acceptedUrl
+     * @param string $rejectedUrl
+     * @param string $cancelledUrl
      * @param string $ipn
      * @param string $checkoutUrl
      * @return RedirectUrls
      * @throws InvalidUrlsException
      */
-    public static function create(string $accepted, string $rejected, string $cancelled, string $ipn, string $checkoutUrl): self
+    public static function create(string $acceptedUrl, string $rejectedUrl, string $cancelledUrl, string $ipn, string $checkoutUrl): self
     {
-        $urls = new RedirectUrls($accepted, $rejected, $cancelled, $ipn, $checkoutUrl);
+        $urls = new RedirectUrls($acceptedUrl, $rejectedUrl, $cancelledUrl, $ipn, $checkoutUrl);
 
         $urlsValidator = new RedirectUrlsValidator();
         $urlsValidator->validateUrls($urls);
