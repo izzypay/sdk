@@ -344,7 +344,7 @@ class IzzyPayTest extends TestCase
             'token' => 'token',
             'merchantId' => 'merchant id',
             'merchantCartId' => 'merchant cart id',
-            'jsUrl' => 'https://webshop.url/js-url',
+            'jsUrl' => 'https://test.izzypay.hu/some.js',
             'available' => true,
         ];
         $initResponse = new InitResponse($response['token'], $response['merchantId'], $response['merchantCartId'], $response['jsUrl']);

@@ -231,7 +231,7 @@ class ResponseValidatorTest extends TestCase
                     'token' => 'token',
                     'merchantId' => 'merchant id',
                     'merchantCartId' => 'merchant cart id',
-                    'jsUrl' => 'https://www.webshop.url/js-url'
+                    'jsUrl' => 'https://test.izzypay.hu/some.js'
                 ],
                 null
             ],
