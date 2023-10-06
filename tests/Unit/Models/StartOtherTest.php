@@ -6,22 +6,25 @@ namespace IzzyPay\Tests\Unit\Models;
 
 use IzzyPay\Exceptions\InvalidOtherException;
 use IzzyPay\Models\Other;
+use IzzyPay\Models\StartOther;
 use IzzyPay\Tests\Helpers\Traits\InvokeConstructorTrait;
 use IzzyPay\Tests\Helpers\Traits\SetterAndGetterTesterTrait;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 
-class OtherTest extends TestCase
+class StartOtherTest extends TestCase
 {
     use InvokeConstructorTrait;
     use SetterAndGetterTesterTrait;
 
     private const BROWSER = 'Chrome';
+    private const IP = '192.168.1.1';
 
     protected function setUp(): void
     {
         $this->fields = [
             'browser' => 'Vivaldi',
+            'ip' => '192.168.1.2',
         ];
     }
 
@@ -30,7 +33,7 @@ class OtherTest extends TestCase
      */
     public function testSettersAndGetters(): void
     {
-        $other = $this->invokeConstructor(Other::class, [self::BROWSER]);
+        $other = $this->invokeConstructor(StartOther::class, [self::IP, self::BROWSER]);
         $this->_testSettersAndGetters($other);
     }
 
@@ -39,17 +42,22 @@ class OtherTest extends TestCase
      */
     public function testToArray(): void
     {
-        $other = $this->invokeConstructor(Other::class, [self::BROWSER]);
+        /** @var StartOther $other */
+        $other = $this->invokeConstructor(StartOther::class, [self::IP, self::BROWSER]);
         $otherAsArray = $other->toArray();
-        $this->assertEquals([
-            'browser' => self::BROWSER,
-        ], $otherAsArray);
+        $this->assertEquals(
+            [
+                'ip' => self::IP,
+                'browser' => self::BROWSER
+            ],
+            $otherAsArray
+        );
     }
 
     public function testCreateWithException(): void
     {
         $this->expectException(InvalidOtherException::class);
-        Other::create('');
+        StartOther::create('', '');
     }
 
     /**
@@ -57,7 +65,8 @@ class OtherTest extends TestCase
      */
     public function testCreate(): void
     {
-        $other = Other::create(self::BROWSER);
+        $other = StartOther::create(self::IP, self::BROWSER);
         $this->assertEquals(self::BROWSER, $other->getBrowser());
+        $this->assertEquals(self::IP, $other->getIp());
     }
 }

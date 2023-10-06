@@ -83,7 +83,7 @@ class CartTest extends TestCase
         $cart = $this->invokeConstructor(Cart::class, [self::CURRENCY, self::TOTAL_VALUE]);
         $cart->addItem($cartItem);
         $cartAsArray = $cart->toArray();
-        $this->assertEqualsCanonicalizing([
+        $this->assertEquals([
             'currency' => self::CURRENCY,
             'totalValue' => self::TOTAL_VALUE,
             'items' => [

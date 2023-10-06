@@ -27,14 +27,14 @@ class RequestServiceTest extends TestCase
     use InvokeMethodTrait;
 
     private const MERCHANT_ID = 'merchantId';
-    private const BASE_URL = 'https://www.example.com';
+    private const BASE_URL = 'https://test.izzypay.hu';
     private const PLUGIN_VERSION = 'plugin 1.0';
     private const REQUEST_TIMEOUT = 0.5;
     private const SDK_VERSION = '1.1.0';
 
-    private Client|MockInterface $guzzleClientMock;
-    private HmacService|MockObject $hmacServiceMock;
-    private ResponseValidator|MockObject $responseValidatorMock;
+    private MockInterface $guzzleClientMock;
+    private MockObject $hmacServiceMock;
+    private MockObject $responseValidatorMock;
     private string $pluginVersionHeaderWithShopPlugin;
     private string $pluginVersionHeaderWithoutShopPlugin;
 
@@ -352,7 +352,7 @@ class RequestServiceTest extends TestCase
             $this->responseValidatorMock,
         );
         $response = $requestService->sendPostRequest($endpoint, $body);
-        $this->assertEqualsCanonicalizing($responseData, $response);
+        $this->assertEquals($responseData, $response);
     }
 
     /**
@@ -405,7 +405,7 @@ class RequestServiceTest extends TestCase
 
         $requestService = $this->getNewRequestService();
         $response = $requestService->sendPostRequest($endpoint, $body);
-        $this->assertEqualsCanonicalizing($responseData, $response);
+        $this->assertEquals($responseData, $response);
     }
     // </editor-fold>
 
@@ -550,7 +550,7 @@ class RequestServiceTest extends TestCase
             $this->responseValidatorMock,
         );
         $response = $requestService->sendPutRequest($endpoint, $body);
-        $this->assertEqualsCanonicalizing($responseData, $response);
+        $this->assertEquals($responseData, $response);
     }
 
     /**
@@ -598,7 +598,7 @@ class RequestServiceTest extends TestCase
 
         $requestService = $this->getNewRequestService();
         $response = $requestService->sendPutRequest($endpoint);
-        $this->assertEqualsCanonicalizing($responseData, $response);
+        $this->assertEquals($responseData, $response);
     }
 
     /**
@@ -651,7 +651,7 @@ class RequestServiceTest extends TestCase
 
         $requestService = $this->getNewRequestService();
         $response = $requestService->sendPutRequest($endpoint, $body);
-        $this->assertEqualsCanonicalizing($responseData, $response);
+        $this->assertEquals($responseData, $response);
     }
     // </editor-fold>
 

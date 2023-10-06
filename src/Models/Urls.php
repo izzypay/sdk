@@ -59,7 +59,7 @@ class Urls
     }
 
     /**
-     * @return array
+     * @return array<string, string>
      */
     public function toArray(): array
     {
@@ -72,7 +72,7 @@ class Urls
     /**
      * @param string $ipn
      * @param string $checkoutUrl
-     * @return static
+     * @return Urls
      * @throws InvalidUrlsException
      */
     public static function create(string $ipn, string $checkoutUrl): self

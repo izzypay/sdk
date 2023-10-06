@@ -16,14 +16,14 @@ class UrlsTest extends TestCase
     use InvokeConstructorTrait;
     use SetterAndGetterTesterTrait;
 
-    private const IPN_URL = 'https://ipn.com';
-    private const CHECKOUT_URL = 'https://checkout.com';
+    private const IPN_URL = 'https://webshop.url/ipn';
+    private const CHECKOUT_URL = 'https://webshop.url/checkout';
 
     protected function setUp(): void
     {
         $this->fields = [
-            'ipn' => 'https://www.ipn.com',
-            'checkoutUrl' => 'https://www.checkout.com'
+            'ipn' => 'https://www.webshop.url/ipn',
+            'checkoutUrl' => 'https://www.webshop.url/checkout'
         ];
     }
 
@@ -43,7 +43,7 @@ class UrlsTest extends TestCase
     {
         $urls = $this->invokeConstructor(Urls::class, [self::IPN_URL, self::CHECKOUT_URL]);
         $urlsAsArray = $urls->toArray();
-        $this->assertEqualsCanonicalizing([
+        $this->assertEquals([
             'ipn' => self::IPN_URL,
             'checkoutUrl' => self::CHECKOUT_URL,
         ], $urlsAsArray);

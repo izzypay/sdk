@@ -15,22 +15,22 @@ use IzzyPay\Exceptions\InvalidReturnDataException;
 use IzzyPay\Exceptions\InvalidUrlsException;
 use IzzyPay\Exceptions\PaymentServiceUnavailableException;
 use IzzyPay\Exceptions\RequestException;
-use IzzyPay\IzzyPay;
 use IzzyPay\Models\Address;
 use IzzyPay\Models\CartItem;
 use IzzyPay\Models\Cart;
+use IzzyPay\Models\CreateOther;
 use IzzyPay\Models\LimitedCustomer;
 use IzzyPay\Models\Customer;
 use IzzyPay\Models\Other;
-use IzzyPay\Models\Response\InitResponse;
-use IzzyPay\Models\Response\StartResponse;
-use IzzyPay\Models\StartOther;
-use IzzyPay\Models\Urls;
+use IzzyPay\Models\RedirectUrls;
+use IzzyPay\Models\Response\CreateResponse;
+use IzzyPay\Models\Response\RedirectInitResponse;
+use IzzyPay\RedirectIzzyPay;
 
 $merchantCartId = '8';
-$izzyPay = new IzzyPay('merchant1', 'abcd1234', 'https://test.izzpay.hu', 'plugin 1.0');
+$izzyPay = new RedirectIzzyPay('merchant1', 'abcd1234', 'https://test.izzpay.hu', 'plugin 1.0');
 
-function verifyCredential(IzzyPay $izzyPay): void
+function verifyCredential(RedirectIzzyPay $izzyPay): void
 {
     try {
         $izzyPay->cred();
@@ -39,7 +39,7 @@ function verifyCredential(IzzyPay $izzyPay): void
     }
 }
 
-function sendInit(IzzyPay $izzyPay, string $merchantCartId): ?InitResponse
+function sendInit(RedirectIzzyPay $izzyPay, string $merchantCartId): ?RedirectInitResponse
 {
     try {
         $cartItem = CartItem::create('name','category', 'subCategory', 'product', 6666.6, 1, 'manufacturer', 'merchantItemId', 'other');
@@ -53,23 +53,23 @@ function sendInit(IzzyPay $izzyPay, string $merchantCartId): ?InitResponse
     return null;
 }
 
-function sendStart(IzzyPay $izzyPay, string $merchantCartId, $token): ?StartResponse
+function sendCreate(RedirectIzzyPay $izzyPay, string $merchantCartId, ?string $token): ?CreateResponse
 {
     try {
         $cartItem = CartItem::create('name','category', 'subCategory', 'product', 6666.66, 1, 'manufacturer', 'merchantItemId', 'other');
         $cart = Cart::create('HUF', 6667.00, [$cartItem]);
         $address = Address::create('8888', 'city', 'street', 'houseNo', 'address1', 'address2', 'address3');
         $customer = Customer::create('merchant', 'merchantCustomerId', null,'other', 'name', 'surname', 'phone', 'email@emai.com', $address, $address);
-        $other = StartOther::create('127.0.0.1', 'browser');
-        $urls = Urls::create('https://webshop.url/ipn', 'https://webshop.url/checkout');
-        return $izzyPay->start($token, $merchantCartId, $cart, $customer, $other, $urls);
+        $other = CreateOther::create('127.0.0.1', 'browser');
+        $urls = RedirectUrls::create('https://webshop.url/accepted', 'https://webshop.url/rejected', 'https://webshop.url/cancelled', 'https://webshop.url/ipn', 'https://webshop.url/checkout');
+        return $izzyPay->create($token, $merchantCartId, $cart, $customer, $other, $urls);
     } catch (InvalidAddressException|InvalidCustomerException|InvalidCartItemException|InvalidCartException|InvalidOtherException|InvalidResponseException|RequestException|JsonException|InvalidUrlsException|AuthenticationException|PaymentServiceUnavailableException $e) {
         var_dump($e->getMessage());
     }
     return null;
 }
 
-function sendDeliveryCart(IzzyPay $izzyPay, string $merchantCartId): void
+function sendDeliveryCart(RedirectIzzyPay $izzyPay, string $merchantCartId): void
 {
     try {
         $izzyPay->deliveryCart($merchantCartId);
@@ -78,7 +78,7 @@ function sendDeliveryCart(IzzyPay $izzyPay, string $merchantCartId): void
     }
 }
 
-function sendDeliveryItem(IzzyPay $izzyPay, string $merchantCartId, string $merchantItemId): void
+function sendDeliveryItem(RedirectIzzyPay $izzyPay, string $merchantCartId, string $merchantItemId): void
 {
     try {
         $izzyPay->deliveryItem($merchantCartId, $merchantItemId);
@@ -87,7 +87,7 @@ function sendDeliveryItem(IzzyPay $izzyPay, string $merchantCartId, string $merc
     }
 }
 
-function sendReturnCart(IzzyPay $izzyPay, string $merchantCartId, DateTimeImmutable $returnDate): void
+function sendReturnCart(RedirectIzzyPay $izzyPay, string $merchantCartId, DateTimeImmutable $returnDate): void
 {
     try {
         $izzyPay->returnCart($merchantCartId, $returnDate);
@@ -96,7 +96,7 @@ function sendReturnCart(IzzyPay $izzyPay, string $merchantCartId, DateTimeImmuta
     }
 }
 
-function sendReturnItem(IzzyPay $izzyPay, string $merchantCartId, string $merchantItemId, DateTimeImmutable $returnDate, ?float $reducedValue = null): void
+function sendReturnItem(RedirectIzzyPay $izzyPay, string $merchantCartId, string $merchantItemId, DateTimeImmutable $returnDate, ?float $reducedValue = null): void
 {
     try {
         $izzyPay->returnItem($merchantCartId, $merchantItemId, $returnDate, $reducedValue);
@@ -109,25 +109,25 @@ function sendReturnItem(IzzyPay $izzyPay, string $merchantCartId, string $mercha
 // Not part of the normal flow, therefore doesn't need to be called before the init.
 verifyCredential($izzyPay);
 
+$token = null;
 $initResponse = sendInit($izzyPay, $merchantCartId);
 if ($initResponse) {
-    $jsUrl = $initResponse->getJsUrl();
     $token = $initResponse->getToken();
-    var_dump($jsUrl);
+    var_dump($token);
+}
 
-    $startResponse = sendStart($izzyPay, $merchantCartId, $token);
-    if ($startResponse) {
-        $token = $startResponse->getToken();
-        var_dump('Ok');
+$createResponse = sendCreate($izzyPay, $merchantCartId, $token);
+if ($createResponse) {
+    $token = $createResponse->getToken();
+    var_dump($createResponse->getRedirectUrl());
 
-        // Delivery for the whole cart
-        sendDeliveryCart($izzyPay, $merchantCartId);
-        // Delivery for single item from the cart
-        sendDeliveryItem($izzyPay, $merchantCartId, 'merchantItemId');
+    // Delivery for the whole cart
+    sendDeliveryCart($izzyPay, $merchantCartId);
+    // Delivery for single item from the cart
+    sendDeliveryItem($izzyPay, $merchantCartId, 'merchantItemId');
 
-        // Return the whole cart
-        sendReturnCart($izzyPay, $merchantCartId, new DateTimeImmutable('2022-04-04T12:34:56+0010'));
-        // Return single item from the cart
-        sendReturnItem($izzyPay, $merchantCartId, 'merchantItemId', new DateTimeImmutable('2022-04-04T12:34:56+0010'), 100.2);
-    }
+    // Return the whole cart
+    sendReturnCart($izzyPay, $merchantCartId, new DateTimeImmutable('2022-04-04T12:34:56+0010'));
+    // Return single item from the cart
+    sendReturnItem($izzyPay, $merchantCartId, 'merchantItemId', new DateTimeImmutable('2022-04-04T12:34:56+0010'), 100.2);
 }
