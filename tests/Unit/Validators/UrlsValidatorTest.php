@@ -32,16 +32,17 @@ class UrlsValidatorTest extends TestCase
     }
 
     /**
+     * @return array<int, array<int, object|string|null>>
      * @throws ReflectionException
      */
     public function getUrlsProvider(): array
     {
         $invalidUrls1 = $this->invokeConstructor(Urls::class, ['', '']);
         $invalidUrls2 = $this->invokeConstructor(Urls::class, ['invalid', '']);
-        $invalidUrls3 = $this->invokeConstructor(Urls::class, ['https://ipn.com', '']);
-        $invalidUrls4 = $this->invokeConstructor(Urls::class, ['https://ipn.com', 'invalid']);
-        $validUrls1 = $this->invokeConstructor(Urls::class, ['https://ipn.com', '']);
-        $validUrls2 = $this->invokeConstructor(Urls::class, ['https://ipn.com', 'https://checkout.com']);
+        $invalidUrls3 = $this->invokeConstructor(Urls::class, ['https://webshop.url/ipn', '']);
+        $invalidUrls4 = $this->invokeConstructor(Urls::class, ['https://webshop.url/ipn', 'invalid']);
+        $validUrls1 = $this->invokeConstructor(Urls::class, ['https://webshop.url/ipn', '']);
+        $validUrls2 = $this->invokeConstructor(Urls::class, ['https://webshop.url/ipn', 'https://webshop.url/checkout']);
         return [
             [$invalidUrls1, InvalidUrlsException::class],
             [$invalidUrls2, InvalidUrlsException::class],

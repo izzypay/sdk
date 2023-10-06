@@ -9,14 +9,14 @@ use IzzyPay\Validators\OtherValidator;
 
 class StartOther
 {
-    private string $ip;
+    protected string $ip;
     protected string $browser;
 
     /**
      * @param string $ip
      * @param string $browser
      */
-    private function __construct(string $ip, string $browser)
+    protected function __construct(string $ip, string $browser)
     {
         $this->ip = $ip;
         $this->browser = $browser;
@@ -59,7 +59,7 @@ class StartOther
     }
 
     /**
-     * @return array
+     * @return array<string, string>
      */
     public function toArray(): array
     {
@@ -72,7 +72,7 @@ class StartOther
     /**
      * @param string $ip
      * @param string $browser
-     * @return static
+     * @return StartOther
      * @throws InvalidOtherException
      */
     public static function create(string $ip, string $browser): self

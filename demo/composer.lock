@@ -339,13 +339,14 @@
         },
         {
             "name": "izzypay/sdk",
-            "version": "1.1.0",
+            "version": "1.4.0",
             "dist": {
                 "type": "path",
                 "url": "..",
-                "reference": "15dbd7b77a7409d516de9e7ce38c09d10d6b80b8"
+                "reference": "bbcaa7b8376020001700c0ac6410b4e774f9c8a1"
             },
             "require": {
+                "ext-json": "*",
                 "guzzlehttp/guzzle": "^7.4",
                 "php": ">=7.4"
             },

@@ -70,9 +70,9 @@ class CustomerTest extends TestCase
     public function testToArray(): void
     {
         $address = $this->invokeConstructor(Address::class, [self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3]);
-        $customer = $this->invokeConstructor(Customer::class, [self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::OTHER, self::NAME, self::SURNAME, self::COMPANY_NAME, self::PHONE, self::EMAIL, $address, $address]);
+        $customer = $this->invokeConstructor(Customer::class, [self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::COMPANY_NAME, self::OTHER, self::NAME, self::SURNAME, self::PHONE, self::EMAIL, $address, $address]);
         $customerAsArray = $customer->toArray();
-        $this->assertEqualsCanonicalizing([
+        $this->assertEquals([
             'registered' => self::REGISTERED,
             'merchantCustomerId' => self::MERCHANT_CUSTOMER_ID,
             'other' => self::OTHER,

@@ -54,7 +54,7 @@ class AddressTest extends TestCase
     {
         $address = $this->invokeConstructor(Address::class, [self::ZIP, self::CITY, self::STREET, self::HOUSE_NO, self::ADDRESS1, self::ADDRESS2, self::ADDRESS3]);
         $urlsAsArray = $address->toArray();
-        $this->assertEqualsCanonicalizing([
+        $this->assertEquals([
             'zip' => self::ZIP,
             'city' => self::CITY,
             'street' => self::STREET,

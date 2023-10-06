@@ -57,7 +57,7 @@ class CartItemTest extends TestCase
     {
         $cartItem = $this->invokeConstructor(CartItem::class, [self::NAME, self::CATEGORY, self::SUB_CATEGORY, self::TYPE, self::PRICE, self::QUANTITY, self::MANUFACTURER, self::MERCHANT_ITEM_ID, self::OTHER]);
         $cartItemAsArray = $cartItem->toArray();
-        $this->assertEqualsCanonicalizing([
+        $this->assertEquals([
             'name' => self::NAME,
             'category' => self::CATEGORY,
             'subCategory' => self::SUB_CATEGORY,

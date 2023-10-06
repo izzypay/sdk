@@ -48,7 +48,7 @@ class LimitedCustomerTest extends TestCase
     {
         $limitedCustomer = $this->invokeConstructor(LimitedCustomer::class, [self::REGISTERED, self::MERCHANT_CUSTOMER_ID, self::COMPANY_NAME, self::OTHER]);
         $limitedCustomerAsArray = $limitedCustomer->toArray();
-        $this->assertEqualsCanonicalizing([
+        $this->assertEquals([
             'registered' => self::REGISTERED,
             'merchantCustomerId' => self::MERCHANT_CUSTOMER_ID,
             'companyName' => self::COMPANY_NAME,

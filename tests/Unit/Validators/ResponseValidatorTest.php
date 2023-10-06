@@ -19,7 +19,7 @@ class ResponseValidatorTest extends TestCase
 {
     use InvokeMethodTrait;
 
-    private HmacService|MockObject $hmacServiceMock;
+    private MockObject $hmacServiceMock;
 
     protected function setUp(): void
     {
@@ -85,7 +85,7 @@ class ResponseValidatorTest extends TestCase
     {
         $responseValidator = $this->getNewResponseValidator();
         $errors = $this->invokeMethod($responseValidator, 'validate', [$response]);
-        $this->assertEqualsCanonicalizing($expected, $errors);
+        $this->assertEquals($expected, $errors);
     }
 
     /**
@@ -105,6 +105,22 @@ class ResponseValidatorTest extends TestCase
     }
 
     /**
+     * @dataProvider getRedirectInitResponseForValidationProvider
+     * @throws InvalidResponseException
+     */
+    public function testValidateRedirectInitResponse(array $response, ?string $expectedExceptionClass): void
+    {
+        $responseValidator = $this->getNewResponseValidator();
+        if ($expectedExceptionClass) {
+            $this->expectException($expectedExceptionClass);
+        }
+        $responseValidator->validateRedirectInitResponse($response);
+        if (!$expectedExceptionClass) {
+            $this->assertTrue(true);
+        }
+    }
+
+    /**
      * @dataProvider getStartResponseForValidationProvider
      * @throws InvalidResponseException
      */
@@ -115,6 +131,22 @@ class ResponseValidatorTest extends TestCase
             $this->expectException($expectedExceptionClass);
         }
         $responseValidator->validateStartResponse($response);
+        if (!$expectedExceptionClass) {
+            $this->assertTrue(true);
+        }
+    }
+
+    /**
+     * @dataProvider getCreateResponseForValidationProvider
+     * @throws InvalidResponseException
+     */
+    public function testValidateCreateResponse(array $response, ?string $expectedExceptionClass): void
+    {
+        $responseValidator = $this->getNewResponseValidator();
+        if ($expectedExceptionClass) {
+            $this->expectException($expectedExceptionClass);
+        }
+        $responseValidator->validateCreateResponse($response);
         if (!$expectedExceptionClass) {
             $this->assertTrue(true);
         }
@@ -199,9 +231,27 @@ class ResponseValidatorTest extends TestCase
                     'token' => 'token',
                     'merchantId' => 'merchant id',
                     'merchantCartId' => 'merchant cart id',
-                    'jsUrl' => 'https://www.example.com'
+                    'jsUrl' => 'https://test.izzypay.hu/some.js'
                 ],
                 null
+            ],
+        ];
+    }
+
+    public function getRedirectInitResponseForValidationProvider(): array
+    {
+        return [
+            [
+                [],
+                InvalidResponseException::class,
+            ],
+            [
+                [
+                    'token' => 'token',
+                    'merchantId' => 'merchant id',
+                    'merchantCartId' => 'merchant cart id',
+                ],
+                null,
             ],
         ];
     }
@@ -220,6 +270,42 @@ class ResponseValidatorTest extends TestCase
                     'merchantCartId' => 'merchant cart id',
                 ],
                 null,
+            ],
+        ];
+    }
+
+    public function getCreateResponseForValidationProvider(): array
+    {
+        return [
+            [
+                [],
+                InvalidResponseException::class,
+            ],
+            [
+                [
+                    'token' => 'token',
+                    'merchantId' => 'merchant id',
+                    'merchantCartId' => 'merchant cart id',
+                ],
+                InvalidResponseException::class,
+            ],
+            [
+                [
+                    'token' => 'token',
+                    'merchantId' => 'merchant id',
+                    'merchantCartId' => 'merchant cart id',
+                    'redirectUrl' => 'redirect url'
+                ],
+                InvalidResponseException::class,
+            ],
+            [
+                [
+                    'token' => 'token',
+                    'merchantId' => 'merchant id',
+                    'merchantCartId' => 'merchant cart id',
+                    'redirectUrl' => 'https://webshop.url/redirect'
+                ],
+                null
             ],
         ];
     }
