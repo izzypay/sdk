@@ -101,7 +101,10 @@ class ResponseValidator
     {
         $errors = $this->validate($response);
 
-        if (!array_key_exists('redirectUrl', $response) || !filter_var($response['redirectUrl'], FILTER_VALIDATE_URL)) {
+        if (
+            !array_key_exists('errors', $response)
+            && (!array_key_exists('redirectUrl', $response) || !filter_var($response['redirectUrl'], FILTER_VALIDATE_URL))
+        ) {
             $errors[] = 'redirectUrl';
         }
 
