@@ -303,6 +303,15 @@ class ResponseValidatorTest extends TestCase
                     'token' => 'token',
                     'merchantId' => 'merchant id',
                     'merchantCartId' => 'merchant cart id',
+                    'errors' => ['key' => 'value'],
+                ],
+                null,
+            ],
+            [
+                [
+                    'token' => 'token',
+                    'merchantId' => 'merchant id',
+                    'merchantCartId' => 'merchant cart id',
                     'redirectUrl' => 'https://webshop.url/redirect'
                 ],
                 null
