@@ -655,6 +655,37 @@ class RequestServiceTest extends TestCase
     }
     // </editor-fold>
 
+    // <editor-fold desc=validateAuthentication>
+    public function testValidateAuthenticationWithInvalidAuthorizationHeader(): void
+    {
+        $this->responseValidatorMock
+            ->expects($this->once())
+            ->method('validateAuthentication')
+            ->with('content', 'Bearer signature')
+            ->willThrowException(new AuthenticationException('Invalid signature'));
+
+        $this->expectException(AuthenticationException::class);
+        $requestService = $this->getNewRequestService();
+        $requestService->validateAuthentication('content', 'Bearer signature');
+    }
+
+    /**
+     * @throws AuthenticationException
+     */
+    public function validateAuthentication(): void
+    {
+        $this->responseValidatorMock
+            ->expects($this->once())
+            ->method('validateAuthentication')
+            ->with('content', 'Bearer signature');
+
+        $requestService = $this->getNewRequestService();
+        $requestService->validateAuthentication('content', 'Bearer merchant:signature');
+
+        $this->assertTrue(true);
+    }
+    // </editor-fold>
+
     public function tearDown(): void
     {
         Mockery::close();

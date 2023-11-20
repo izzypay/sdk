@@ -131,3 +131,22 @@ if ($initResponse) {
         sendReturnItem($izzyPay, $merchantCartId, 'merchantItemId', new DateTimeImmutable('2022-04-04T12:34:56+0010'), 100.2);
     }
 }
+
+// Helper to validate authentication on IPN calls
+try {
+    $contentArray = [
+        'token' => 'b752c5e0-fd6e-4fcb-a194-0d2691a79403',
+        'merchantId' => '1',
+        'merchantCartId' => $merchantCartId,
+        'status' => 'accepted',
+        'submitDate' => '2023-10-24 10:00:00',
+        'finishDate' => '2023-10-24 10:10:00'
+    ];
+    $content = json_encode($contentArray, JSON_THROW_ON_ERROR);
+    $signature = base64_encode(hash_hmac('sha384', $content, 'abcd1234', true));
+    $authorizationHeader = "HMAC $signature";
+
+    $izzyPay->validateAuthentication($content, $authorizationHeader);
+} catch (AuthenticationException|JsonException $e) {
+    var_dump($e->getMessage());
+}

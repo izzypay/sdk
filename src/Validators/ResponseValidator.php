@@ -9,6 +9,7 @@ use IzzyPay\Exceptions\InvalidResponseException;
 use IzzyPay\Exceptions\PaymentServiceUnavailableException;
 use IzzyPay\Services\HmacService;
 use Psr\Http\Message\ResponseInterface;
+use function var_dump;
 
 class ResponseValidator
 {
@@ -20,6 +21,25 @@ class ResponseValidator
     public function __construct(HmacService $hmacService)
     {
         $this->hmacService = $hmacService;
+    }
+
+    /**
+     * @param string $content
+     * @param string $authorizationHeader
+     * @return void
+     * @throws AuthenticationException
+     */
+    public function validateAuthentication(string $content, string $authorizationHeader): void
+    {
+        $signature = $this->hmacService->getSignature($authorizationHeader);
+        if ($signature === null) {
+            throw new AuthenticationException('Invalid authorization header');
+        }
+
+        $calculatedEncodedSignature = $this->hmacService->generateSignature($content);
+        if ($calculatedEncodedSignature !== $signature) {
+            throw new AuthenticationException('Invalid signature');
+        }
     }
 
     /**
