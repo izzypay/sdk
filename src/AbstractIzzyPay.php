@@ -116,6 +116,26 @@ abstract class AbstractIzzyPay
     }
 
     /**
+     * @param string $content
+     * @param string $authorizationHeader
+     * @return void
+     * @throws AuthenticationException
+     */
+    public function validateAuthentication(string $content, string $authorizationHeader): void
+    {
+        $this->requestService->validateAuthentication($content, $authorizationHeader);
+    }
+
+    /**
+     * @param string $content
+     * @return string
+     */
+    public function generateAuthorizationHeader(string $content): string
+    {
+        return $this->requestService->generateAuthorizationHeader($content);
+    }
+
+    /**
      * @param string $merchantCartId
      * @param Cart $cart
      * @param AbstractCustomer $customer
