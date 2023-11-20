@@ -9,7 +9,6 @@ use IzzyPay\Exceptions\InvalidResponseException;
 use IzzyPay\Exceptions\PaymentServiceUnavailableException;
 use IzzyPay\Services\HmacService;
 use Psr\Http\Message\ResponseInterface;
-use function var_dump;
 
 class ResponseValidator
 {
