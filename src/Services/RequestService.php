@@ -127,4 +127,24 @@ class RequestService
             throw new RequestException($exception->getMessage());
         }
     }
+
+    /**
+     * @param string $content
+     * @param string $authorizationHeader
+     * @return void
+     * @throws AuthenticationException
+     */
+    public function validateAuthentication(string $content, string $authorizationHeader): void
+    {
+        $this->responseValidator->validateAuthentication($content, $authorizationHeader);
+    }
+
+    /**
+     * @param string $content
+     * @return string
+     */
+    public function generateAuthorizationHeader(string $content): string
+    {
+        return $this->hmacService->generateAuthorizationHeader($this->merchantId, $content);
+    }
 }

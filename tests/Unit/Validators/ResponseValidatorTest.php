@@ -31,6 +31,47 @@ class ResponseValidatorTest extends TestCase
     /**
      * @throws AuthenticationException
      */
+    public function testValidateAuthenticationWithInvalidAuthorizationHeader(): void
+    {
+        $responseValidator = $this->getNewResponseValidator();
+        $content = 'content';
+        $authorizationHeader = 'Bearer signature';
+        $this->hmacServiceMock->expects($this->once())->method('getSignature')->willReturn(null);
+        $this->expectException(AuthenticationException::class);
+        $responseValidator->validateAuthentication($content, $authorizationHeader);
+    }
+
+    /**
+     * @throws AuthenticationException
+     */
+    public function testValidateAuthenticationWithInvalidSignature(): void
+    {
+        $responseValidator = $this->getNewResponseValidator();
+        $content = 'content';
+        $authorizationHeader = 'Bearer signature';
+        $this->hmacServiceMock->expects($this->once())->method('getSignature')->willReturn('invalid');
+        $this->hmacServiceMock->expects($this->once())->method('generateSignature')->willReturn('signature');
+        $this->expectException(AuthenticationException::class);
+        $responseValidator->validateAuthentication($content, $authorizationHeader);
+    }
+
+    /**
+     * @throws AuthenticationException
+     */
+    public function testValidateAuthentication(): void
+    {
+        $responseValidator = $this->getNewResponseValidator();
+        $content = 'content';
+        $authorizationHeader = 'Bearer signature';
+        $this->hmacServiceMock->expects($this->once())->method('getSignature')->willReturn('signature');
+        $this->hmacServiceMock->expects($this->once())->method('generateSignature')->willReturn('signature');
+        $responseValidator->validateAuthentication($content, $authorizationHeader);
+        $this->assertTrue(true);
+    }
+
+    /**
+     * @throws AuthenticationException
+     */
     public function testValidateResponseAuthenticationWithoutAuthorizationHeader(): void
     {
         $responseValidator = $this->getNewResponseValidator();
@@ -297,6 +338,15 @@ class ResponseValidatorTest extends TestCase
                     'redirectUrl' => 'redirect url'
                 ],
                 InvalidResponseException::class,
+            ],
+            [
+                [
+                    'token' => 'token',
+                    'merchantId' => 'merchant id',
+                    'merchantCartId' => 'merchant cart id',
+                    'errors' => ['key' => 'value'],
+                ],
+                null,
             ],
             [
                 [

@@ -23,6 +23,25 @@ class ResponseValidator
     }
 
     /**
+     * @param string $content
+     * @param string $authorizationHeader
+     * @return void
+     * @throws AuthenticationException
+     */
+    public function validateAuthentication(string $content, string $authorizationHeader): void
+    {
+        $signature = $this->hmacService->getSignature($authorizationHeader);
+        if ($signature === null) {
+            throw new AuthenticationException('Invalid authorization header');
+        }
+
+        $calculatedEncodedSignature = $this->hmacService->generateSignature($content);
+        if ($calculatedEncodedSignature !== $signature) {
+            throw new AuthenticationException('Invalid signature');
+        }
+    }
+
+    /**
      * @param ResponseInterface $response
      * @return void
      * @throws AuthenticationException
@@ -101,7 +120,10 @@ class ResponseValidator
     {
         $errors = $this->validate($response);
 
-        if (!array_key_exists('redirectUrl', $response) || !filter_var($response['redirectUrl'], FILTER_VALIDATE_URL)) {
+        if (
+            !array_key_exists('errors', $response)
+            && (!array_key_exists('redirectUrl', $response) || !filter_var($response['redirectUrl'], FILTER_VALIDATE_URL))
+        ) {
             $errors[] = 'redirectUrl';
         }
 
