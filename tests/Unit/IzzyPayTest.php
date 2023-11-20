@@ -944,6 +944,57 @@ class IzzyPayTest extends TestCase
 
     // </editor-fold>
 
+    // <editor-fold desc=validateAuthentication()>
+
+    public function testValidateAuthenticationWithInvalidAuthorizationHeader(): void
+    {
+        $this->requestServiceMock
+            ->shouldReceive('validateAuthentication')
+            ->once()
+            ->with('content', 'Bearer signature')
+            ->andThrow(new AuthenticationException('Invalid signature'));
+
+        $this->expectException(AuthenticationException::class);
+        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->validateAuthentication('content', 'Bearer signature');
+    }
+
+    /**
+     * @throws AuthenticationException
+     */
+    public function testValidateAuthentication(): void
+    {
+        $this->requestServiceMock
+            ->shouldReceive('validateAuthentication')
+            ->once()
+            ->with('content', 'Bearer signature');
+
+        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $izzyPay->validateAuthentication('content', 'Bearer signature');
+
+        $this->assertTrue(true);
+    }
+
+    // </editor-fold>
+
+    // <editor-fold desc=validateAuthentication()>
+
+    public function testGenerateAuthorizationHeader(): void
+    {
+        $this->requestServiceMock
+            ->shouldReceive('generateAuthorizationHeader')
+            ->once()
+            ->with('content')
+            ->andReturn('HMAC merchantId:signature');
+
+        $izzyPay = new IzzyPay(self::MERCHANT_ID, self::MERCHANT_SECRET, self::BASE_URL);
+        $actual = $izzyPay->generateAuthorizationHeader('content');
+
+        $this->assertEquals('HMAC merchantId:signature', $actual);
+    }
+
+    // </editor-fold>
+
     public function tearDown(): void
     {
         Mockery::close();
