@@ -138,4 +138,13 @@ class RequestService
     {
         $this->responseValidator->validateAuthentication($content, $authorizationHeader);
     }
+
+    /**
+     * @param string $content
+     * @return string
+     */
+    public function generateAuthorizationHeader(string $content): string
+    {
+        return $this->hmacService->generateAuthorizationHeader($this->merchantId, $content);
+    }
 }

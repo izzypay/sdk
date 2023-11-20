@@ -150,3 +150,17 @@ try {
 } catch (AuthenticationException|JsonException $e) {
     var_dump($e->getMessage());
 }
+
+// Helper to generate authorization header
+$contentArray = [
+    'token' => 'b752c5e0-fd6e-4fcb-a194-0d2691a79403',
+    'merchantId' => '1',
+    'merchantCartId' => $merchantCartId,
+    'status' => 'accepted',
+    'submitDate' => '2023-10-24 10:00:00',
+    'finishDate' => '2023-10-24 10:10:00',
+    'receivedDate' => '2023-10-24 10:20:00'
+];
+$content = json_encode($contentArray, JSON_THROW_ON_ERROR);
+$authorizationHeader = $izzyPay->generateAuthorizationHeader($content);
+var_dump($authorizationHeader);

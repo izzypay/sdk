@@ -127,6 +127,15 @@ abstract class AbstractIzzyPay
     }
 
     /**
+     * @param string $content
+     * @return string
+     */
+    public function generateAuthorizationHeader(string $content): string
+    {
+        return $this->requestService->generateAuthorizationHeader($content);
+    }
+
+    /**
      * @param string $merchantCartId
      * @param Cart $cart
      * @param AbstractCustomer $customer

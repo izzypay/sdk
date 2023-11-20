@@ -686,6 +686,22 @@ class RequestServiceTest extends TestCase
     }
     // </editor-fold>
 
+    // <editor-fold desc=generateAuthorizationHeader>
+    public function testGenerateAuthorizationHeader(): void
+    {
+        $this->hmacServiceMock
+            ->expects($this->once())
+            ->method('generateAuthorizationHeader')
+            ->with('merchantId', 'content')
+            ->willReturn('HMAC merchantId:signature');
+
+        $requestService = $this->getNewRequestService();
+        $actual = $requestService->generateAuthorizationHeader('content');
+
+        $this->assertEquals('HMAC merchantId:signature', $actual);
+    }
+    // </editor-fold>
+
     public function tearDown(): void
     {
         Mockery::close();
