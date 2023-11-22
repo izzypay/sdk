@@ -124,7 +124,7 @@ function ipnHandlingExample(IzzyPay $izzyPay): void
         $authorizationHeader = $izzyPay->generateAuthorizationHeader($content);
         var_dump($authorizationHeader);
         // Example on how to output it.
-        // header($authorizationHeader);
+        // header("Authorization: $authorizationHeader");
     } catch (AuthenticationException $e) {
         // Not authorized IPN request
         var_dump($e->getMessage());
