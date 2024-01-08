@@ -17,7 +17,7 @@ class LimitedCustomer extends AbstractCustomer
      * @return static
      * @throws InvalidCustomerException
      */
-    public static function create(string $registered, ?string $merchantCustomerId, ?string $companyName, ?string $other): self
+    public static function create(string $registered, ?string $merchantCustomerId = null, ?string $companyName = null, ?string $other = null): self
     {
         $basicCustomer = new LimitedCustomer($registered, $merchantCustomerId, $companyName, $other);
 

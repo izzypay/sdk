@@ -210,4 +210,31 @@ class Address
 
         return $address;
     }
+
+    /**
+     * @param string $zip
+     * @param string $city
+     * @param string $street
+     * @param string $houseNo
+     * @return Address
+     * @throws InvalidAddressException
+     */
+    public static function createFromStreetAndHouseNo(string $zip, string $city, string $street, string $houseNo): self
+    {
+        return self::create($zip, $city, $street, $houseNo, null, null, null);
+    }
+
+    /**
+     * @param string $zip
+     * @param string $city
+     * @param string $address1
+     * @param string|null $address2
+     * @param string|null $address3
+     * @return Address
+     * @throws InvalidAddressException
+     */
+    public static function createFromAddresses(string $zip, string $city, string $address1, ?string $address2 = null, ?string $address3 = null): self
+    {
+        return self::create($zip, $city, null, null, $address1, $address2, $address3);
+    }
 }

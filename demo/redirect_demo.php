@@ -44,7 +44,7 @@ function sendInit(RedirectIzzyPay $izzyPay, string $merchantCartId): ?RedirectIn
     try {
         $cartItem = CartItem::create('name','category', 'subCategory', 'product', 6666.6, 1, 'manufacturer', 'merchantItemId', 'other');
         $cart = Cart::create('HUF', 6667.00, [$cartItem]);
-        $limitedCustomer = LimitedCustomer::create('guest', null, null, 'other');
+        $limitedCustomer = LimitedCustomer::create('guest');
         $other = Other::create('browser');
         return $izzyPay->init($merchantCartId, $cart, $limitedCustomer, $other);
     } catch (InvalidCustomerException|InvalidCartItemException|InvalidCartException|InvalidOtherException|InvalidResponseException|RequestException|JsonException|AuthenticationException|PaymentServiceUnavailableException $e) {
@@ -58,8 +58,9 @@ function sendCreate(RedirectIzzyPay $izzyPay, string $merchantCartId, ?string $t
     try {
         $cartItem = CartItem::create('name','category', 'subCategory', 'product', 6666.66, 1, 'manufacturer', 'merchantItemId', 'other');
         $cart = Cart::create('HUF', 6667.00, [$cartItem]);
-        $address = Address::create('8888', 'city', 'street', 'houseNo', 'address1', 'address2', 'address3');
-        $customer = Customer::create('merchant', 'merchantCustomerId', null,'other', 'name', 'surname', 'phone', 'email@emai.com', $address, $address);
+        $deliveryAddress = Address::createFromStreetAndHouseNo('8888', 'city', 'street', 'houseNo');
+        $invoiceAddress = Address::createFromAddresses('8888', 'city', 'address1', 'address2', 'address3');
+        $customer = Customer::create('merchant', 'merchantCustomerId', null,'other', 'name', 'surname', 'phone', 'email@emai.com', $deliveryAddress, $invoiceAddress);
         $other = CreateOther::create('127.0.0.1', 'browser');
         $urls = RedirectUrls::create('https://webshop.url/accepted', 'https://webshop.url/rejected', 'https://webshop.url/cancelled', 'https://webshop.url/ipn', 'https://webshop.url/checkout');
         return $izzyPay->create($token, $merchantCartId, $cart, $customer, $other, $urls);
